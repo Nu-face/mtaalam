@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mtaalam - AQRB Exam Prep</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+  body{background:#0B3D2E;color:white;min-height:100vh;padding:18px 16px 90px}
+  .top{text-align:center}
+  .logo{font-size:24px;font-weight:bold;letter-spacing:3px}
+  .logo small{display:block;color:#D4AF37;font-size:10px;letter-spacing:3px;margin-top:2px}
+  .karibu{margin-top:18px}
+  .karibu h1{font-size:21px}
+  .karibu p{color:#D4AF37;font-size:13px;margin-top:6px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .card{background:white;color:#0B3D2E;border-radius:14px;padding:18px 8px;text-align:center;cursor:pointer;border:3px solid transparent}
+  .card span{font-size:28px;display:block}
+  .card b{font-size:13px;display:block;margin-top:6px;line-height:1.2}
+  .card small{font-size:10px;color:#777}
+  .card.active{border-color:#D4AF37;background:#FFF8E1}
+  .section{margin-top:20px}
+  .section h3{font-size:14px;margin-bottom:10px;color:#D4AF37}
+  .quiz-btn{background:white;color:#111;border-radius:14px;padding:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:pointer}
+  .quiz-btn b{font-size:14px}
+  .quiz-btn small{color:#777;font-size:11px;display:block}
+  .quiz-btn .arrow{font-size:18px;color:#0B3D2E}
+  .logbook-btn{width:100%;background:#1A7A4C;color:white;border:none;padding:16px;border-radius:14px;font-size:16px;font-weight:bold;margin-top:6px;cursor:pointer}
+  .logbook-btn:disabled{opacity:.5}
+  .form-box{background:white;color:#222;border-radius:14px;padding:16px;margin-top:14px;display:none;line-height:1.5}
+  .form-box input,.form-box select,.form-box textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;margin-bottom:10px;font-size:14px}
+  .save-btn{width:100%;background:#D4AF37;color:#0B3D2E;border:none;padding:14px;border-radius:12px;font-weight:bold;font-size:15px;cursor:pointer}
+  .progress-box{background:white;color:#222;border-radius:14px;padding:14px;margin-top:12px;display:none}
+  .bar{background:#eee;border-radius:10px;height:12px;overflow:hidden;margin-top:6px}
+  .bar-fill{background:#1A7A4C;height:100%;width:0%;transition:.3s}
+  .nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:12px 0;color:#0B3D2E;font-size:12px}
+  .nav div{text-align:center;cursor:pointer}
+  .nav .active{color:#1A7A4C;font-weight:bold}
+  #ujumbe{text-align:center;color:#D4AF37;margin-top:10px;font-size:13px;min-height:18px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">MTAALAM<small>PREPARE FOR AQRB EXAM</small></div>
+  <div class="karibu"><h1>Karibu Mtaalam 👋</h1><p>Chagua Taaluma Yako</p></div>
+</div>
+
+<div class="grid" id="grid">
+  <div class="card" onclick="chagua(this,'Architect')"><span>🏛️</span><b>Architect</b><small>Majengo & Mipango</small></div>
+  <div class="card" onclick="chagua(this,'Architect Technologist')"><span>📐</span><b>Architect Technologist</b><small>Michoro & Detailing</small></div>
+  <div class="card" onclick="chagua(this,'Interior Designer')"><span>🛋️</span><b>Interior Designer</b><small>Mambo ya Ndani</small></div>
+  <div class="card" onclick="chagua(this,'Landscape Architect')"><span>🌳</span><b>Landscape Architect</b><small>Mazingira & Bustani</small></div>
+  <div class="card" onclick="chagua(this,'Quantity Surveyor')"><span>📏</span><b>Quantity Surveyor</b><small>Gharama & Upimaji</small></div>
+  <div class="card" onclick="chagua(this,'Construction Manager')"><span>👷</span><b>Construction Manager</b><small>Usimamizi wa Ujenzi</small></div>
+</div>
+
+<div id="ujumbe">Chagua taaluma yako kwanza 👆</div>
+
+<div class="section">
+  <h3>Maswali — Anza Kujifunza</h3>
+  <div class="quiz-btn" onclick="funguaQuiz('Sheria')">
+    <div><b>⚖️ Sheria — Maswali 30</b><small>Kwa wote 6 — Sheria inafanana</small></div><div class="arrow">→</div>
+  </div>
+  <div class="quiz-btn" onclick="funguaQuiz('Syllabus')">
+    <div><b>📖 <span id="syllabusTitle">Syllabus Yangu — Maswali 20</span></b><small id="syllabusSub">Chagua taaluma kwanza</small></div><div class="arrow">→</div>
+  </div>
+</div>
+
+<button class="logbook-btn" id="logBtn" disabled onclick="funguaLogbook()">+ Ongeza Log Book</button>
+
+<div class="form-box" id="logForm">
+  <b id="logTitle">Ongeza Log Book</b><br>
+  <small>Andika kazi uliyofanya leo, itahifadhiwa kwenye Log Book yako.</small><br><br>
+  Mradi<input id="mradi" placeholder="Mfano: Jengo la Shule Mwanza">
+  Stage<select id="stage"><option>Measurement</option><option>Design</option><option>Site Supervision</option><option>Tender</option><option>Valuation</option></select>
+  Masaa<input id="masaa" type="number" placeholder="Mfano: 20">
+  Msimamizi<input id="msimamizi" placeholder="Mfano: Eng. Mwalimu - Reg No.">
+  Maelezo<textarea id="maelezo" placeholder="Nilifanya nini? Mfano: Nilipima BOQ ya madarasa 4"></textarea>
+  <button class="save-btn" onclick="hifadhi()">Hifadhi Log Book ✅</button>
+</div>
+
+<div class="progress-box" id="progressBox">
+  <b>📒 Log Book Yangu — <span id="progTaalamu"></span></b>
+  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;"><span>Jumla ya Masaa</span><b id="progText">0 / 420</b></div>
+  <div class="bar"><div class="bar-fill" id="progBar"></div></div>
+  <div id="orodha" style="margin-top:10px;font-size:13px;line-height:1.6;"></div>
+</div>
+
+<div class="nav">
+  <div class="active">🏠<br>Home</div>
+  <div onclick="funguaQuiz('Sheria')">❓<br>Maswali</div>
+  <div onclick="funguaLogbook()">📒<br>Log Book</div>
+  <div onclick="alert('Profile - Itaonyesha jina lako, taaluma, na masaa yako')">👤<br>Profile</div>
+</div>
+
+<script>
+let taaluma = "";
+let masaaYote = 0;
+function chagua(el, jina){
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  taaluma = jina;
+  document.getElementById('ujumbe').innerText = "Umechagua: " + jina + " ✅";
+  document.getElementById('syllabusTitle').innerText = jina + " — Maswali 20";
+  document.getElementById('syllabusSub').innerText = "Syllabus ya " + jina;
+  document.getElementById('logBtn').disabled = false;
+  document.getElementById('logTitle').innerText = "Ongeza Log Book — " + jina;
+  document.getElementById('progTaalamu').innerText = jina;
+}
+function funguaQuiz(aina){
+  if(!taaluma){ alert("Chagua taaluma yako kwanza 👆"); return; }
+  if(aina==='Sheria'){ alert("Sheria — Maswali 30 — BURE 5 za kwanza ni Case Study. Tutaiweka Quiz hapa kesho. Sasa jaribu Log Book chini 👇"); }
+  else { alert(taaluma + " — Maswali 20 — Tutaiweka hapa kesho."); }
+}
+function funguaLogbook(){
+  if(!taaluma){ alert("Chagua taaluma yako kwanza 👆"); return; }
+  let f=document.getElementById('logForm');
+  f.style.display = f.style.display==='block' ? 'none' : 'block';
+  window.scrollTo(0, document.body.scrollHeight);
+}
+function hifadhi(){
+  let mradi=document.getElementById('mradi').value;
+  let masaa=parseInt(document.getElementById('masaa').value||0);
+  let stage=document.getElementById('stage').value;
+  let msim=document.getElementById('msimamizi').value;
+  if(!mradi || !masaa){ alert("Andika Mradi na Masaa kwanza"); return; }
+  masaaYote += masaa;
+  let pb=document.getElementById('progressBox'); pb.style.display='block';
+  document.getElementById('progText').innerText = masaaYote + " / 420";
+  document.getElementById('progBar').style.width = Math.min(100, masaaYote/420*100) + "%";
+  document.getElementById('orodha').innerHTML += "✅ <b>"+mradi+"</b> — "+stage+" — "+masaa+" masaa — "+msim+"<br>";
+  alert("Imehifadhiwa! ✅ Masaa yako sasa: " + masaaYote);
+  document.getElementById('mradi').value=""; document.getElementById('masaa').value=""; document.getElementById('msimamizi').value=""; document.getElementById('maelezo').value="";
+}
+</script>
+</body>
+</html>

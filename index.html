@@ -6,35 +6,35 @@
 <title>MTAALAM - AQRB Exam Prep</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
-body{background:#0f172a;color:white;min-height:100vh;padding:16px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.logo{font-weight:900;font-size:22px;letter-spacing:1px}
+body{background:#0f172a;color:white;min-height:100vh;padding:0 16px 16px}
+.top{position:sticky;top:0;background:#0f172a;padding:16px 0 12px;display:flex;justify-content:space-between;align-items:center;z-index:10}
+.logo{font-weight:900;font-size:24px;letter-spacing:1px}
 .logo span{color:#f59e0b}
-.badge{background:#f59e0b;color:#111;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.badge{background:#f59e0b;color:#111;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800}
 .card{background:white;color:#111;border-radius:20px;padding:18px;margin-top:12px}
-.card h1{font-size:26px;line-height:1.2}
+.card h1{font-size:28px;line-height:1.15}
 .card p{color:#64748b;margin-top:8px;font-size:14px;line-height:1.5}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .prof{border:2px solid #e2e8f0;border-radius:16px;padding:14px;text-align:center;cursor:pointer;background:#f8fafc}
-.prof.active{border-color:#f59e0b;background:#fffbeb}
-.prof b{display:block;font-size:14px}
+.prof.active{border-color:#f59e0b;background:#fffbeb;box-shadow:0 0 0 2px #f59e0b}
+.prof b{display:block;font-size:14px;line-height:1.2}
 .prof small{color:#64748b}
-.row{display:flex;gap:10px;margin-top:12px}
-.btn{flex:1;border-radius:14px;padding:14px;border:0;font-weight:800;cursor:pointer;font-size:14px}
-.btn-gold{background:#f59e0b}
+.row{display:flex;gap:10px;margin-top:14px}
+.btn{flex:1;border-radius:14px;padding:14px;border:0;font-weight:800;cursor:pointer;font-size:14px;line-height:1.3}
+.btn-gold{background:#f59e0b;color:#111}
 .btn-dark{background:#0f172a;color:white}
-.btn-white{background:white;border:2px solid #e2e8f0}
+.btn-white{background:white;border:2px solid #e2e8f0;color:#111}
 .hidden{display:none!important}
 .q-top{display:flex;justify-content:space-between;font-size:13px;color:#64748b;font-weight:700}
-.q{font-size:19px;line-height:1.4;margin:14px 0;font-weight:800}
-.opt{border:2px solid #e2e8f0;border-radius:14px;padding:13px;margin-top:10px;cursor:pointer;font-size:15px;background:#f8fafc}
+.q{font-size:19px;line-height:1.4;margin:14px 0;font-weight:800;color:#111}
+.opt{border:2px solid #e2e8f0;border-radius:14px;padding:13px;margin-top:10px;cursor:pointer;font-size:15px;background:#f8fafc;color:#111}
 .opt.correct{border-color:#16a34a;background:#dcfce7}
 .opt.wrong{border-color:#dc2626;background:#fee2e2}
-.explain{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5}
+.explain{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5;color:#111}
 input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px;margin-top:8px;font-size:15px}
 .progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:10px}
-.progress i{display:block;height:100%;background:#f59e0b;width:20%}
-.score{font-size:42px;font-weight:900;text-align:center;margin:16px 0}
+.progress i{display:block;height:100%;background:#f59e0b;width:5%}
+.score{font-size:42px;font-weight:900;text-align:center;margin:16px 0;color:#111}
 .center{text-align:center}
 .small{font-size:13px;color:#64748b}
 </style>
@@ -43,21 +43,21 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 
 <div class="top">
 <div class="logo">MTA<span>ALAM</span></div>
-<div class="badge" id="topBadge">AQRB EXAM PREP</div>
+<div class="badge">AQRB EXAM PREP</div>
 </div>
 
-<!-- LANDING -->
+<!-- LANDING - DESIGN YA MWANZO -->
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
 <p>Chagua taaluma yako. Jifunze Sheria na Syllabus. Jaza Log Book yako hadi 420.</p>
 <div class="grid" id="profGrid">
-<div class="prof" data-p="Architect"><b>🏛️ Architect</b><small>AR</small></div>
-<div class="prof" data-p="Architectural Technologist"><b>📐 Technologist</b><small>AT</small></div>
-<div class="prof" data-p="Interior Designer"><b>🛋️ Interior</b><small>ID</small></div>
-<div class="prof" data-p="Landscape Architect"><b>🌳 Landscape</b><small>LA</small></div>
-<div class="prof active" data-p="Quantity Surveyor"><b>📏 Quantity Surveyor</b><small>QS</small></div>
-<div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><small>CM</small></div>
+<div class="prof" data-p="Architect"><b>🏛️ Architect</b><br><small>AR</small></div>
+<div class="prof" data-p="Architectural Technologist"><b>📐 Technologist</b><br><small>AT</small></div>
+<div class="prof" data-p="Interior Designer"><b>🛋️ Interior</b><br><small>ID</small></div>
+<div class="prof" data-p="Landscape Architect"><b>🌳 Landscape</b><br><small>LA</small></div>
+<div class="prof active" data-p="Quantity Surveyor"><b>📏 Quantity Surveyor</b><br><small>QS</small></div>
+<div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><br><small>CM</small></div>
 </div>
 <div class="row">
 <button class="btn btn-gold" onclick="startQuiz('sheria')">⚖️ Sheria<br><small>Maswali 30</small></button>
@@ -83,7 +83,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 </div>
 
-<!-- QUIZ -->
+<!-- QUIZ - INABAKI -->
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SHERIA</span><span id="qNum">Swali 1 / 5</span></div>
 <div class="progress"><i id="qBar"></i></div>
@@ -99,7 +99,6 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <b class="center" style="display:block">Matokeo Yako</b>
 <div class="score" id="scoreText">0 / 5</div>
 <p class="center" id="scoreMsg"></p>
-<div id="review"></div>
 <button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena</button>
 <button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">Rudi Nyumbani</button>
 </div>
@@ -127,12 +126,12 @@ syllabus:[
 document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
 function showLog(){document.getElementById('logForm').classList.remove('hidden')}
 function saveLog(){let h=parseInt(document.getElementById('logHours').value||0);if(!h){alert('Weka masaa');return}logs+=h;document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';document.getElementById('logForm').classList.add('hidden');alert('Imehifadhiwa! Sasa una '+logs+' / 420');}
-function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();showQ()}
+function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;document.getElementById('scoreMsg').textContent=score>=4?'Hongera! Uko vizuri sana kwa AQRB.':score>=3?'Vizuri! Endelea kujifunza.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.'}
-function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden')}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 </script>
 </body>
 </html>

@@ -3,136 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mtaalam - AQRB Exam Prep</title>
+<title>MTAALAM - AQRB Exam Prep</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-  body{background:#0B3D2E;color:white;min-height:100vh;padding:18px 16px 90px}
-  .top{text-align:center}
-  .logo{font-size:24px;font-weight:bold;letter-spacing:3px}
-  .logo small{display:block;color:#D4AF37;font-size:10px;letter-spacing:3px;margin-top:2px}
-  .karibu{margin-top:18px}
-  .karibu h1{font-size:21px}
-  .karibu p{color:#D4AF37;font-size:13px;margin-top:6px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-  .card{background:white;color:#0B3D2E;border-radius:14px;padding:18px 8px;text-align:center;cursor:pointer;border:3px solid transparent}
-  .card span{font-size:28px;display:block}
-  .card b{font-size:13px;display:block;margin-top:6px;line-height:1.2}
-  .card small{font-size:10px;color:#777}
-  .card.active{border-color:#D4AF37;background:#FFF8E1}
-  .section{margin-top:20px}
-  .section h3{font-size:14px;margin-bottom:10px;color:#D4AF37}
-  .quiz-btn{background:white;color:#111;border-radius:14px;padding:15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;cursor:pointer}
-  .quiz-btn b{font-size:14px}
-  .quiz-btn small{color:#777;font-size:11px;display:block}
-  .quiz-btn .arrow{font-size:18px;color:#0B3D2E}
-  .logbook-btn{width:100%;background:#1A7A4C;color:white;border:none;padding:16px;border-radius:14px;font-size:16px;font-weight:bold;margin-top:6px;cursor:pointer}
-  .logbook-btn:disabled{opacity:.5}
-  .form-box{background:white;color:#222;border-radius:14px;padding:16px;margin-top:14px;display:none;line-height:1.5}
-  .form-box input,.form-box select,.form-box textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;margin-bottom:10px;font-size:14px}
-  .save-btn{width:100%;background:#D4AF37;color:#0B3D2E;border:none;padding:14px;border-radius:12px;font-weight:bold;font-size:15px;cursor:pointer}
-  .progress-box{background:white;color:#222;border-radius:14px;padding:14px;margin-top:12px;display:none}
-  .bar{background:#eee;border-radius:10px;height:12px;overflow:hidden;margin-top:6px}
-  .bar-fill{background:#1A7A4C;height:100%;width:0%;transition:.3s}
-  .nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:12px 0;color:#0B3D2E;font-size:12px}
-  .nav div{text-align:center;cursor:pointer}
-  .nav .active{color:#1A7A4C;font-weight:bold}
-  #ujumbe{text-align:center;color:#D4AF37;margin-top:10px;font-size:13px;min-height:18px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:#0f172a;color:white;min-height:100vh;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.logo{font-weight:900;font-size:22px;letter-spacing:1px}
+.logo span{color:#f59e0b}
+.badge{background:#f59e0b;color:#111;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.card{background:white;color:#111;border-radius:20px;padding:18px;margin-top:12px}
+.card h1{font-size:26px;line-height:1.2}
+.card p{color:#64748b;margin-top:8px;font-size:14px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.prof{border:2px solid #e2e8f0;border-radius:16px;padding:14px;text-align:center;cursor:pointer;background:#f8fafc}
+.prof.active{border-color:#f59e0b;background:#fffbeb}
+.prof b{display:block;font-size:14px}
+.prof small{color:#64748b}
+.row{display:flex;gap:10px;margin-top:12px}
+.btn{flex:1;border-radius:14px;padding:14px;border:0;font-weight:800;cursor:pointer;font-size:14px}
+.btn-gold{background:#f59e0b}
+.btn-dark{background:#0f172a;color:white}
+.btn-white{background:white;border:2px solid #e2e8f0}
+.hidden{display:none!important}
+.q-top{display:flex;justify-content:space-between;font-size:13px;color:#64748b;font-weight:700}
+.q{font-size:19px;line-height:1.4;margin:14px 0;font-weight:800}
+.opt{border:2px solid #e2e8f0;border-radius:14px;padding:13px;margin-top:10px;cursor:pointer;font-size:15px;background:#f8fafc}
+.opt.correct{border-color:#16a34a;background:#dcfce7}
+.opt.wrong{border-color:#dc2626;background:#fee2e2}
+.explain{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5}
+input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px;margin-top:8px;font-size:15px}
+.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:#f59e0b;width:20%}
+.score{font-size:42px;font-weight:900;text-align:center;margin:16px 0}
+.center{text-align:center}
+.small{font-size:13px;color:#64748b}
 </style>
 </head>
 <body>
 
 <div class="top">
-  <div class="logo">MTAALAM<small>PREPARE FOR AQRB EXAM</small></div>
-  <div class="karibu"><h1>Karibu Mtaalam 👋</h1><p>Chagua Taaluma Yako</p></div>
+<div class="logo">MTA<span>ALAM</span></div>
+<div class="badge" id="topBadge">AQRB EXAM PREP</div>
 </div>
 
-<div class="grid" id="grid">
-  <div class="card" onclick="chagua(this,'Architect')"><span>🏛️</span><b>Architect</b><small>Majengo & Mipango</small></div>
-  <div class="card" onclick="chagua(this,'Architect Technologist')"><span>📐</span><b>Architect Technologist</b><small>Michoro & Detailing</small></div>
-  <div class="card" onclick="chagua(this,'Interior Designer')"><span>🛋️</span><b>Interior Designer</b><small>Mambo ya Ndani</small></div>
-  <div class="card" onclick="chagua(this,'Landscape Architect')"><span>🌳</span><b>Landscape Architect</b><small>Mazingira & Bustani</small></div>
-  <div class="card" onclick="chagua(this,'Quantity Surveyor')"><span>📏</span><b>Quantity Surveyor</b><small>Gharama & Upimaji</small></div>
-  <div class="card" onclick="chagua(this,'Construction Manager')"><span>👷</span><b>Construction Manager</b><small>Usimamizi wa Ujenzi</small></div>
+<!-- LANDING -->
+<div id="landing">
+<div class="card">
+<h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
+<p>Chagua taaluma yako. Jifunze Sheria na Syllabus. Jaza Log Book yako hadi 420.</p>
+<div class="grid" id="profGrid">
+<div class="prof" data-p="Architect"><b>🏛️ Architect</b><small>AR</small></div>
+<div class="prof" data-p="Architectural Technologist"><b>📐 Technologist</b><small>AT</small></div>
+<div class="prof" data-p="Interior Designer"><b>🛋️ Interior</b><small>ID</small></div>
+<div class="prof" data-p="Landscape Architect"><b>🌳 Landscape</b><small>LA</small></div>
+<div class="prof active" data-p="Quantity Surveyor"><b>📏 Quantity Surveyor</b><small>QS</small></div>
+<div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><small>CM</small></div>
+</div>
+<div class="row">
+<button class="btn btn-gold" onclick="startQuiz('sheria')">⚖️ Sheria<br><small>Maswali 30</small></button>
+<button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20</small></button>
+</div>
+<p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
 </div>
 
-<div id="ujumbe">Chagua taaluma yako kwanza 👆</div>
-
-<div class="section">
-  <h3>Maswali — Anza Kujifunza</h3>
-  <div class="quiz-btn" onclick="funguaQuiz('Sheria')">
-    <div><b>⚖️ Sheria — Maswali 30</b><small>Kwa wote 6 — Sheria inafanana</small></div><div class="arrow">→</div>
-  </div>
-  <div class="quiz-btn" onclick="funguaQuiz('Syllabus')">
-    <div><b>📖 <span id="syllabusTitle">Syllabus Yangu — Maswali 20</span></b><small id="syllabusSub">Chagua taaluma kwanza</small></div><div class="arrow">→</div>
-  </div>
+<div class="card">
+<b>📒 Log Book Yangu</b>
+<p>Maendeleo yako kuelekea 420 masaa / siku za mafunzo.</p>
+<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">20</span> / 420</p>
+<div class="progress"><i id="logBar" style="width:5%"></i></div>
+<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="showLog()">+ Ongeza Log Book</button>
 </div>
 
-<button class="logbook-btn" id="logBtn" disabled onclick="funguaLogbook()">+ Ongeza Log Book</button>
-
-<div class="form-box" id="logForm">
-  <b id="logTitle">Ongeza Log Book</b><br>
-  <small>Andika kazi uliyofanya leo, itahifadhiwa kwenye Log Book yako.</small><br><br>
-  Mradi<input id="mradi" placeholder="Mfano: Jengo la Shule Mwanza">
-  Stage<select id="stage"><option>Measurement</option><option>Design</option><option>Site Supervision</option><option>Tender</option><option>Valuation</option></select>
-  Masaa<input id="masaa" type="number" placeholder="Mfano: 20">
-  Msimamizi<input id="msimamizi" placeholder="Mfano: Eng. Mwalimu - Reg No.">
-  Maelezo<textarea id="maelezo" placeholder="Nilifanya nini? Mfano: Nilipima BOQ ya madarasa 4"></textarea>
-  <button class="save-btn" onclick="hifadhi()">Hifadhi Log Book ✅</button>
+<div id="logForm" class="card hidden">
+<b>Ongeza Log Book</b>
+<input id="logTitle" placeholder="Mfano: Site Visit - Mbezi">
+<input id="logHours" type="number" placeholder="Masaa / Siku - mfano 8">
+<select id="logCat"><option>Site Experience</option><option>Design</option><option>Measurement / QS</option><option>Project Management</option></select>
+<button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="saveLog()">Hifadhi Log Book</button>
+</div>
 </div>
 
-<div class="progress-box" id="progressBox">
-  <b>📒 Log Book Yangu — <span id="progTaalamu"></span></b>
-  <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;"><span>Jumla ya Masaa</span><b id="progText">0 / 420</b></div>
-  <div class="bar"><div class="bar-fill" id="progBar"></div></div>
-  <div id="orodha" style="margin-top:10px;font-size:13px;line-height:1.6;"></div>
+<!-- QUIZ -->
+<div id="quiz" class="card hidden">
+<div class="q-top"><span id="qCat">SHERIA</span><span id="qNum">Swali 1 / 5</span></div>
+<div class="progress"><i id="qBar"></i></div>
+<div class="q" id="qText"></div>
+<div id="opts"></div>
+<div id="explain" class="explain hidden"></div>
+<button id="nextBtn" class="btn btn-dark hidden" style="width:100%;margin-top:14px" onclick="nextQ()">Swali Linalofuata →</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">← Rudi Nyumbani</button>
 </div>
 
-<div class="nav">
-  <div class="active">🏠<br>Home</div>
-  <div onclick="funguaQuiz('Sheria')">❓<br>Maswali</div>
-  <div onclick="funguaLogbook()">📒<br>Log Book</div>
-  <div onclick="alert('Profile - Itaonyesha jina lako, taaluma, na masaa yako')">👤<br>Profile</div>
+<!-- RESULT -->
+<div id="result" class="card hidden">
+<b class="center" style="display:block">Matokeo Yako</b>
+<div class="score" id="scoreText">0 / 5</div>
+<p class="center" id="scoreMsg"></p>
+<div id="review"></div>
+<button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">Rudi Nyumbani</button>
 </div>
 
 <script>
-let taaluma = "";
-let masaaYote = 0;
-function chagua(el, jina){
-  document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  taaluma = jina;
-  document.getElementById('ujumbe').innerText = "Umechagua: " + jina + " ✅";
-  document.getElementById('syllabusTitle').innerText = jina + " — Maswali 20";
-  document.getElementById('syllabusSub').innerText = "Syllabus ya " + jina;
-  document.getElementById('logBtn').disabled = false;
-  document.getElementById('logTitle').innerText = "Ongeza Log Book — " + jina;
-  document.getElementById('progTaalamu').innerText = jina;
-}
-function funguaQuiz(aina){
-  if(!taaluma){ alert("Chagua taaluma yako kwanza 👆"); return; }
-  if(aina==='Sheria'){ alert("Sheria — Maswali 30 — BURE 5 za kwanza ni Case Study. Tutaiweka Quiz hapa kesho. Sasa jaribu Log Book chini 👇"); }
-  else { alert(taaluma + " — Maswali 20 — Tutaiweka hapa kesho."); }
-}
-function funguaLogbook(){
-  if(!taaluma){ alert("Chagua taaluma yako kwanza 👆"); return; }
-  let f=document.getElementById('logForm');
-  f.style.display = f.style.display==='block' ? 'none' : 'block';
-  window.scrollTo(0, document.body.scrollHeight);
-}
-function hifadhi(){
-  let mradi=document.getElementById('mradi').value;
-  let masaa=parseInt(document.getElementById('masaa').value||0);
-  let stage=document.getElementById('stage').value;
-  let msim=document.getElementById('msimamizi').value;
-  if(!mradi || !masaa){ alert("Andika Mradi na Masaa kwanza"); return; }
-  masaaYote += masaa;
-  let pb=document.getElementById('progressBox'); pb.style.display='block';
-  document.getElementById('progText').innerText = masaaYote + " / 420";
-  document.getElementById('progBar').style.width = Math.min(100, masaaYote/420*100) + "%";
-  document.getElementById('orodha').innerHTML += "✅ <b>"+mradi+"</b> — "+stage+" — "+masaa+" masaa — "+msim+"<br>";
-  alert("Imehifadhiwa! ✅ Masaa yako sasa: " + masaaYote);
-  document.getElementById('mradi').value=""; document.getElementById('masaa').value=""; document.getElementById('msimamizi').value=""; document.getElementById('maelezo').value="";
-}
+let selected='Quantity Surveyor';
+let logs=20;
+let currentCat='sheria';
+let qi=0, score=0;
+const questions={
+sheria:[
+{q:"Mteja anakupa kazi bila mkataba wa maandishi. Baadaye anakataa kukulipa. Kwa mujibu wa Sheria ya AQRB na Code of Conduct, hatua sahihi ni ipi?",opts:["Kukataa kazi zote za baadaye bila mkataba","Kufanya kazi kwanza, mkataba baadaye","Kuhakikisha mkataba wa maandishi unaeleza wigo, ada na majukumu kabla ya kuanza kazi","Kumlipia mteja ili akubali"],a:2,ex:"Mtaalamu lazima afanye kazi kwa mkataba wa maandishi. Hii inakulinda wewe na mteja. Bila mkataba, ni vigumu kudai malipo."},
+{q:"Umepewa taarifa za siri za mradi wa mteja. Mshindani wako anakuuliza. Unafanya nini?",opts:["Unamwambia kidogo tu","Unakataa - taarifa za mteja ni siri","Unamwambia kama atakupa kazi","Unaweka kwenye WhatsApp status"],a:1,ex:"Code of Conduct: Usitoe taarifa za siri za mteja bila idhini yake. Hii ni kosa kubwa la kimaadili."},
+{q:"Nani anaruhusiwa kutumia jina 'Architect' / 'Quantity Surveyor' Tanzania?",opts:["Mtu yeyote aliyesoma ujenzi","Mtu aliyesajiliwa na AQRB pekee","Mtu mwenye uzoefu wa miaka 2","Mtu mwenye kampuni ya ujenzi"],a:1,ex:"Jina la taaluma ni la wali sajiliwa na Bodi (AQRB) pekee. Kutumia bila usajili ni kosa kisheria."},
+{q:"Kwenye zabuni, unagundua mteja wako anataka kukupatia kazi kwa rushwa. Unafanya nini?",opts:["Unakubali kimya kimya","Unakataa na kuripoti - ni kinyume na maadili","Unakubali lakini huandiki popote","Unaomba rushwa kubwa zaidi"],a:1,ex:"Mtaalamu lazima awe mwaminifu na huru. Rushwa inaharibu taaluma na ni kosa la jinai."},
+{q:"Mkataba wa ujenzi unapokwisha, nyaraka za mradi ni za nani?",opts:["Za mtaalamu pekee","Za mteja, mtaalamu anabaki na nakala kwa rekodi","Za fundi","Hazina mmiliki"],a:1,ex:"Nyaraka ni mali ya mteja. Mtaalamu anapaswa kuhifadhi nakala kwa rekodi na kutotoa bila idhini."}
+],
+syllabus:[
+{q:"Kwenye Measurement (QS), 'Taking Off' maana yake ni nini?",opts:["Kupima kazi kutoka kwenye michoro ili kupata quantities","Kupiga picha site","Kuchora ramani","Kupanga wafanyakazi"],a:0,ex:"Taking Off = kupima vipimo kutoka kwenye michoro na kuandika kwenye dimension paper kabla ya Bill of Quantities."},
+{q:"Bill of Quantities inatumika kwa nini?",opts:["Kupamba ofisi","Kupata bei ya zabuni na kulipa kazi iliyofanyika","Kuandika barua","Kuhesabu mishahara"],a:1,ex:"BoQ ni orodha ya kazi na quantities. Inatumika kupata bei na kama msingi wa malipo (valuation)."},
+{q:"Variation ni nini?",opts:["Mabadiliko ya kazi kutoka mkataba wa awali","Kazi iliyokamilika","Kazi iliyosimamishwa milele","Kazi ya fundi"],a:0,ex:"Variation = mabadiliko ya wigo, ubora au wingi wa kazi baada ya mkataba. Lazima iidhinishwe na kulipiwa kwa utaratibu."},
+{q:"Practical Completion maana yake ni nini?",opts:["Mradi umekamilika na unaweza kutumika, isipokuwa kasoro ndogo","Mradi umeanza tu","Mradi umesimama","Mradi umefutwa"],a:0,ex:"Practical Completion = kazi imekamilika kiasi cha kutumika. Huanza Defects Liability Period."},
+{q:"Defects Liability Period ni kipindi gani?",opts:["Kipindi mkandarasi anarekebisha kasoro baada ya kukabidhi mradi","Kipindi cha likizo","Kipindi cha kupata kazi mpya","Kipindi cha kulipa kodi"],a:0,ex:"Baada ya Practical Completion, mkandarasi anabaki na jukumu la kurekebisha kasoro kwa kipindi kilicho kwenye mkataba."}
+]};
+document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
+function showLog(){document.getElementById('logForm').classList.remove('hidden')}
+function saveLog(){let h=parseInt(document.getElementById('logHours').value||0);if(!h){alert('Weka masaa');return}logs+=h;document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';document.getElementById('logForm').classList.add('hidden');alert('Imehifadhiwa! Sasa una '+logs+' / 420');}
+function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();showQ()}
+function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
+function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
+function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
+function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;document.getElementById('scoreMsg').textContent=score>=4?'Hongera! Uko vizuri sana kwa AQRB.':score>=3?'Vizuri! Endelea kujifunza.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.'}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden')}
 </script>
 </body>
 </html>

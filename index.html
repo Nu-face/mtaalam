@@ -78,7 +78,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><br><small>CM</small></div>
 </div>
 <div class="row">
-<button class="btn btn-gold" onclick="showLaws()">⚖️ Sheria<br><small>Sheria 11 za AQRB</small></button>
+<button class="btn btn-gold" onclick="showLaws()">⚖️ Sheria<br><small>Sheria 13 za AQRB</small></button>
 <button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20 ya bure</small></button>
 </div>
 <p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
@@ -103,7 +103,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 
 <div id="lawsPage" class="hidden">
 <div class="card">
-<b style="font-size:20px">📜 Sheria 11 za AQRB</b>
+<b style="font-size:20px">📜 Sheria 13 za AQRB</b>
 <p>Chagua sheria moja ujibu maswali yake. Zote ni BURE kwa sasa.</p>
 <div id="lawsContainer"></div>
 <button class="btn btn-white" style="width:100%;margin-top:14px" onclick="backFromLaws()">← Rudi Nyumbani</button>
@@ -159,6 +159,8 @@ const LAWS_10 = [
   { id:'Law 9', name:'Law of Contract', count:10, desc:'Mikataba, Kuvunjika, Fidia' },
   { id:'Law 10', name:'Arbitration Act', count:10, desc:'Kusuluhu Mgogoro bila Mahakama' },
   { id:'Law 11', name:'Mikataba ya Ujenzi', count:10, desc:'JCT, FIDIC, Variation, Valuation' },
+  { id:'Law 12', name:'OSHA - Health & Safety', count:10, desc:'Usalama Kazini, PPE, Ajali' },
+  { id:'Law 13', name:'Professional Ethics', count:10, desc:'Maadili, Uaminifu, Conflict of Interest' },
 ];
 
 // MPYA - ZOTE KWA PAMOJA: Inaonyesha List na inahesabu yenyewe kutoka Supabase
@@ -196,7 +198,7 @@ function backFromLaws(){
   document.getElementById('landing').classList.remove('hidden');
   window.scrollTo(0,0);
 }
-// MPYA - ZOTE KWA PAMOJA: Law 1 hadi Law 11 zote zinatumia hii hii, hakuna kubadilisha tena
+// MPYA - ZOTE KWA PAMOJA: Law 1 hadi Law 13 zote zinatumia hii hii, hakuna kubadilisha tena
 async function openLaw(lawId){
   currentLawId = lawId;
   currentCat = 'sheria';

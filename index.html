@@ -43,6 +43,8 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .auth-box p{color:#94a3b8}
 .pay-opt{border:2px solid #e2e8f0;border-radius:14px;padding:12px;margin-top:10px;cursor:pointer;background:#f8fafc;display:flex;justify-content:space-between;align-items:center}
 .pay-opt.active{border-color:#f59e0b;background:#fffbeb}
+.law-card{background:white;color:#111;border-radius:16px;padding:14px;margin-top:10px;cursor:pointer;border:2px solid #e2e8f0}
+.law-card:active{border-color:#f59e0b;background:#fffbeb}
 </style>
 </head>
 <body>
@@ -76,7 +78,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><br><small>CM</small></div>
 </div>
 <div class="row">
-<button class="btn btn-gold" onclick="startQuiz('sheria')">⚖️ Sheria<br><small>Maswali 30</small></button>
+<button class="btn btn-gold" onclick="showLaws()">⚖️ Sheria<br><small>Sheria 10 za AQRB</small></button>
 <button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20 ya bure</small></button>
 </div>
 <p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
@@ -98,6 +100,17 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 <div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Ingia kwanza ili uone log zako.</p></div></div>
 </div>
+
+<!-- MPYA: PAGE YA LAWS 10 -->
+<div id="lawsPage" class="hidden">
+<div class="card">
+<b style="font-size:20px">📜 Sheria 10 za AQRB</b>
+<p>Chagua sheria moja ujibu maswali yake. Zote ni BURE kwa sasa.</p>
+<div id="lawsContainer"></div>
+<button class="btn btn-white" style="width:100%;margin-top:14px" onclick="backFromLaws()">← Rudi Nyumbani</button>
+</div>
+</div>
+
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
 <div class="progress"><i id="qBar"></i></div>
@@ -133,6 +146,58 @@ const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
 let selectedPlan='Wiki 1 - 5,000/-';let selectedPrice=5000;
+let currentLawId=null;
+
+// MPYA: LAWS 10 - A (Sheria moja kwa taaluma zote)
+const LAWS_10 = [
+  { id:'Law 1', name:'AQRB Act 2010', count:20, desc:'Usajili, Bodi, Nidhamu, Stop Order' },
+  { id:'Law 2', name:'By-Laws + Code of Conduct', count:10, desc:'Maadili, Ada, Malalamiko' },
+  { id:'Law 3', name:'Land Act 1999', count:10, desc:'Ardhi, Umiliki, Kibali cha Kujenga' },
+  { id:'Law 4', name:'Public Procurement Act 2011', count:10, desc:'Zabuni, Tenda, Serikali' },
+  { id:'Law 5', name:'Contractors Act - CRB', count:10, desc:'Nani anaweza kujenga, Daraja' },
+  { id:'Law 6', name:'Engineers Act - ERB', count:5, desc:'Mipaka - Architect vs Engineer vs QS' },
+  { id:'Law 7', name:'Environment Act 2004', count:10, desc:'EIA, Mazingira' },
+  { id:'Law 8', name:'Urban Planning + Building Regs', count:10, desc:'Vibali, Mipango Miji' },
+  { id:'Law 9', name:'Law of Contract', count:10, desc:'Mikataba, Kuvunjika, Fidia' },
+  { id:'Law 10', name:'Arbitration Act', count:5, desc:'Kusuluhu Mgogoro bila Mahakama' },
+];
+
+function showLaws(){
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('lawsPage').classList.remove('hidden');
+  document.getElementById('lawsContainer').innerHTML = LAWS_10.map((law,i)=>`
+    <div class="law-card" onclick="openLaw('${law.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <b>${i+1}. ${law.name}</b>
+        <span style="background:#dcfce7;padding:4px 8px;border-radius:999px;font-size:12px;white-space:nowrap">${law.count} Maswali • BURE</span>
+      </div>
+      <div class="small" style="margin-top:4px">${law.desc}</div>
+      <div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div>
+    </div>
+  `).join('');
+  window.scrollTo(0,0);
+}
+function backFromLaws(){
+  document.getElementById('lawsPage').classList.add('hidden');
+  document.getElementById('landing').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+async function openLaw(lawId){
+  currentLawId = lawId;
+  // KWA SASA: tunatumia maswali 30 ya Sheria uliyonayo ili App isiharibike
+  // BAADAYE: tutabadilisha hapa kusoma kutoka Supabase kwa topic = lawId
+  currentCat = 'sheria';
+  qi=0; score=0;
+  document.getElementById('lawsPage').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('qCat').textContent = lawId.toUpperCase() + ' - SHERIA';
+  showQ();
+  window.scrollTo(0,0);
+}
+
 async function checkUser(){
   const {data} = await supabaseClient.auth.getSession();
   currentUser = data.session?.user || null;
@@ -306,12 +371,16 @@ function payNow(){
   document.getElementById('payMsg').textContent = 'Tuma ' + selectedPrice + '/- kwenda ' + payNumber + ' - ' + selectedPlan;
   alert(msg);
 }
-async function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)}
+async function startQuiz(cat){
+  // Kama anatoka kwenye Laws List, rudi kwanza
+  document.getElementById('lawsPage').classList.add('hidden');
+  currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)
+}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
-function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 checkUser();
 </script>
 </body>

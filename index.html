@@ -274,7 +274,6 @@ async function loadFreeQuestions(){
   if(currentCat === 'sheria') return;
   let dbProf = profMap[selected];
   if(!dbProf) return;
-  if(dbProf !== 'architect' && dbProf !== 'qs' && dbProf !== 'technologist' && dbProf !== 'interior') return;
   try{
     const { data, error } = await supabaseClient
       .from('questions')

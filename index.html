@@ -38,10 +38,32 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .score{font-size:42px;font-weight:900;text-align:center;margin:16px 0;color:#111}
 .center{text-align:center}
 .small{font-size:13px;color:#64748b}
+.auth-box{background:#1e293b;border-radius:16px;padding:14px;margin-top:12px}
+.auth-box b{color:white}
+.auth-box p{color:#94a3b8}
 </style>
 </head>
 <body>
 <div class="top"><div class="logo">MTA<span>ALAM</span></div><div class="badge">AQRB EXAM PREP</div></div>
+
+<div id="authCard" class="auth-box">
+<b id="authTitle">👤 Ingia / Jisajili</b>
+<p id="authDesc">Ingia ili Log Book yako ihifadhiwe kwako peke yako.</p>
+<input id="authEmail" type="email" placeholder="Email yako - mfano: rwegasore@gmail.com" style="background:white">
+<input id="authPass" type="password" placeholder="Password - angalau herufi 6">
+<div class="row">
+<button class="btn btn-gold" onclick="doLogin()">Ingia</button>
+<button class="btn btn-white" onclick="doSignup()">Jisajili Mpya</button>
+</div>
+<p id="authMsg" class="small center" style="color:#fbbf24;margin-top:8px"></p>
+</div>
+
+<div id="userBar" class="auth-box hidden">
+<b id="userEmail">👤 </b>
+<p>Umeingia. Log Book hapa ni yako peke yako.</p>
+<button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
+</div>
+
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
@@ -63,8 +85,8 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div class="card">
 <b>📒 Log Book Yangu</b>
 <p>Maendeleo yako kuelekea 420 masaa / siku za mafunzo.</p>
-<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">20</span> / 420</p>
-<div class="progress"><i id="logBar" style="width:5%"></i></div>
+<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">0</span> / 420</p>
+<div class="progress"><i id="logBar" style="width:0%"></i></div>
 <button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="showLog()">+ Ongeza Log Book</button>
 <p id="syncStatus" class="small center" style="margin-top:8px">☁️ Imeunganishwa na Supabase</p>
 </div>
@@ -75,7 +97,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <select id="logCat"><option>Site Experience</option><option>Design</option><option>Measurement / QS</option><option>Project Management</option></select>
 <button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="saveLog()">Hifadhi Log Book</button>
 </div>
-<div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Bado hakuna log mpya.</p></div></div>
+<div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Ingia kwanza ili uone log zako.</p></div></div>
 </div>
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
@@ -97,7 +119,46 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 const SUPABASE_URL = "https://deszjuhihaoiywgujogm.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let selected='Quantity Surveyor';let logs=20;let currentCat='sheria';let qi=0,score=0;
+let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
+
+async function checkUser(){
+  const {data} = await supabaseClient.auth.getSession();
+  currentUser = data.session?.user || null;
+  if(currentUser){
+    document.getElementById('authCard').classList.add('hidden');
+    document.getElementById('userBar').classList.remove('hidden');
+    document.getElementById('userEmail').textContent='👤 '+currentUser.email;
+    loadLogs();
+  } else {
+    document.getElementById('authCard').classList.remove('hidden');
+    document.getElementById('userBar').classList.add('hidden');
+    logs=0; updateLogUI();
+    document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';
+    document.getElementById('syncStatus').textContent='🔐 Ingia ili uone Log Book yako';
+  }
+}
+async function doSignup(){
+  let email=document.getElementById('authEmail').value.trim();
+  let pass=document.getElementById('authPass').value;
+  if(!email||!pass||pass.length<6){document.getElementById('authMsg').textContent='Weka email sahihi na password ya herufi 6+';return}
+  document.getElementById('authMsg').textContent='Inajisajili...';
+  const {data,error}=await supabaseClient.auth.signUp({email:email,password:pass});
+  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}
+  document.getElementById('authMsg').textContent='Umejisajili! Sasa Ingia.';
+  checkUser();
+}
+async function doLogin(){
+  let email=document.getElementById('authEmail').value.trim();
+  let pass=document.getElementById('authPass').value;
+  if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}
+  document.getElementById('authMsg').textContent='Inaingia...';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});
+  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message+' - Jaribu Jisajili kwanza.';return}
+  document.getElementById('authMsg').textContent='';
+  checkUser();
+}
+async function doLogout(){ await supabaseClient.auth.signOut(); checkUser(); }
+
 const questions={
 sheria:[
 {q:"Mteja anakupa kazi bila mkataba wa maandishi. Baadaye anakataa kukulipa. Hatua sahihi ni ipi?",opts:["Kukataa kazi zote bila mkataba","Kufanya kazi kwanza, mkataba baadaye","Kuhakikisha mkataba wa maandishi unaeleza wigo, ada na majukumu kabla ya kuanza kazi","Kumlipia mteja ili akubali"],a:2,ex:"Mtaalamu lazima afanye kazi kwa mkataba wa maandishi."},
@@ -154,33 +215,41 @@ syllabus:[
 {q:"Mwisho - QS anasaidiaje mteja kuokoa pesa?",opts:["Kwa kupunguza ubora","Kwa kupanga bajeti sahihi, kudhibiti variations, kupima kazi halisi na kuhakikisha analipa alichopata tu","Kwa kumuibia mkandarasi","Kwa kutofanya kazi"],a:1,ex:"QS mzuri anahakikisha mteja analipa bei ya haki kwa kazi iliyofanyika kweli."}
 ]};
 document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
-function showLog(){document.getElementById('logForm').classList.remove('hidden')}
+function showLog(){
+  if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}
+  document.getElementById('logForm').classList.remove('hidden')
+}
 async function loadLogs(){
+  if(!currentUser) return;
   try{
-    const {data,error}=await supabaseClient.from('logbook').select('*').order('created_at',{ascending:false}).limit(5);
+    const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
     if(error) throw error;
-    if(data && data.length){
-      let total=20; data.forEach(r=> total+= (r.hours||0));
-      logs=total; updateLogUI();
+    let total=0; data.forEach(r=> total+= (r.hours||0));
+    logs=total; updateLogUI();
+    if(data.length){
       document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');
-      document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs';
+      document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;
+    } else {
+      document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';
+      document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';
     }
-  }catch(e){ document.getElementById('syncStatus').textContent='⚠️ Supabase bado haijawekwa table - ina-save kwenye simu kwanza'; }
+  }catch(e){ document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message; }
 }
 function updateLogUI(){ document.getElementById('logCount').textContent=logs; document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%'; }
 async function saveLog(){
+  if(!currentUser){alert('Ingia kwanza');return}
   let title=document.getElementById('logTitle').value||'Log Book';
   let h=parseInt(document.getElementById('logHours').value||0);
   let cat=document.getElementById('logCat').value;
   if(!h){alert('Weka masaa');return}
-  logs+=h; updateLogUI();
-  document.getElementById('logForm').classList.add('hidden');
   try{
-    const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected}]);
+    const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);
     if(error) throw error;
-    alert('Imehifadhiwa Supabase! Sasa una '+logs+' / 420');
+    document.getElementById('logForm').classList.add('hidden');
+    document.getElementById('logTitle').value=''; document.getElementById('logHours').value='';
+    alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');
     loadLogs();
-  }catch(e){ alert('Imehifadhiwa kwenye simu! Sasa una '+logs+' / 420. Kuweka table Supabase, nenda SQL Editor na u-run hii: CREATE TABLE logbook (id bigint generated always as identity primary key, title text, hours int, category text, profession text, created_at timestamptz default now());'); }
+  }catch(e){ alert('Kosa kuhifadhi: '+e.message); }
 }
 function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
@@ -188,7 +257,7 @@ function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.'}
 function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
-loadLogs();
+checkUser();
 </script>
 </body>
 </html>

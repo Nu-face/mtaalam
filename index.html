@@ -41,6 +41,8 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .auth-box{background:#1e293b;border-radius:16px;padding:14px;margin-top:12px}
 .auth-box b{color:white}
 .auth-box p{color:#94a3b8}
+.pay-opt{border:2px solid #e2e8f0;border-radius:14px;padding:12px;margin-top:10px;cursor:pointer;background:#f8fafc;display:flex;justify-content:space-between;align-items:center}
+.pay-opt.active{border-color:#f59e0b;background:#fffbeb}
 </style>
 </head>
 <body>
@@ -78,7 +80,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 <div class="row">
 <button class="btn btn-gold" onclick="startQuiz('sheria')">⚖️ Sheria<br><small>Maswali 30</small></button>
-<button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20</small></button>
+<button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20 ya bure</small></button>
 </div>
 <p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
 </div>
@@ -112,7 +114,20 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <b class="center" style="display:block">Matokeo Yako</b>
 <div class="score" id="scoreText">0 / 20</div>
 <p class="center" id="scoreMsg"></p>
-<button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena</button>
+<div id="payBox" class="hidden">
+<div style="border-top:1px solid #e2e8f0;margin-top:14px;padding-top:12px">
+<b>🔓 Fungua Maswali Yote - Chagua Kifurushi</b>
+<p class="small">Umemaliza 20 ya bure. Chagua kifurushi ili uendelee na maswali 3000+ na mitihani ya majaribio.</p>
+<div class="pay-opt" onclick="choosePlan('Siku 1 - 1,000/-',1000,this)"><span><b>⚡ Siku 1</b><br><small class="small">Saa 24 - kwa kujaribu</small></span><b>1,000/-</b></div>
+<div class="pay-opt active" onclick="choosePlan('Wiki 1 - 5,000/-',5000,this)"><span><b>🔥 Wiki 1 - Maarufu</b><br><small class="small">Siku 7 - bora kwa revision</small></span><b>5,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Mwezi 1 - 20,000/-',20000,this)"><span><b>📚 Mwezi 1</b><br><small class="small">Siku 30 - kujiandaa vizuri</small></span><b>20,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Yote - 50,000/-',50000,this)"><span><b>👑 Yote - Full Access</b><br><small class="small">Hadi mtihani - maswali yote</small></span><b>50,000/-</b></div>
+<p class="small center" style="margin-top:10px">Umechagua: <b id="chosenPlan">Wiki 1 - 5,000/-</b></p>
+<button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="payNow()">Lipa Sasa na M-Pesa / Tigo Pesa</button>
+<p id="payMsg" class="small center" style="margin-top:8px"></p>
+</div>
+</div>
+<button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena (Bure)</button>
 <button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">Rudi Nyumbani</button>
 </div>
 <script>
@@ -120,6 +135,7 @@ const SUPABASE_URL = "https://deszjuhihaoiywgujogm.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
+let selectedPlan='Wiki 1 - 5,000/-';let selectedPrice=5000;
 
 async function checkUser(){
   const {data} = await supabaseClient.auth.getSession();
@@ -262,12 +278,14 @@ const profMap = {
 async function loadFreeQuestions(){
   if(currentCat === 'sheria') return;
   let dbProf = profMap[selected];
-  if(dbProf !== 'architect') return;
+  if(!dbProf) return;
+  // Kwa sasa Architect na QS wana maswali Supabase, wengine wanabaki na ya zamani
+  if(dbProf !== 'architect' && dbProf !== 'qs') return;
   try{
     const { data, error } = await supabaseClient
       .from('questions')
       .select('*')
-      .eq('profession','architect')
+      .eq('profession', dbProf)
       .eq('paper','syllabus')
       .eq('is_free', true)
       .eq('is_active', true)
@@ -283,11 +301,24 @@ async function loadFreeQuestions(){
     }
   }catch(e){ console.log('Kutumia maswali ya zamani:', e.message); }
 }
+function choosePlan(label, price, el){
+  selectedPlan = label; selectedPrice = price;
+  document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('chosenPlan').textContent = label;
+}
+function payNow(){
+  // BADILISHA HAPA: weka namba yako ya M-Pesa / Till
+  let payNumber = "075X XXX XXX"; // <-- weka namba yako hapa
+  let msg = 'Umechagua: ' + selectedPlan + '\n\nLipa ' + selectedPrice + '/- kwenda M-Pesa: ' + payNumber + '\nJina: MTAALAM\n\nBaada ya kulipa, tuma screenshot ya muamala WhatsApp ili tukufungulie.';
+  document.getElementById('payMsg').textContent = 'Tuma ' + selectedPrice + '/- kwenda ' + payNumber + ' - ' + selectedPlan;
+  alert(msg);
+}
 async function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
-function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.'}
+function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
 function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 checkUser();
 </script>

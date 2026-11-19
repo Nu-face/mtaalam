@@ -47,7 +47,6 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </head>
 <body>
 <div class="top"><div class="logo">MTA<span>ALAM</span></div><div class="badge">AQRB EXAM PREP</div></div>
-
 <div id="authCard" class="auth-box">
 <b id="authTitle">👤 Ingia / Jisajili</b>
 <p id="authDesc">Ingia ili Log Book yako ihifadhiwe kwako peke yako.</p>
@@ -59,13 +58,11 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 <p id="authMsg" class="small center" style="color:#fbbf24;margin-top:8px"></p>
 </div>
-
 <div id="userBar" class="auth-box hidden">
 <b id="userEmail">👤 </b>
 <p>Umeingia. Log Book hapa ni yako peke yako.</p>
 <button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
 </div>
-
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
@@ -277,7 +274,7 @@ async function loadFreeQuestions(){
   if(currentCat === 'sheria') return;
   let dbProf = profMap[selected];
   if(!dbProf) return;
-  if(dbProf !== 'architect' && dbProf !== 'qs' && dbProf !== 'technologist') return;
+  if(dbProf !== 'architect' && dbProf !== 'qs' && dbProf !== 'technologist' && dbProf !== 'interior') return;
   try{
     const { data, error } = await supabaseClient
       .from('questions')

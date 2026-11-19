@@ -136,7 +136,6 @@ const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
 let selectedPlan='Wiki 1 - 5,000/-';let selectedPrice=5000;
-
 async function checkUser(){
   const {data} = await supabaseClient.auth.getSession();
   currentUser = data.session?.user || null;
@@ -174,7 +173,6 @@ async function doLogin(){
   checkUser();
 }
 async function doLogout(){ await supabaseClient.auth.signOut(); checkUser(); }
-
 const questions={
 sheria:[
 {q:"Mteja anakupa kazi bila mkataba wa maandishi. Baadaye anakataa kukulipa. Hatua sahihi ni ipi?",opts:["Kukataa kazi zote bila mkataba","Kufanya kazi kwanza, mkataba baadaye","Kuhakikisha mkataba wa maandishi unaeleza wigo, ada na majukumu kabla ya kuanza kazi","Kumlipia mteja ili akubali"],a:2,ex:"Mtaalamu lazima afanye kazi kwa mkataba wa maandishi."},
@@ -279,8 +277,7 @@ async function loadFreeQuestions(){
   if(currentCat === 'sheria') return;
   let dbProf = profMap[selected];
   if(!dbProf) return;
-  // Kwa sasa Architect na QS wana maswali Supabase, wengine wanabaki na ya zamani
-  if(dbProf !== 'architect' && dbProf !== 'qs') return;
+  if(dbProf !== 'architect' && dbProf !== 'qs' && dbProf !== 'technologist') return;
   try{
     const { data, error } = await supabaseClient
       .from('questions')
@@ -308,8 +305,7 @@ function choosePlan(label, price, el){
   document.getElementById('chosenPlan').textContent = label;
 }
 function payNow(){
-  // BADILISHA HAPA: weka namba yako ya M-Pesa / Till
-  let payNumber = "075X XXX XXX"; // <-- weka namba yako hapa
+  let payNumber = "075X XXX XXX";
   let msg = 'Umechagua: ' + selectedPlan + '\n\nLipa ' + selectedPrice + '/- kwenda M-Pesa: ' + payNumber + '\nJina: MTAALAM\n\nBaada ya kulipa, tuma screenshot ya muamala WhatsApp ili tukufungulie.';
   document.getElementById('payMsg').textContent = 'Tuma ' + selectedPrice + '/- kwenda ' + payNumber + ' - ' + selectedPlan;
   alert(msg);

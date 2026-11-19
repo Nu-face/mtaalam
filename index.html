@@ -52,4 +52,363 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div id="authCard" class="auth-box">
 <b id="authTitle">👤 Ingia / Jisajili</b>
 <p id="authDesc">Ingia ili Log Book yako ihifadhiwe kwako peke yako.</p>
-<input id="authEmail" type="email" placeholder="
+<input id="authEmail" type="email" placeholder="Email yako - mfano: rwegasore@gmail.com" style="background:white">
+<input id="authPass" type="password" placeholder="Password - angalau herufi 6">
+<div class="row">
+<button class="btn btn-gold" onclick="doLogin()">Ingia</button>
+<button class="btn btn-white" onclick="doSignup()">Jisajili Mpya</button>
+</div>
+<p id="authMsg" class="small center" style="color:#fbbf24;margin-top:8px"></p>
+</div>
+<div id="userBar" class="auth-box hidden">
+<b id="userEmail">👤 </b>
+<p>Umeingia. Log Book hapa ni yako peke yako.</p>
+<button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
+</div>
+<div id="landing">
+<div class="card">
+<h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
+<p>Chagua taaluma yako. Jifunze Sheria na Syllabus. Jaza Log Book yako hadi 420.</p>
+<div class="grid">
+<div class="prof" data-p="Architect"><b>🏛️ Architect</b><br><small>AR</small></div>
+<div class="prof" data-p="Architectural Technologist"><b>📐 Technologist</b><br><small>AT</small></div>
+<div class="prof" data-p="Interior Designer"><b>🛋️ Interior</b><br><small>ID</small></div>
+<div class="prof" data-p="Landscape Architect"><b>🌳 Landscape</b><br><small>LA</small></div>
+<div class="prof active" data-p="Quantity Surveyor"><b>📏 Quantity Surveyor</b><br><small>QS</small></div>
+<div class="prof" data-p="Construction Manager"><b>🏗️ Construction Mgr</b><br><small>CM</small></div>
+</div>
+<div class="row">
+<button class="btn btn-gold" onclick="showLaws()">⚖️ Sheria<br><small>Sheria 11 za AQRB</small></button>
+<button class="btn btn-dark" onclick="startQuiz('syllabus')">📚 Syllabus Yangu<br><small>Maswali 20 ya bure</small></button>
+</div>
+<p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
+</div>
+<div class="card">
+<b>📒 Log Book Yangu</b>
+<p>Maendeleo yako kuelekea 420 masaa / siku za mafunzo.</p>
+<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">0</span> / 420</p>
+<div class="progress"><i id="logBar" style="width:0%"></i></div>
+<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="showLog()">+ Ongeza Log Book</button>
+<p id="syncStatus" class="small center" style="margin-top:8px">☁️ Imeunganishwa na Supabase</p>
+</div>
+<div id="logForm" class="card hidden">
+<b>Ongeza Log Book</b>
+<input id="logTitle" placeholder="Mfano: Site Visit - Mbezi">
+<input id="logHours" type="number" placeholder="Masaa / Siku - mfano 8">
+<select id="logCat"><option>Site Experience</option><option>Design</option><option>Measurement / QS</option><option>Project Management</option></select>
+<button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="saveLog()">Hifadhi Log Book</button>
+</div>
+<div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Ingia kwanza ili uone log zako.</p></div></div>
+</div>
+
+<div id="lawsPage" class="hidden">
+<div class="card">
+<b style="font-size:20px">📜 Sheria 11 za AQRB</b>
+<p>Chagua sheria moja ujibu maswali yake. Zote ni BURE kwa sasa.</p>
+<div id="lawsContainer"></div>
+<button class="btn btn-white" style="width:100%;margin-top:14px" onclick="backFromLaws()">← Rudi Nyumbani</button>
+</div>
+</div>
+
+<div id="quiz" class="card hidden">
+<div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
+<div class="progress"><i id="qBar"></i></div>
+<div class="q" id="qText"></div>
+<div id="opts"></div>
+<div id="explain" class="explain hidden"></div>
+<button id="nextBtn" class="btn btn-dark hidden" style="width:100%;margin-top:14px" onclick="nextQ()">Swali Linalofuata →</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">← Rudi Nyumbani</button>
+</div>
+<div id="result" class="card hidden">
+<b class="center" style="display:block">Matokeo Yako</b>
+<div class="score" id="scoreText">0 / 20</div>
+<p class="center" id="scoreMsg"></p>
+<div id="payBox" class="hidden">
+<div style="border-top:1px solid #e2e8f0;margin-top:14px;padding-top:12px">
+<b>🔓 Fungua Maswali Yote - Chagua Kifurushi</b>
+<p class="small">Umemaliza 20 ya bure. Chagua kifurushi ili uendelee na maswali 3000+ na mitihani ya majaribio.</p>
+<div class="pay-opt" onclick="choosePlan('Siku 1 - 1,000/-',1000,this)"><span><b>⚡ Siku 1</b><br><small class="small">Saa 24 - kwa kujaribu</small></span><b>1,000/-</b></div>
+<div class="pay-opt active" onclick="choosePlan('Wiki 1 - 5,000/-',5000,this)"><span><b>🔥 Wiki 1 - Maarufu</b><br><small class="small">Siku 7 - bora kwa revision</small></span><b>5,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Mwezi 1 - 20,000/-',20000,this)"><span><b>📚 Mwezi 1</b><br><small class="small">Siku 30 - kujiandaa vizuri</small></span><b>20,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Yote - 50,000/-',50000,this)"><span><b>👑 Yote - Full Access</b><br><small class="small">Hadi mtihani - maswali yote</small></span><b>50,000/-</b></div>
+<p class="small center" style="margin-top:10px">Umechagua: <b id="chosenPlan">Wiki 1 - 5,000/-</b></p>
+<button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="payNow()">Lipa Sasa na M-Pesa / Tigo Pesa</button>
+<p id="payMsg" class="small center" style="margin-top:8px"></p>
+</div>
+</div>
+<button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena (Bure)</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHome()">Rudi Nyumbani</button>
+</div>
+<script>
+const SUPABASE_URL = "https://deszjuhihaoiywgujogm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
+let selectedPlan='Wiki 1 - 5,000/-';let selectedPrice=5000;
+let currentLawId=null;
+
+const LAWS_10 = [
+  { id:'Law 1', name:'AQRB Act 2010', count:20, desc:'Usajili, Bodi, Nidhamu, Stop Order' },
+  { id:'Law 2', name:'By-Laws + Code of Conduct', count:10, desc:'Maadili, Ada, Malalamiko' },
+  { id:'Law 3', name:'Land Act 1999', count:10, desc:'Ardhi, Umiliki, Kibali cha Kujenga' },
+  { id:'Law 4', name:'Public Procurement Act 2011', count:10, desc:'Zabuni, Tenda, Serikali' },
+  { id:'Law 5', name:'Contractors Act - CRB', count:10, desc:'Nani anaweza kujenga, Daraja' },
+  { id:'Law 6', name:'Engineers Act - ERB', count:5, desc:'Mipaka - Architect vs Engineer vs QS' },
+  { id:'Law 7', name:'Environment Act 2004', count:10, desc:'EIA, Mazingira' },
+  { id:'Law 8', name:'Urban Planning + Building Regs', count:10, desc:'Vibali, Mipango Miji' },
+  { id:'Law 9', name:'Law of Contract', count:10, desc:'Mikataba, Kuvunjika, Fidia' },
+  { id:'Law 10', name:'Arbitration Act', count:10, desc:'Kusuluhu Mgogoro bila Mahakama' },
+  { id:'Law 11', name:'Mikataba ya Ujenzi', count:10, desc:'JCT, FIDIC, Variation, Valuation' },
+];
+
+// MPYA - ZOTE KWA PAMOJA: Inaonyesha List na inahesabu yenyewe kutoka Supabase
+async function showLaws(){
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('lawsPage').classList.remove('hidden');
+  renderLawsList({});
+  try{
+    const { data } = await supabaseClient.from('questions').select('topic').eq('profession','qs').eq('paper','laws').eq('is_active',true);
+    const counts={};
+    if(data) data.forEach(r=>{ counts[r.topic]=(counts[r.topic]||0)+1; });
+    renderLawsList(counts);
+  }catch(e){ console.log(e.message); }
+  window.scrollTo(0,0);
+}
+function renderLawsList(counts){
+  document.getElementById('lawsContainer').innerHTML = LAWS_10.map((law,i)=>{
+    const realCount = counts[law.id] || 0;
+    const status = realCount>0 ? `✅ ${realCount} Maswali • BURE` : `⏳ ${law.count} Yanakuja • BURE`;
+    const bg = realCount>0 ? '#dcfce7' : '#fef9c3';
+    return `<div class="law-card" onclick="openLaw('${law.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <b>${i+1}. ${law.name}</b>
+        <span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px;white-space:nowrap">${status}</span>
+      </div>
+      <div class="small" style="margin-top:4px">${law.desc}</div>
+      <div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div>
+    </div>`;
+  }).join('');
+}
+function backFromLaws(){
+  document.getElementById('lawsPage').classList.add('hidden');
+  document.getElementById('landing').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+// MPYA - ZOTE KWA PAMOJA: Law 1 hadi Law 11 zote zinatumia hii hii, hakuna kubadilisha tena
+async function openLaw(lawId){
+  currentLawId = lawId;
+  currentCat = 'sheria';
+  qi=0; score=0;
+  document.getElementById('lawsPage').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('qCat').textContent = lawId.toUpperCase() + ' - SHERIA';
+  document.getElementById('qText').textContent = 'Inapakia maswali...';
+  document.getElementById('opts').innerHTML = '';
+  document.getElementById('explain').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+  try{
+    const { data, error } = await supabaseClient.from('questions').select('*').eq('profession','qs').eq('paper','laws').eq('topic',lawId).eq('is_free',true).eq('is_active',true).order('created_at',{ascending:true});
+    if(error) throw error;
+    if(data && data.length>0){
+      questions.sheria = data.map(r=>({ q:r.question, opts:[r.option_a,r.option_b,r.option_c,r.option_d], a:['A','B','C','D'].indexOf(r.correct_answer), ex:r.explanation||'' }));
+      showQ();
+    } else {
+      document.getElementById('qNum').textContent = 'Swali 0 / 0';
+      document.getElementById('qText').textContent = 'Maswali ya '+lawId+' bado hayajaingia. Tafadhali rudi baadae - tunayaandaa sasa.';
+      document.getElementById('opts').innerHTML = '<button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="backHome()">← Rudi kwenye Laws</button>';
+    }
+  }catch(e){
+    document.getElementById('qText').textContent = 'Kosa kupakia: '+e.message;
+  }
+  window.scrollTo(0,0);
+}
+
+async function checkUser(){
+  const {data} = await supabaseClient.auth.getSession();
+  currentUser = data.session?.user || null;
+  if(currentUser){
+    document.getElementById('authCard').classList.add('hidden');
+    document.getElementById('userBar').classList.remove('hidden');
+    document.getElementById('userEmail').textContent='👤 '+currentUser.email;
+    loadLogs();
+  } else {
+    document.getElementById('authCard').classList.remove('hidden');
+    document.getElementById('userBar').classList.add('hidden');
+    logs=0; updateLogUI();
+    document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';
+    document.getElementById('syncStatus').textContent='🔐 Ingia ili uone Log Book yako';
+  }
+}
+async function doSignup(){
+  let email=document.getElementById('authEmail').value.trim();
+  let pass=document.getElementById('authPass').value;
+  if(!email||!pass||pass.length<6){document.getElementById('authMsg').textContent='Weka email sahihi na password ya herufi 6+';return}
+  document.getElementById('authMsg').textContent='Inajisajili...';
+  const {data,error}=await supabaseClient.auth.signUp({email:email,password:pass});
+  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}
+  document.getElementById('authMsg').textContent='Umejisajili! Sasa Ingia.';
+  checkUser();
+}
+async function doLogin(){
+  let email=document.getElementById('authEmail').value.trim();
+  let pass=document.getElementById('authPass').value;
+  if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}
+  document.getElementById('authMsg').textContent='Inaingia...';
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});
+  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message+' - Jaribu Jisajili kwanza.';return}
+  document.getElementById('authMsg').textContent='';
+  checkUser();
+}
+async function doLogout(){ await supabaseClient.auth.signOut(); checkUser(); }
+const questions={
+sheria:[
+{q:"Mteja anakupa kazi bila mkataba wa maandishi. Baadaye anakataa kukulipa. Hatua sahihi ni ipi?",opts:["Kukataa kazi zote bila mkataba","Kufanya kazi kwanza, mkataba baadaye","Kuhakikisha mkataba wa maandishi unaeleza wigo, ada na majukumu kabla ya kuanza kazi","Kumlipia mteja ili akubali"],a:2,ex:"Mtaalamu lazima afanye kazi kwa mkataba wa maandishi."},
+{q:"Umepewa taarifa za siri za mradi wa mteja. Mshindani anakuuliza. Unafanya nini?",opts:["Unamwambia kidogo tu","Unakataa - taarifa za mteja ni siri","Unamwambia kama atakupa kazi","Unaweka kwenye WhatsApp status"],a:1,ex:"Code of Conduct: Usitoe taarifa za siri za mteja bila idhini yake."},
+{q:"Nani anaruhusiwa kutumia jina 'Architect' / 'Quantity Surveyor' Tanzania?",opts:["Mtu yeyote aliyesoma ujenzi","Mtu aliyesajiliwa na AQRB pekee","Mtu mwenye uzoefu wa miaka 2","Mtu mwenye kampuni ya ujenzi"],a:1,ex:"Jina la taaluma ni la wali sajiliwa na Bodi pekee."},
+{q:"Kwenye zabuni, mteja anataka kukupatia kazi kwa rushwa. Unafanya nini?",opts:["Unakubali kimya kimya","Unakataa na kuripoti - ni kinyume na maadili","Unakubali lakini huandiki popote","Unaomba rushwa kubwa zaidi"],a:1,ex:"Mtaalamu lazima awe mwaminifu na huru. Rushwa ni kosa la jinai."},
+{q:"Mkataba unapokwisha, nyaraka za mradi ni za nani?",opts:["Za mtaalamu pekee","Za mteja, mtaalamu anabaki na nakala kwa rekodi","Za fundi","Hazina mmiliki"],a:1,ex:"Nyaraka ni mali ya mteja."},
+{q:"AQRB ni nini?",opts:["Chama cha wafanyakazi wa ujenzi","Bodi inayowasajili na kuwasimamia Architects na Quantity Surveyors Tanzania","Kampuni ya ujenzi","Wizara ya Elimu"],a:1,ex:"AQRB = Architects and Quantity Surveyors Registration Board."},
+{q:"Kazi ya msingi ya AQRB ni ipi?",opts:["Kujenga majengo","Kusajili, kusimamia maadili na kulinda taaluma","Kuuza vifaa vya ujenzi","Kutoa mikopo"],a:1,ex:"AQRB inasajili wataalamu, inahakikisha viwango na maadili."},
+{q:"Graduate Architect / Graduate QS anaruhusiwa kufanya nini?",opts:["Kujitegemea kama mtaalamu kamili","Kufanya kazi chini ya usimamizi wa mtaalamu aliyesajiliwa","Kutia saini michoro kama Architect","Kufungua ofisi peke yake"],a:1,ex:"Graduate lazima afanye kazi chini ya usimamizi hadi apate usajili kamili."},
+{q:"Kabla ya kusajiliwa kama Professional, unahitaji nini?",opts:["Shahada tu","Shahada + uzoefu / Log Book + kufaulu mtihani wa Bodi","Pesa tu","Kampuni"],a:1,ex:"Unahitaji shahada, uzoefu uliothibitishwa na kufaulu mtihani wa AQRB."},
+{q:"Log Book inalenga nini?",opts:["Kuandika hadithi","Kuthibitisha uzoefu wa vitendo uliopata chini ya usimamizi","Kuhesabu mishahara","Kuandika barua"],a:1,ex:"Log Book ni ushahidi wa uzoefu wako wa vitendo."},
+{q:"Mtaalamu aliyesajiliwa akifanya kosa kubwa la kimaadili, AQRB inaweza kufanya nini?",opts:["Kumpa zawadi","Kumwonya, kumsimamisha au kumfuta kwenye rejista","Kumhamishia nchi nyingine","Kutomfanya chochote"],a:1,ex:"Bodi ina mamlaka ya nidhamu."},
+{q:"Ni kosa gani kuitia saini kazi ambayo hukufanya wewe?",opts:["Sio kosa","Ni kosa - unatia saini kazi uliyoisimamia / uliyofanya tu","Ni kawaida","Inaruhusiwa kama ni rafiki yako"],a:1,ex:"Usiweke saini kwenye kazi hukusimamia."},
+{q:"Conflict of Interest ni nini?",opts:["Kupenda kazi yako","Hali ambapo maslahi yako binafsi yanaweza kuathiri uamuzi wako wa kitaaluma","Kufanya kazi nyingi","Kuchoka kazini"],a:1,ex:"Mfano: Wewe ni mshauri wa mteja na una hisa kwenye kampuni ya mkandarasi."},
+{q:"Ukiwa na Conflict of Interest, unafanya nini?",opts:["Unaficha","Unamjulisha mteja na kuondoka kwenye uamuzi huo","Unaendelea kimya","Unaomba pesa zaidi"],a:1,ex:"Lazima uwe wazi - mjulishe mteja."},
+{q:"Ada za kitaaluma zinapaswa kuamuliwa vipi?",opts:["Kwa kubahatisha","Kwa mkataba wa maandishi, wazi na wa haki - kwa mujibu wa miongozo ya Bodi","Kwa kumuuliza fundi","Kwa kuiga jirani"],a:1,ex:"Ada ziwe wazi kwenye mkataba kabla ya kazi."},
+{q:"Mtaalamu anapaswa kuendelea kujifunza baada ya kusajiliwa? (CPD)",opts:["Hapana, amemaliza","Ndiyo - Continuing Professional Development ni lazima","Tu kama anataka","Tu mwaka wa kwanza"],a:1,ex:"CPD inakuhakikisha unabaki na ujuzi wa sasa."},
+{q:"Kutoa matangazo ya uongo kuhusu sifa zako ni nini?",opts:["Ujanja wa kibiashara","Kosa la kimaadili - usidanganye kuhusu sifa, uzoefu au usajili","Inaruhusiwa","Ni sawa kama hakuna anayejua"],a:1,ex:"Usidanganye kuhusu shahada, usajili au miradi."},
+{q:"Mteja anakuomba ufanye jambo linalokiuka Sheria za Ujenzi. Unafanya nini?",opts:["Unafanya tu - ni pesa yake","Unakataa na kumweleza - lazima ufuate Sheria na viwango vya usalama","Unafanya kimya","Unaomba pesa zaidi ili ufanye"],a:1,ex:"Usalama wa umma ni kwanza."},
+{q:"Kazi ya Architect na QS inatofautianaje kwa kifupi?",opts:["Zinafanana kabisa","Architect anabuni (design), QS anasimamia gharama / measurement","QS anabuni, Architect anahesabu gharama","Hakuna tofauti"],a:1,ex:"Architect = design. QS = gharama, measurement, BoQ."},
+{q:"Kwenye mradi, nani anahusika na kuhakikisha kazi inafanywa kwa mujibu wa michoro?",opts:["Mteja peke yake","Mshauri / mtaalamu anayesimamia mradi","Fundi peke yake","Dereva"],a:1,ex:"Mtaalamu anayesimamia anahakikisha kazi inafuata michoro."},
+{q:"Kama unashuku mkandarasi anatumia vifaa duni, unafanya nini?",opts:["Unaangalia tu","Unamjulisha mteja kwa maandishi na kuagiza kurekebisha","Unaomba rushwa ili unyamaze","Unaondoka kimya"],a:1,ex:"Lazima ulinde ubora na usalama. Andika kila kitu."},
+{q:"Kutoa cheti cha kukamilika kabla kazi haijakamilika ni nini?",opts:["Ni sawa","Ni kosa kubwa - cheti kinatolewa baada ya kuthibitisha kazi imekamilika","Ni kawaida","Inategemea na mteja"],a:1,ex:"Cheti ni nyaraka rasmi. Usitoe uongo."},
+{q:"Usajili wa AQRB unahitaji kufanywa upya?",opts:["Hapana, ni wa milele","Ndiyo - lazima uhuishwe kwa mujibu wa Bodi na kulipa ada","Tu mara moja","Tu ukihama mji"],a:1,ex:"Usajili unahuishwa."},
+{q:"Mtu asiyesajiliwa akifanya kazi ya Architect / QS, matokeo yake ni nini?",opts:["Anapata sifa","Kazi yake haina thamani kisheria na anaweza kuchukuliwa hatua","Anapata pesa nyingi","Anasifiwa"],a:1,ex:"Kazi ya mtu asiyesajiliwa haina ulinzi wa kisheria."},
+{q:"Kwa nini mtaalamu anahitaji Professional Indemnity / Bima?",opts:["Kupamba ofisi","Kulinda mteja na mtaalamu kama kuna kosa / hasara iliyotokana na kazi","Kupata kazi nyingi","Ni lazima ya serikali tu"],a:1,ex:"Bima inakulinda kama kuna madai ya uzembe wa kitaaluma."},
+{q:"Mteja akikataa kukulipa baada ya kazi, hatua ya kwanza ni ipi?",opts:["Kupiga kelele mitandaoni","Kumwandikia barua rasmi ya kudai - kwa mujibu wa mkataba - na kujaribu suluhu","Kuvunja jengo lake","Kumtukana"],a:1,ex:"Fuata mkataba: andika, jadili, kama imeshindikana tumia njia za suluhu."},
+{q:"Mkataba wa mshauri unapaswa kuwa na nini?",opts:["Jina tu","Wigo wa kazi, ada, muda, majukumu na jinsi ya kumaliza mkataba","Saini tu","Picha tu"],a:1,ex:"Mkataba mzuri unaeleza kila kitu ili kusiwe na mgogoro."},
+{q:"Kushiriki kwenye zabuni huku ukijua bei za washindani kupitia njia za siri ni nini?",opts:["Ujanja","Kosa la maadili - ushindani lazima uwe wa haki","Inaruhusiwa","Ni kawaida kwenye ujenzi"],a:1,ex:"Ushindani wa haki ni msingi wa zabuni."},
+{q:"Mtaalamu anapaswa kumtendeaje mteja wake?",opts:["Kumdanganya","Kwa uaminifu, uwazi na kwa maslahi bora ya mteja","Kumnyang'anya pesa","Kumpuuza"],a:1,ex:"Unafanya kazi kwa maslahi bora ya mteja wako."},
+{q:"Mwisho - Kama umefanya kosa kwenye mradi, unafanya nini?",opts:["Unaficha","Unakiri, unamjulisha mteja, unarekebisha na kujifunza","Una blame fundi","Unaondoka nchini"],a:1,ex:"Mtaalamu mzuri anakiri kosa, anarekebisha na anajifunza."}
+],
+syllabus:[
+{q:"Kwenye Measurement (QS), 'Taking Off' maana yake ni nini?",opts:["Kupima kazi kutoka kwenye michoro ili kupata quantities","Kupiga picha site","Kuchora ramani","Kupanga wafanyakazi"],a:0,ex:"Taking Off = kupima vipimo kutoka kwenye michoro na kuandika kwenye dimension paper kabla ya Bill of Quantities."},
+{q:"Bill of Quantities inatumika kwa nini?",opts:["Kupamba ofisi","Kupata bei ya zabuni na kulipa kazi iliyofanyika","Kuandika barua","Kuhesabu mishahara"],a:1,ex:"BoQ ni orodha ya kazi na quantities. Inatumika kupata bei na kama msingi wa malipo."},
+{q:"Variation ni nini?",opts:["Mabadiliko ya kazi kutoka mkataba wa awali","Kazi iliyokamilika","Kazi iliyosimamishwa milele","Kazi ya fundi"],a:0,ex:"Variation = mabadiliko ya wigo, ubora au wingi wa kazi baada ya mkataba."},
+{q:"Practical Completion maana yake ni nini?",opts:["Mradi umekamilika na unaweza kutumika, isipokuwa kasoro ndogo","Mradi umeanza tu","Mradi umesimama","Mradi umefutwa"],a:0,ex:"Practical Completion = kazi imekamilika kiasi cha kutumika. Huanza Defects Liability Period."},
+{q:"Defects Liability Period ni kipindi gani?",opts:["Kipindi mkandarasi anarekebisha kasoro baada ya kukabidhi mradi","Kipindi cha likizo","Kipindi cha kupata kazi mpya","Kipindi cha kulipa kodi"],a:0,ex:"Baada ya Practical Completion, mkandarasi anabaki na jukumu la kurekebisha kasoro."},
+{q:"Valuation / Interim Certificate ni nini?",opts:["Cheti cha kuzaliwa","Tathmini ya kazi iliyofanyika site ili mkandarasi alipwe","Barua ya kuacha kazi","Cheti cha ndoa"],a:1,ex:"QS anapima kazi iliyofanyika, anatoa valuation, ndiyo msingi wa kulipa mkandarasi."},
+{q:"Retention ni nini?",opts:["Pesa inayobaki ofisini","Asilimia ya pesa inayozuiliwa kutoka kwa malipo ya mkandarasi kama dhamana ya kurekebisha kasoro","Pesa ya chai","Pesa ya usafiri"],a:1,ex:"Retention inazuiliwa - mfano 5% au 10% - inarudishwa baada ya Defects Liability Period kama hakuna kasoro."},
+{q:"Prime Cost (PC) Sum ni nini?",opts:["Jumla ya gharama za ofisi","Kiasi kilichowekwa kwenye BoQ kwa ajili ya vifaa / kazi ambayo haijajulikana wazi wakati wa zabuni","Kiasi cha faida","Kiasi cha kodi"],a:1,ex:"PC Sum = kiasi cha kukadiria kwa item ambayo supplier hajajulikana bado."},
+{q:"Provisional Sum ni nini?",opts:["Pesa ya dharura","Kiasi kilichowekwa kwa kazi ambayo haijulikani kama itafanyika au wigo wake","Pesa ya mshahara","Pesa ya likizo"],a:1,ex:"Provisional Sum hutumika kwa kazi isiyo na uhakika - kama ikifanyika, inalipwa, kama haikufanyika, inaondolewa."},
+{q:"Kwenye michoro, Scale 1:100 maana yake ni nini?",opts:["1cm kwenye karatasi = 100cm halisi (1m)","1cm = 1cm","1m = 1m","Haina maana"],a:0,ex:"Scale inakuambia uwiano wa mchoro na ukweli. 1:100 ni kawaida kwa floor plans."},
+{q:"Site Visit ya kwanza unachunguza nini?",opts:["Watu wanaopita tu","Hali ya udongo, mteremko, maji, barabara, majengo jirani na huduma zilizopo","Chakula cha jirani","Rangi ya nyumba jirani"],a:1,ex:"Site Analysis ni muhimu kabla ya design - inaathiri gharama na design."},
+{q:"Feasibility Study ni nini?",opts:["Kusoma kitabu","Kuchunguza kama mradi unawezekana - kiteknolojia, kifedha na kisheria - kabla ya kuanza","Kupiga picha","Kuchora tu"],a:1,ex:"Kabla ya kutumia pesa nyingi, unachunguza kama mradi una faida na unawezekana."},
+{q:"Tender / Zabuni ni nini?",opts:["Kununua chakula","Mchakato wa kumpata mkandarasi kwa ushindani - kwa kutuma BoQ na kupokea bei","Kufanya mkutano","Kuandika barua"],a:1,ex:"Zabuni ya haki inahakikisha mteja anapata bei bora na mkandarasi mzuri."},
+{q:"Kwenye mkataba wa ujenzi, 'Contract Sum' ni nini?",opts:["Jumla ya pesa ya mkataba iliyokubaliwa","Pesa ya chai","Pesa ya usafiri","Pesa ya ofisi"],a:0,ex:"Contract Sum = bei iliyokubaliwa kati ya mteja na mkandarasi."},
+{q:"Fluctuation / Price Adjustment ni nini?",opts:["Mabadiliko ya hali ya hewa","Marekebisho ya bei kwa sababu ya kupanda kwa bei za vifaa / mishahara wakati wa ujenzi","Mabadiliko ya rangi","Mabadiliko ya jina"],a:1,ex:"Kama bei za soko zinapanda sana, mkataba unaweza kuruhusu marekebisho."},
+{q:"Daywork ni nini?",opts:["Kazi ya mchana","Kazi inayolipwa kwa saa / siku za kazi + vifaa - kwa kazi ndogo ambazo hazikuwa kwenye BoQ","Kazi ya usiku","Kazi ya wikendi"],a:1,ex:"Daywork hutumika kwa kazi ndogo zisizotarajiwa - unarekodi masaa, vifaa na kazi."},
+{q:"Kwenye ujenzi, 'Setting Out' ni nini?",opts:["Kuweka meza","Kuhamisha vipimo kutoka kwenye michoro kwenda kwenye ardhi - kuweka alama za jengo","Kuweka chakula","Kuweka simu"],a:1,ex:"Setting Out ni hatua ya kwanza site - jengo lianze mahali sahihi."},
+{q:"Foundation inachaguliwa kwa kuzingatia nini?",opts:["Rangi ya nyumba","Aina ya udongo, mzigo wa jengo na kina cha maji ardhini","Jina la mteja","Siku ya wiki"],a:1,ex:"Udongo mbaya + jengo zito = foundation kubwa / tofauti."},
+{q:"Kwenye Project Management, 'Critical Path' ni nini?",opts:["Njia ya kwenda site","Mfululizo wa kazi muhimu ambao ukichelewa, mradi mzima unachelewa","Njia ya mkato","Njia ya kwenda ofisini"],a:1,ex:"Critical Path inakuambia kazi gani huna muda wa kuchelewa nazo."},
+{q:"Mwisho - QS anasaidiaje mteja kuokoa pesa?",opts:["Kwa kupunguza ubora","Kwa kupanga bajeti sahihi, kudhibiti variations, kupima kazi halisi na kuhakikisha analipa alichopata tu","Kwa kumuibia mkandarasi","Kwa kutofanya kazi"],a:1,ex:"QS mzuri anahakikisha mteja analipa bei ya haki kwa kazi iliyofanyika kweli."}
+]};
+document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
+function showLog(){
+  if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}
+  document.getElementById('logForm').classList.remove('hidden')
+}
+async function loadLogs(){
+  if(!currentUser) return;
+  try{
+    const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
+    if(error) throw error;
+    let total=0; data.forEach(r=> total+= (r.hours||0));
+    logs=total; updateLogUI();
+    if(data.length){
+      document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');
+      document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;
+    } else {
+      document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';
+      document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';
+    }
+  }catch(e){ document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message; }
+}
+function updateLogUI(){ document.getElementById('logCount').textContent=logs; document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%'; }
+async function saveLog(){
+  if(!currentUser){alert('Ingia kwanza');return}
+  let title=document.getElementById('logTitle').value||'Log Book';
+  let h=parseInt(document.getElementById('logHours').value||0);
+  let cat=document.getElementById('logCat').value;
+  if(!h){alert('Weka masaa');return}
+  try{
+    const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);
+    if(error) throw error;
+    document.getElementById('logForm').classList.add('hidden');
+    document.getElementById('logTitle').value=''; document.getElementById('logHours').value='';
+    alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');
+    loadLogs();
+  }catch(e){ alert('Kosa kuhifadhi: '+e.message); }
+}
+const profMap = {
+  'Architect':'architect',
+  'Quantity Surveyor':'qs',
+  'Architectural Technologist':'technologist',
+  'Interior Designer':'interior',
+  'Landscape Architect':'landscape',
+  'Construction Manager':'cm'
+};
+async function loadFreeQuestions(){
+  if(currentCat === 'sheria') return;
+  let dbProf = profMap[selected];
+  if(!dbProf) return;
+  try{
+    const { data, error } = await supabaseClient
+      .from('questions')
+      .select('*')
+      .eq('profession', dbProf)
+      .eq('paper','syllabus')
+      .eq('is_free', true)
+      .eq('is_active', true)
+      .limit(20);
+    if(error) throw error;
+    if(data && data.length > 0){
+      questions.syllabus = data.map(r => ({
+        q: r.question,
+        opts: [r.option_a, r.option_b, r.option_c, r.option_d],
+        a: ['A','B','C','D'].indexOf(r.correct_answer),
+        ex: r.explanation || ''
+      }));
+    }
+  }catch(e){ console.log('Kutumia maswali ya zamani:', e.message); }
+}
+function choosePlan(label, price, el){
+  selectedPlan = label; selectedPrice = price;
+  document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('chosenPlan').textContent = label;
+}
+function payNow(){
+  let payNumber = "075X XXX XXX";
+  let msg = 'Umechagua: ' + selectedPlan + '\n\nLipa ' + selectedPrice + '/- kwenda M-Pesa: ' + payNumber + '\nJina: MTAALAM\n\nBaada ya kulipa, tuma screenshot ya muamala WhatsApp ili tukufungulie.';
+  document.getElementById('payMsg').textContent = 'Tuma ' + selectedPrice + '/- kwenda ' + payNumber + ' - ' + selectedPlan;
+  alert(msg);
+}
+async function startQuiz(cat){
+  document.getElementById('lawsPage').classList.add('hidden');
+  currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)
+}
+function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
+function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
+function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
+function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+checkUser();
+</script>
+</body>
+</html>

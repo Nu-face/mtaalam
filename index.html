@@ -251,7 +251,39 @@ async function saveLog(){
     loadLogs();
   }catch(e){ alert('Kosa kuhifadhi: '+e.message); }
 }
-function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();showQ();window.scrollTo(0,0)}
+const profMap = {
+  'Architect':'architect',
+  'Quantity Surveyor':'qs',
+  'Architectural Technologist':'technologist',
+  'Interior Designer':'interior',
+  'Landscape Architect':'landscape',
+  'Construction Manager':'cm'
+};
+async function loadFreeQuestions(){
+  if(currentCat === 'sheria') return;
+  let dbProf = profMap[selected];
+  if(dbProf !== 'architect') return;
+  try{
+    const { data, error } = await supabaseClient
+      .from('questions')
+      .select('*')
+      .eq('profession','architect')
+      .eq('paper','syllabus')
+      .eq('is_free', true)
+      .eq('is_active', true)
+      .limit(20);
+    if(error) throw error;
+    if(data && data.length > 0){
+      questions.syllabus = data.map(r => ({
+        q: r.question,
+        opts: [r.option_a, r.option_b, r.option_c, r.option_d],
+        a: ['A','B','C','D'].indexOf(r.correct_answer),
+        ex: r.explanation || ''
+      }));
+    }
+  }catch(e){ console.log('Kutumia maswali ya zamani:', e.message); }
+}
+async function startQuiz(cat){currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}

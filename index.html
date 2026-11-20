@@ -25,6 +25,7 @@ body{background:#0f172a;color:white;min-height:100vh;padding:0 16px 16px}
 .btn-gold{background:#f59e0b;color:#111}
 .btn-dark{background:#0f172a;color:white}
 .btn-white{background:white;border:2px solid #e2e8f0;color:#111}
+.btn-disabled{background:#64748b!important;color:#e2e8f0!important;cursor:not-allowed;opacity:0.8}
 .hidden{display:none!important}
 .q-top{display:flex;justify-content:space-between;font-size:13px;color:#64748b;font-weight:700}
 .q{font-size:19px;line-height:1.4;margin:14px 0;font-weight:800;color:#111}
@@ -33,8 +34,8 @@ body{background:#0f172a;color:white;min-height:100vh;padding:0 16px 16px}
 .opt.wrong{border-color:#dc2626;background:#fee2e2}
 .explain{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5;color:#111}
 input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px;margin-top:8px;font-size:15px}
-.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:10px}
-.progress i{display:block;height:100%;background:#f59e0b;width:5%}
+.progress{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:10px}
+.progress i{display:block;height:100%;background:#f59e0b;width:10%;transition:width .3s}
 .score{font-size:42px;font-weight:900;text-align:center;margin:16px 0;color:#111}
 .center{text-align:center}
 .small{font-size:13px;color:#64748b}
@@ -48,11 +49,13 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .premium-card{background:linear-gradient(135deg,#f97316,#dc2626);color:white;border-radius:20px;padding:18px;margin-top:12px;cursor:pointer}
 .premium-card p{color:#ffe4e6}
 .sms-btn{display:block;text-align:center;background:#0f172a;color:white;font-weight:800;padding:14px;border-radius:14px;margin-top:10px;text-decoration:none}
-/* ===== MPYA: STREAK + SWALI LA LEO - HAZIGUSI CODE YA ZAMANI ===== */
 .streak-bar{background:#1e293b;border:2px solid #f59e0b;border-radius:20px;padding:16px;margin-top:12px}
 .streak-bar .s-row{display:flex;justify-content:space-between;align-items:center}
 .daily-card{background:#f59e0b;color:#111;border-radius:20px;padding:16px;margin-top:12px}
 .daily-card p{color:#111}
+.leader-card{background:#1e293b;border-radius:20px;padding:16px;margin-top:12px}
+.leader-row{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-radius:10px;margin-top:6px;background:#0f172a;font-size:14px}
+.leader-row.me{background:#f59e0b;color:#111;font-weight:800}
 </style>
 </head>
 <body>
@@ -70,33 +73,34 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <p id="subStatus">Umeingia. Log Book hapa ni yako peke yako.</p>
 <button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
 </div>
-
-<!-- ===== MPYA 1: STREAK BAR - Kwa Taaluma 6 Zote ===== -->
 <div id="streakBar" class="streak-bar">
   <div class="s-row">
     <div>
       <div style="font-size:12px;color:#f59e0b;font-weight:800" id="streakCourseLabel">QUANTITY SURVEYOR • STREAK</div>
       <div style="font-size:26px;font-weight:900;line-height:1.1">🔥 Siku <span id="streakNum">0</span></div>
-      <div style="font-size:12px;color:#94a3b8">Maswali uliyojibu: <b id="streakAnswered" style="color:white">0</b></div>
+      <div style="font-size:12px;color:#94a3b8">Maswali uliyojibu: <b id="streakAnswered" style="color:white">0</b> • 🧊 Freeze: <b id="freezeCount" style="color:#7dd3fc">0</b></div>
     </div>
     <div style="text-align:right">
       <div style="font-weight:800;color:#f59e0b">🏆 #<span id="streakRank">--</span> <span id="streakRankCourse">QS</span></div>
       <div style="font-size:12px;color:#94a3b8">Tanzania</div>
     </div>
   </div>
-  <div class="progress" style="background:#334155"><i id="streakBarFill" style="width:0%"></i></div>
+  <div class="progress" style="background:#334155"><i id="streakBarFill" style="width:10%"></i></div>
   <p style="font-size:11px;color:#94a3b8;margin-top:6px" id="streakMsg">Anza leo - jibu Swali la Leo upate siku 1!</p>
+  <p id="freezeMsg" style="font-size:11px;color:#7dd3fc;margin-top:4px"></p>
 </div>
-
-<!-- ===== MPYA 2: SWALI LA LEO - Kwa Taaluma 6 Zote ===== -->
 <div id="dailyCard" class="daily-card">
   <p style="font-size:12px;font-weight:800">SWALI LA LEO • <span id="dailyCourseLabel">QUANTITY SURVEYOR</span></p>
   <p style="font-weight:900;font-size:18px;line-height:1.2;margin-top:4px">Leo unaweza kuwa kwenye 32% bora wa <span id="dailyCourseLabel2">QS</span>?</p>
   <p style="font-size:13px;margin-top:4px">Wenzako <span id="dailyPeers">14</span> wameshajibu • Sekunde 30 tu • BURE</p>
-  <button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="openDailyQuestion()">JIBU SWALI LA LEO →</button>
+  <button id="dailyBtn" class="btn btn-dark" style="width:100%;margin-top:12px" onclick="openDailyQuestion()">JIBU SWALI LA LEO →</button>
   <p id="dailyStatus" style="text-align:center;font-size:12px;font-weight:700;margin-top:8px">🔥 Ukijibu sasa, streak yako inaokolewa</p>
 </div>
-
+<div id="leaderCard" class="leader-card">
+  <div style="display:flex;justify-content:space-between;align-items:center"><b>🏆 Top 5 - <span id="leaderCourse">QS</span> Wiki Hii</b><span style="font-size:12px;color:#94a3b8">Live</span></div>
+  <div id="leaderList"></div>
+  <p style="font-size:11px;color:#94a3b8;margin-top:8px">Uko wapi? Jibu Swali la Leo kila siku upande juu!</p>
+</div>
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
@@ -167,8 +171,6 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <button class="btn btn-white" style="width:100%;margin-top:12px" onclick="backHome()">← Rudi Nyumbani</button>
 </div>
 </div>
-
-<!-- ===== MPYA: SWALI LA LEO MODAL ===== -->
 <div id="dailyQuiz" class="card hidden">
 <div class="q-top"><span id="dailyQCat">SWALI LA LEO</span><span>🔥 Streak</span></div>
 <div class="q" id="dailyQText"></div>
@@ -177,7 +179,6 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <button id="dailyNextBtn" class="btn btn-dark hidden" style="width:100%;margin-top:14px" onclick="closeDailyAndSave()">Sawa, Nimeelewa → Okoa Streak</button>
 <button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHomeFromDaily()">← Rudi Nyumbani</button>
 </div>
-
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
 <div class="progress"><i id="qBar"></i></div>
@@ -233,11 +234,7 @@ const LAWS_10 = [
 ];
 const profMap={'Architect':'architect','Quantity Surveyor':'qs','Architectural Technologist':'architectural_technologist','Interior Designer':'interior_design','Landscape Architect':'landscape_architect','Construction Manager':'construction_manager'};
 const profShort={'Architect':'AR','Quantity Surveyor':'QS','Architectural Technologist':'AT','Interior Designer':'ID','Landscape Architect':'LA','Construction Manager':'CM'};
-function updatePremiumText(){
-  const short = profShort[selected] || 'QS';
-  const el = document.getElementById('premiumText');
-  if(el) el.textContent = short + ' - Maswali halisi ya 2019 - 2024. Maswali 1000+ • Majibu + Maelezo';
-}
+function updatePremiumText(){const short = profShort[selected] || 'QS';const el = document.getElementById('premiumText');if(el) el.textContent = short + ' - Maswali halisi ya 2019 - 2024. Maswali 1000+ • Majibu + Maelezo';}
 async function showLaws(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('lawsPage').classList.remove('hidden');renderLawsList({});try{const dbProf=profMap[selected]||'qs';const {data}=await supabaseClient.from('questions').select('topic').eq('profession',dbProf).eq('paper','laws');const counts={};if(data)data.forEach(r=>{counts[r.topic]=(counts[r.topic]||0)+1});renderLawsList(counts);}catch(e){console.log(e.message)}window.scrollTo(0,0);}
 function renderLawsList(counts){document.getElementById('lawsContainer').innerHTML=LAWS_10.map((law,i)=>{const rc=counts[law.id]||0;const st=rc>0?`✅ ${rc} Maswali • BURE`:`⏳ ${law.count} Yanakuja • BURE`;const bg=rc>0?'#dcfce7':'#fef9c3';return `<div class="law-card" onclick="openLaw('${law.id}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${law.name}</b><span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px">${st}</span></div><div class="small">${law.desc}</div><div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div></div>`}).join('');}
 function backFromLaws(){document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0);}
@@ -247,43 +244,13 @@ async function doSignup(){let email=document.getElementById('authEmail').value.t
 async function doLogin(){let email=document.getElementById('authEmail').value.trim();let pass=document.getElementById('authPass').value;if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}document.getElementById('authMsg').textContent='Inaingia...';const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}document.getElementById('authMsg').textContent='';checkUser();}
 async function doLogout(){await supabaseClient.auth.signOut();checkUser();}
 const questions={sheria:[],syllabus:[],aqrb:[]};
-document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;updatePremiumText();updateStreakUI();updateDailyUI();}});
+document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;updatePremiumText();updateStreakUI();updateDailyUI();renderLeaderboard();}});
 function showLog(){if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}document.getElementById('logForm').classList.remove('hidden')}
 async function loadLogs(){if(!currentUser)return;try{const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);if(error)throw error;let total=0;data.forEach(r=>total+=(r.hours||0));logs=total;updateLogUI();if(data.length){document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;}else{document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message;}}
 function updateLogUI(){document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';}
 async function saveLog(){if(!currentUser){alert('Ingia kwanza');return}let title=document.getElementById('logTitle').value||'Log Book';let h=parseInt(document.getElementById('logHours').value||0);let cat=document.getElementById('logCat').value;if(!h){alert('Weka masaa');return}try{const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);if(error)throw error;document.getElementById('logForm').classList.add('hidden');document.getElementById('logTitle').value='';document.getElementById('logHours').value='';alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');loadLogs();}catch(e){alert('Kosa kuhifadhi: '+e.message);}}
-async function fetchAllPremium(prof){
-  let all = [];
-  let from = 0;
-  const pageSize = 1000;
-  while(true){
-    const {data, error} = await supabaseClient.from('questions').select('*').eq('profession', prof).eq('paper','aqrb_past_paper').range(from, from + pageSize - 1);
-    if(error) throw error;
-    if(!data || data.length === 0) break;
-    all = all.concat(data);
-    if(data.length < pageSize) break;
-    from += pageSize;
-  }
-  return all;
-}
-async function loadFreeQuestions(){
-  if(currentCat==='sheria') return;
-  let dbProf=profMap[selected]; if(!dbProf) return;
-  try{
-    if(currentCat==='aqrb'){
-      let data = await fetchAllPremium(dbProf);
-      if((!data||data.length===0) && dbProf!=='qs' && dbProf!=='cm'){
-        const short = profShort[selected]?.toLowerCase();
-        data = await fetchAllPremium(short);
-      }
-      if(data&&data.length>0){ questions.aqrb=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.aqrb = shuffleArray(questions.aqrb); }
-      return;
-    }
-    const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','syllabus').limit(20);
-    if(error) throw error;
-    if(data&&data.length>0){ questions.syllabus=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.syllabus = shuffleArray(questions.syllabus); }
-  }catch(e){console.log('Kutumia maswali ya zamani:',e.message);}
-}
+async function fetchAllPremium(prof){let all=[];let from=0;const pageSize=1000;while(true){const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',prof).eq('paper','aqrb_past_paper').range(from,from+pageSize-1);if(error)throw error;if(!data||data.length===0)break;all=all.concat(data);if(data.length<pageSize)break;from+=pageSize;}return all;}
+async function loadFreeQuestions(){if(currentCat==='sheria')return;let dbProf=profMap[selected];if(!dbProf)return;try{if(currentCat==='aqrb'){let data=await fetchAllPremium(dbProf);if((!data||data.length===0)&&dbProf!=='qs'&&dbProf!=='cm'){const short=profShort[selected]?.toLowerCase();data=await fetchAllPremium(short);}if(data&&data.length>0){questions.aqrb=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));questions.aqrb=shuffleArray(questions.aqrb);}return;}const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','syllabus').limit(20);if(error)throw error;if(data&&data.length>0){questions.syllabus=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));questions.syllabus=shuffleArray(questions.syllabus);}}catch(e){console.log('Kutumia maswali ya zamani:',e.message);}}
 function goToPay(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.remove('hidden');renderPayOptions();window.scrollTo(0,0);}
 function renderPayOptions(){document.getElementById('payOptions').innerHTML=PAYMENT_CONFIG.packages.map(p=>{const active=p.id===selectedPackageId?'active':'';return `<div class="pay-opt ${active}" onclick="choosePlan('${p.label}',${p.price},'${p.id}',this)"><span><b>${p.label}</b><br><small class="small">${p.desc}</small></span><b>${p.price.toLocaleString()}/-</b></div>`}).join('');updatePayText();}
 function updatePayText(){document.getElementById('payAmountText').textContent='Tsh '+selectedPrice.toLocaleString();document.getElementById('payPackageText').textContent=selectedPlan;const jina=document.getElementById('payJina')?document.getElementById('payJina').value:'';const muamala=document.getElementById('payMuamala')?document.getElementById('payMuamala').value:'';const smsBody=`Habari Mtaalam, nimelipia ${selectedPlan} Tsh ${selectedPrice}. Jina: ${jina}, Email: ${currentUser?currentUser.email:''}, Muamala: ${muamala}`;document.getElementById('smsLink').href=`sms:0722655693?body=${encodeURIComponent(smsBody)}`;}
@@ -298,226 +265,367 @@ function showResult(){document.getElementById('quiz').classList.add('hidden');do
 function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('dailyQuiz').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 function backHomeFromDaily(){document.getElementById('dailyQuiz').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 
-/* ===== MPYA: STREAK + SWALI LA LEO + NOTIFICATION SAA 8 - KWA TAALUMA 6 ===== */
-const DAILY_BANK = {
-  'Quantity Surveyor': [
-    {q:'BoQ ni nini?',opts:['Bill of Quantities','Book of Quality','Bill of Quality','Basic of Quantities'],a:0,ex:'BoQ ni orodha ya vipimo na bei za kazi za ujenzi. Hii ndiyo silaha ya QS.'},
-    {q:'Variation ni nini?',opts:['Mabadiliko ya kazi baada ya mkataba','Kazi mpya kabisa','Kufuta mkataba','Malipo ya awali'],a:0,ex:'Variation ni mabadiliko yoyote ya kazi, bei au muda baada ya mkataba kusainiwa.'},
-    {q:'Nani anathibitisha Valuation kwa malipo ya mjenzi?',opts:['QS','Fundi','Mteja pekee','Serikali'],a:0,ex:'QS ndiye anayepima kazi iliyofanyika na kutoa Valuation / Certificate ya malipo.'},
-    {q:'JCT ni nini?',opts:['Mkataba wa ujenzi','Aina ya saruji','Chombo cha kupima','Shirika la serikali'],a:0,ex:'JCT - Joint Contracts Tribunal, ni mfumo wa mikataba ya ujenzi unaotumika sana.'},
-    {q:'Prime Cost Sum ni nini?',opts:['Kiasi kilichowekwa kwa kazi ambayo bado haijajulikana bei yake','Gharama ya mwisho','Faida ya mjenzi','Kodi'],a:0,ex:'PC Sum ni kiasi kilichowekwa kwenye BoQ kwa ajili ya vitu ambavyo havijachaguliwa bado.'},
-    {q:'Retention ni nini?',opts:['Pesa inayozuiliwa kama dhamana hadi kazi ikamilike','Malipo ya awali','Faini','Kodi ya mjenzi'],a:0,ex:'Retention ni 5-10% inayozuiliwa ili kuhakikisha mjenzi atarudi kurekebisha kasoro.'},
-    {q:'Final Account ni nini?',opts:['Hesabu ya mwisho ya gharama halisi ya mradi','Bajeti ya mwanzo','Malipo ya kwanza','Kadirio tu'],a:0,ex:'Final Account huandaliwa baada ya mradi kuisha, ina gharama halisi zote + variations.'}
-  ],
-  'Architect': [
-    {q:'Site Analysis ni nini?',opts:['Kuchambua eneo kabla ya kubuni','Kupiga picha tu','Kuchora ramani','Kupima ardhi pekee'],a:0,ex:'Site Analysis ni kuchambua jua, upepo, ardhi, maji na mazingira kabla ya design.'},
-    {q:'Scale 1:100 ina maana gani?',opts:['1cm kwenye karatasi = 100cm halisi','1m = 100m','Kitu ni kidogo','Haina maana'],a:0,ex:'1:100 - kila 1 unit kwenye mchoro ni 100 units halisi.'},
-    {q:'Nani anatoa Building Permit?',opts:['Halmashauri / Mamlaka ya Mipango Miji','Fundi','Mteja','CRB'],a:0,ex:'Kibali cha kujenga hutolewa na Halmashauri baada ya michoro kupitishwa.'},
-    {q:'Concept Design ni hatua gani?',opts:['Wazo la kwanza la design','Michoro ya mwisho','Ujenzi','Kadirio la bei'],a:0,ex:'Concept ni wazo la kwanza - form, space na mtazamo wa jengo.'},
-    {q:'Passive Design inategemea nini?',opts:['Jua na upepo wa asili','AC pekee','Taa za umeme','Chuma'],a:0,ex:'Passive Design hutumia jua, upepo na mwanga wa asili kupunguza matumizi ya umeme.'},
-    {q:'AQRB inasimamia nani?',opts:['Architects, QS na wataalamu wengine wa ujenzi','Wahandisi tu','Wakandarasi tu','Wote'],a:0,ex:'AQRB - Architects and Quantity Surveyors Registration Board.'},
-    {q:'Section Drawing inaonyesha nini?',opts:['Jengo likikatwa wima kuona ndani','Jengo kutoka juu','Jengo kutoka nje','Mlango tu'],a:0,ex:'Section inaonyesha urefu, dari, sakafu na muundo wa ndani kama jengo limekatwa.'}
-  ],
-  'Architectural Technologist': [
-    {q:'Kazi kubwa ya Architectural Technologist ni nini?',opts:['Kutengeneza michoro ya ujenzi na maelezo ya kiufundi','Kubuni tu','Kupanga bei','Kusimamia wafanyakazi'],a:0,ex:'Technologist anahakikisha design ya Architect inaweza kujengwa - details, materials na specs.'},
-    {q:'Working Drawing ni nini?',opts:['Michoro ya kutumika site kujenga','Mchoro wa kupendezesha','Sketch','Picha'],a:0,ex:'Working Drawings ndiyo michoro halisi ambayo fundi anatumia site.'},
-    {q:'Specification ni nini?',opts:['Maelezo ya vifaa na ubora wa kazi','Bei','Jina la mjenzi','Muda'],a:0,ex:'Spec inaeleza ni vifaa gani, ubora gani na jinsi gani kazi ifanyike.'},
-    {q:'Detail Drawing hutumika kwa nini?',opts:['Kuonyesha sehemu ndogo kwa ukubwa mkubwa','Kuonyesha jengo zima','Kupima ardhi','Kupiga picha'],a:0,ex:'Detail inaonyesha sehemu kama joint ya paa, dirisha kwa scale kubwa.'},
-    {q:'Building Information Modeling (BIM) ni nini?',opts:['Mfumo wa kidigitali wa kubuni na kusimamia jengo','Aina ya saruji','Programu ya bei','Mchoro wa mkono'],a:0,ex:'BIM ni mfumo wa 3D unaounganisha design, gharama na muda.'},
-    {q:'U-value inapima nini?',opts:['Jinsi joto linavyopita kwenye ukuta/paa','Uzito','Urefu','Bei'],a:0,ex:'U-value ndogo = insulation nzuri, joto haliingii sana.'},
-    {q:'Damp Proof Course (DPC) ni nini?',opts:['Tabaka linalozuia maji kupanda ukutani','Rangi','Saruji','Paaza'],a:0,ex:'DPC huwekwa juu ya foundation kuzuia unyevu kupanda.'}
-  ],
-  'Interior Designer': [
-    {q:'Mood Board ni nini?',opts:['Mkusanyiko wa picha, rangi na vifaa kuonyesha wazo la design','Bodi ya shule','Jedwali','Orodha ya bei'],a:0,ex:'Mood Board inamsaidia mteja kuona na kuhisi design kabla haijatekelezwa.'},
-    {q:'Ergonomics katika Interior ni nini?',opts:['Kubuni kulingana na mwili na starehe ya binadamu','Kubuni kwa bei ghali','Kupaka rangi','Kuweka taa'],a:0,ex:'Ergonomics - kiti, meza na nafasi ziwe sawa na mwili wa mtu.'},
-    {q:'Rangi ya joto (Warm Color) ni ipi?',opts:['Nyota ya machungwa, nyekundu','Bluu, kijani','Nyeusi','Nyeupe'],a:0,ex:'Warm colors - nyekundu, machungwa, njano - huleta hisia ya joto na ukaribu.'},
-    {q:'Space Planning ni nini?',opts:['Kupanga matumizi ya nafasi ndani ya chumba','Kupaka rangi','Kununua fanicha','Kuweka pazia'],a:0,ex:'Space Planning ni kupanga wapi sofa, meza, njia ya kupita ili nafasi itumike vizuri.'},
-    {q:'Lighting Layers ni nini?',opts:['Ambient, Task na Accent zikichanganyika','Taa moja tu','Taa za nje','Mishumaa'],a:0,ex:'Chumba kizuri kina taa 3: ya jumla, ya kazi na ya kupendezesha.'},
-    {q:'Kazi ya Interior Designer inatofautiana vipi na Decorator?',opts:['Designer anashughulika na muundo na nafasi, Decorator rangi na mapambo tu','Hakuna tofauti','Designer ni fundi','Decorator ni daktari'],a:0,ex:'Designer anabadilisha nafasi na muundo, Decorator anapamba juu yake.'},
-    {q:'Material Board hutumika kwa nini?',opts:['Kuonyesha mteja vifaa halisi vitakavyotumika','Kuhesabu bei','Kupima chumba','Kuchora'],a:0,ex:'Mteja anagusa kitambaa, mbao, tiles kabla hajachagua.'}
-  ],
-  'Landscape Architect': [
-    {q:'Kazi kubwa ya Landscape Architect ni nini?',opts:['Kubuni nafasi za nje - bustani, barabara, mazingira','Kupanda maua tu','Kujenga nyumba','Kupima ardhi'],a:0,ex:'Landscape anabuni nje ya jengo - njia, miti, maji, na sehemu za kukaa.'},
-    {q:'Site Grading ni nini?',opts:['Kupanga mwinuko wa ardhi ili maji yatiririke vizuri','Kupanda miti','Kujenga ukuta','Kupaka rangi'],a:0,ex:'Grading inahakikisha maji hayasimami karibu na jengo, yanatiririka kwenda drain.'},
-    {q:'Native Plants ni nini?',opts:['Mimea ya asili ya eneo hilo','Mimea ya nje','Maua ya plastiki','Mimea ya dukani'],a:0,ex:'Miti ya asili hustahimili hali ya hewa na inahitaji maji kidogo.'},
-    {q:'Hardscape ni nini?',opts:['Sehemu ngumu - njia, mawe, ukuta','Miti','Maua','Majani'],a:0,ex:'Hardscape = njia, patio, ukuta wa mawe. Softscape = miti na majani.'},
-    {q:'EIA inahusika vipi na Landscape?',opts:['Kuchambua athari za mradi kwa mazingira kabla ya kujenga','Kupiga picha','Kuhesabu bei','Kupanga rangi'],a:0,ex:'EIA - Environmental Impact Assessment, inahitajika kabla ya miradi mikubwa.'},
-    {q:'Sustainable Drainage ni nini?',opts:['Kutumia ardhi na mimea kupunguza mafuriko','Mifereji ya saruji tu','Kuziba maji','Kujenga bwawa'],a:0,ex:'SUDS hutumia mimea na ardhi kunyonya maji badala ya kuyapeleka yote mtaani.'},
-    {q:'Public Space nzuri ina nini?',opts:['Kukaa, kivuli, usalama na urahisi wa kufika','Maua tu','Rangi','Ukuta mkubwa'],a:0,ex:'Public space nzuri watu wanataka kukaa, kupumzika na kukutana.'}
-  ],
-  'Construction Manager': [
-    {q:'Kazi kubwa ya Construction Manager ni nini?',opts:['Kupanga, kusimamia muda, gharama na ubora wa ujenzi','Kujenga mwenyewe','Kubuni','Kupima ardhi'],a:0,ex:'CM ndiye anayehakikisha mradi unaisha kwa muda, bajeti na ubora.'},
-    {q:'Gantt Chart hutumika kwa nini?',opts:['Kuonyesha ratiba ya kazi kwa muda','Kuhesabu bei','Kuchora jengo','Kupima ardhi'],a:0,ex:'Gantt Chart inaonyesha kazi gani inaanza lini, inaisha lini na nani anaifanya.'},
-    {q:'Critical Path ni nini?',opts:['Mfululizo wa kazi muhimu ambazo zikichelewa mradi wote unachelewa','Njia ya kwenda site','Barabara','Mfereji'],a:0,ex:'Kama kazi kwenye Critical Path ikichelewa siku 1, mradi wote unachelewa siku 1.'},
-    {q:'OSHA inahusu nini site?',opts:['Usalama na afya ya wafanyakazi','Bei','Rangi','Ubunifu'],a:0,ex:'OSHA - wafanyakazi wawe na helmet, PPE, na site iwe salama.'},
-    {q:'Site Meeting hufanyika kwa nini?',opts:['Kujadili maendeleo, changamoto na hatua zinazofuata','Kula chakula','Kupiga picha','Kusaini mkataba'],a:0,ex:'Site Meeting - kila wiki, mteja, mjenzi, QS na Architect wanakutana.'},
-    {q:'Mobilization ni nini?',opts:['Kuleta vifaa, wafanyakazi na kuandaa site kabla ya kuanza','Kumaliza mradi','Kulipa','Kufunga site'],a:0,ex:'Mobilization ni hatua ya kwanza - site office, vifaa, maji, umeme.'},
-    {q:'Snag List ni nini?',opts:['Orodha ya kasoro ndogo za kurekebisha kabla ya kukabidhi mradi','Orodha ya wafanyakazi','Orodha ya bei','Orodha ya vifaa'],a:0,ex:'Kabla ya handover, mteja anatembea na kuandika kasoro - hizo ndizo snags.'}
-  ]
-};
+/* ===== MPYA: STREAK + FREEZE + LEADERBOARD + SWALI LA LEO 30x6 - IMEREKEBISHWA ===== */
+function getStreakKey(c){return 'mtaalam_streak_'+(profMap[c]||'qs');}
+function getLastKey(c){return 'mtaalam_last_'+(profMap[c]||'qs');}
+function getAnsweredKey(c){return 'mtaalam_answered_'+(profMap[c]||'qs');}
+function getFreezeKey(c){return 'mtaalam_freeze_'+(profMap[c]||'qs');}
+function getStreak(c){return parseInt(localStorage.getItem(getStreakKey(c))||'0');}
+function getAnswered(c){return parseInt(localStorage.getItem(getAnsweredKey(c))||'0');}
+function getFreeze(c){return parseInt(localStorage.getItem(getFreezeKey(c))||'0');}
+function setFreeze(c,v){localStorage.setItem(getFreezeKey(c),String(v));}
 
-function getStreakKey(course){ return 'mtaalam_streak_' + (profMap[course] || 'qs'); }
-function getLastKey(course){ return 'mtaalam_last_' + (profMap[course] || 'qs'); }
-function getAnsweredKey(course){ return 'mtaalam_answered_' + (profMap[course] || 'qs'); }
-
-function getStreak(course){
-  return parseInt(localStorage.getItem(getStreakKey(course)) || '0');
+function checkFreezeOnLoad(){
+  const today=new Date().toDateString();
+  const last=localStorage.getItem(getLastKey(selected));
+  if(!last||last===today) return;
+  const diffDays=Math.floor((new Date(today)-new Date(last))/86400000);
+  if(diffDays===2){
+    let f=getFreeze(selected);
+    if(f>0){
+      setFreeze(selected,f-1);
+      localStorage.setItem(getLastKey(selected), new Date(Date.now()-86400000).toDateString());
+      const fm=document.getElementById('freezeMsg');
+      if(fm) fm.textContent='🧊 Freeze imetumika! Streak yako imeokolewa. Freeze zilizobaki: '+(f-1);
+    }
+  }
 }
-function getAnswered(course){
-  return parseInt(localStorage.getItem(getAnsweredKey(course)) || '0');
-}
-
 function updateStreakUI(){
-  const streak = getStreak(selected);
-  const answered = getAnswered(selected);
-  const short = profShort[selected] || 'QS';
-  document.getElementById('streakNum').textContent = streak;
-  document.getElementById('streakAnswered').textContent = answered;
-  document.getElementById('streakCourseLabel').textContent = selected.toUpperCase() + ' • STREAK';
-  document.getElementById('streakRankCourse').textContent = short;
-  // Rank ya kubahatisha kulingana na streak - kwa demo, ili mtu ajisikie yuko kwenye mashindano
-  const rank = streak === 0 ? '--' : Math.max(1, 25 - streak);
-  document.getElementById('streakRank').textContent = rank;
-  document.getElementById('streakBarFill').style.width = Math.min(100, (streak/30)*100) + '%';
-  if(streak === 0){
-    document.getElementById('streakMsg').textContent = 'Anza leo - jibu Swali la Leo upate siku 1!';
-  } else if(streak < 7){
-    document.getElementById('streakMsg').textContent = `Vizuri! Zimebaki siku ${7-streak} kufika Badge ya siku 7.`;
-  } else if(streak < 30){
-    document.getElementById('streakMsg').textContent = `Zimebaki siku ${30-streak} kufika Badge ya Mfalme wa ${selected} 👑`;
-  } else {
-    document.getElementById('streakMsg').textContent = `Hongera! Wewe ni Mfalme wa ${selected} 👑`;
+  checkFreezeOnLoad();
+  const streak=getStreak(selected);
+  const answered=getAnswered(selected);
+  const freeze=getFreeze(selected);
+  const short=profShort[selected]||'QS';
+  document.getElementById('streakNum').textContent=streak;
+  document.getElementById('streakAnswered').textContent=answered;
+  document.getElementById('freezeCount').textContent=freeze;
+  document.getElementById('streakCourseLabel').textContent=selected.toUpperCase()+' • STREAK';
+  document.getElementById('streakRankCourse').textContent=short;
+  const pct=Math.max(10, Math.min(100,(streak/30)*100));
+  document.getElementById('streakBarFill').style.width=pct+'%';
+  if(streak===0) document.getElementById('streakMsg').textContent='Anza leo - jibu Swali la Leo upate siku 1!';
+  else if(streak<7) document.getElementById('streakMsg').textContent=`Vizuri! Zimebaki siku ${7-streak} kufika Badge ya siku 7 + Freeze 1 🧊`;
+  else if(streak<30) document.getElementById('streakMsg').textContent=`Zimebaki siku ${30-streak} kufika Badge ya Mfalme wa ${selected} 👑`;
+  else document.getElementById('streakMsg').textContent=`Hongera! Wewe ni Mfalme wa ${selected} 👑`;
+  const fm=document.getElementById('freezeMsg');
+  if(fm && !fm.textContent.includes('Freeze imetumika')){
+    fm.textContent = freeze>0 ? `🧊 Una Freeze ${freeze} - ukisahau siku 1, streak haitapotea.` : '';
   }
 }
-
 function updateDailyUI(){
-  const short = profShort[selected] || 'QS';
-  document.getElementById('dailyCourseLabel').textContent = selected.toUpperCase();
-  document.getElementById('dailyCourseLabel2').textContent = short;
-  document.getElementById('dailyPeers').textContent = 12 + (new Date().getDate() % 10);
-  const today = new Date().toDateString();
-  const last = localStorage.getItem(getLastKey(selected));
-  const statusEl = document.getElementById('dailyStatus');
-  if(last === today){
-    statusEl.textContent = '✅ Umemaliza leo! Streak yako iko salama. Rudi kesho 6:00 asubuhi';
+  const short=profShort[selected]||'QS';
+  document.getElementById('dailyCourseLabel').textContent=selected.toUpperCase();
+  document.getElementById('dailyCourseLabel2').textContent=short;
+  document.getElementById('dailyPeers').textContent=12+(new Date().getDate()%10);
+  const today=new Date().toDateString();
+  const last=localStorage.getItem(getLastKey(selected));
+  const statusEl=document.getElementById('dailyStatus');
+  const btn=document.getElementById('dailyBtn');
+  if(last===today){
+    statusEl.textContent='✅ Umemaliza leo! Streak yako iko salama. Rudi kesho 6:00 asubuhi';
+    btn.textContent='✅ Umemaliza Leo - Rudi Kesho 6:00';
+    btn.classList.add('btn-disabled');
+    btn.disabled=true;
   } else {
-    const s = getStreak(selected);
-    if(s >= 3) statusEl.textContent = `🔥 Streak yako ya siku ${s} inasubiri - jibu sasa uiokoe!`;
-    else statusEl.textContent = '🔥 Ukijibu sasa, streak yako inaokolewa';
+    const s=getStreak(selected);
+    statusEl.textContent = s>=3 ? `🔥 Streak yako ya siku ${s} inasubiri - jibu sasa uiokoe!` : '🔥 Ukijibu sasa, streak yako inaokolewa';
+    btn.textContent='JIBU SWALI LA LEO →';
+    btn.classList.remove('btn-disabled');
+    btn.disabled=false;
   }
 }
-
-let dailyCurrent = null;
-function getDailyQuestion(){
-  const bank = DAILY_BANK[selected] || DAILY_BANK['Quantity Surveyor'];
-  const day = new Date().getDate(); // 1-31, kila siku swali tofauti
-  return bank[day % bank.length];
+function getMyName(){ if(currentUser && currentUser.email) return currentUser.email.split('@')[0]; return 'Wewe'; }
+function renderLeaderboard(){
+  const short=profShort[selected]||'QS';
+  document.getElementById('leaderCourse').textContent=short;
+  const myStreak=getStreak(selected);
+  const myName=getMyName();
+  let others=[{name:'Juma',streak:21},{name:'Amina',streak:19},{name:'Baraka',streak:14},{name:'Neema',streak:11}];
+  let all=[...others,{name:myName,streak:myStreak,isMe:true}];
+  all.sort((a,b)=>b.streak-a.streak);
+  all=all.slice(0,5);
+  document.getElementById('leaderList').innerHTML=all.map((u,i)=>{
+    const cls=u.isMe?'leader-row me':'leader-row';
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return `<div class="${cls}"><span>${medal} ${u.name} ${u.isMe?'(Wewe)':''}</span><span>🔥 ${u.streak} siku</span></div>`;
+  }).join('');
+  const myRank=all.findIndex(u=>u.isMe)+1;
+  if(myStreak>0) document.getElementById('streakRank').textContent=myRank>0?myRank:'5';
+  else document.getElementById('streakRank').textContent='--';
 }
-
+let dailyCurrent=null;
+function getDailyQuestion(){
+  const bank=DAILY_BANK[selected]||DAILY_BANK['Quantity Surveyor'];
+  const day=new Date().getDate();
+  return bank[(day-1)%bank.length];
+}
 function openDailyQuestion(){
-  dailyCurrent = getDailyQuestion();
-  // Ficha landing, onyesha daily
+  const btn=document.getElementById('dailyBtn');
+  if(btn.disabled) return;
+  dailyCurrent=getDailyQuestion();
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('dailyQuiz').classList.remove('hidden');
-  document.getElementById('dailyQCat').textContent = 'SWALI LA LEO • ' + selected.toUpperCase();
-  document.getElementById('dailyQText').textContent = dailyCurrent.q;
+  document.getElementById('dailyQCat').textContent='SWALI LA LEO • '+selected.toUpperCase();
+  document.getElementById('dailyQText').textContent=dailyCurrent.q;
   document.getElementById('dailyExplain').classList.add('hidden');
   document.getElementById('dailyNextBtn').classList.add('hidden');
-  const box = document.getElementById('dailyOpts');
-  box.innerHTML = '';
-  dailyCurrent.opts.forEach((o,i)=>{
-    const d = document.createElement('div');
-    d.className = 'opt';
-    d.textContent = o;
-    d.onclick = ()=>checkDaily(i, d);
-    box.appendChild(d);
-  });
+  const box=document.getElementById('dailyOpts'); box.innerHTML='';
+  dailyCurrent.opts.forEach((o,i)=>{const d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>checkDaily(i,d);box.appendChild(d);});
   window.scrollTo(0,0);
 }
-
-function checkDaily(i, el){
-  const opts = document.querySelectorAll('#dailyOpts .opt');
-  if(opts[0].style.pointerEvents === 'none') return;
+function checkDaily(i,el){
+  const opts=document.querySelectorAll('#dailyOpts .opt');
+  if(opts[0].style.pointerEvents==='none') return;
   opts.forEach(o=>o.style.pointerEvents='none');
-  const isCorrect = i === dailyCurrent.a;
-  if(isCorrect){ el.classList.add('correct'); } else { el.classList.add('wrong'); opts[dailyCurrent.a].classList.add('correct'); }
-  const ex = document.getElementById('dailyExplain');
-  if(isCorrect){
-    ex.innerHTML = '<b>✅ Sahihi! Wenzako 68% walikosea swali hili. Wewe uko kwenye 32% bora!</b><br><br><b>Maelezo:</b> ' + dailyCurrent.ex;
-  } else {
-    ex.innerHTML = '<b>❌ Si sahihi. Hili ndilo swali linalowafeli wengi AQRB.</b><br><br><b>Maelezo:</b> ' + dailyCurrent.ex + '<br><br><b>🔓 Fungua Past Paper uone maswali 10 kama haya → Tsh 1,000 tu</b>';
-  }
+  const isCorrect=i===dailyCurrent.a;
+  if(isCorrect) el.classList.add('correct'); else {el.classList.add('wrong');opts[dailyCurrent.a].classList.add('correct');}
+  const ex=document.getElementById('dailyExplain');
+  if(isCorrect) ex.innerHTML='<b>✅ Sahihi! Wenzako 68% walikosea swali hili. Wewe uko kwenye 32% bora!</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex;
+  else ex.innerHTML='<b>❌ Si sahihi. Hili ndilo swali linalowafeli wengi AQRB.</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex+'<br><br><b>🔓 Fungua Past Paper uone maswali 10 kama haya → Tsh 1,000 tu</b>';
   ex.classList.remove('hidden');
   document.getElementById('dailyNextBtn').classList.remove('hidden');
 }
-
 function closeDailyAndSave(){
-  // Okoa streak - hii ndiyo inafanya mtu awe addicted
-  const today = new Date().toDateString();
-  const last = localStorage.getItem(getLastKey(selected));
-  if(last !== today){
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    let streak = getStreak(selected);
-    if(last === yesterday) streak += 1;
-    else streak = 1;
-    localStorage.setItem(getStreakKey(selected), streak);
-    localStorage.setItem(getLastKey(selected), today);
-    const ans = getAnswered(selected) + 1;
-    localStorage.setItem(getAnsweredKey(selected), ans);
-    // Badge alerts
-    if(streak === 3) alert('🎉 Hongera! Siku 3! Umepata Badge ya Msomaji Mpya!');
-    else if(streak === 7) alert('🔥 Siku 7! Umepata Badge ya Mwenye Nidhamu + Streak Freeze 1!');
-    else if(streak === 30) alert('👑 Siku 30! Wewe ni Mfalme wa ' + selected + '!');
-    else alert('✅ Streak imeokolewa! Sasa uko siku ' + streak + ' mfululizo!');
+  const today=new Date().toDateString();
+  const last=localStorage.getItem(getLastKey(selected));
+  if(last!==today){
+    const yesterday=new Date(Date.now()-86400000).toDateString();
+    let streak=getStreak(selected);
+    let freeze=getFreeze(selected);
+    let usedFreeze=false;
+    const diff=last?Math.floor((new Date(today)-new Date(last))/86400000):99;
+    if(last===yesterday) streak+=1;
+    else if(diff===2 && freeze>0){ setFreeze(selected,freeze-1); streak+=1; usedFreeze=true; }
+    else streak=1;
+    localStorage.setItem(getStreakKey(selected),streak);
+    localStorage.setItem(getLastKey(selected),today);
+    const ans=getAnswered(selected)+1;
+    localStorage.setItem(getAnsweredKey(selected),ans);
+    if(streak===7 && getFreeze(selected)===0){ setFreeze(selected,1); alert('🔥 Siku 7! Umepata Badge ya Mwenye Nidhamu + 🧊 Freeze 1!'); }
+    else if(streak===14){ setFreeze(selected,getFreeze(selected)+1); alert('🔥 Siku 14! Umepata 🧊 Freeze nyingine! Sasa una '+getFreeze(selected)+' Freeze'); }
+    else if(streak===3) alert('🎉 Hongera! Siku 3! Umepata Badge ya Msomaji Mpya!');
+    else if(streak===30) alert('👑 Siku 30! Wewe ni Mfalme wa '+selected+'!');
+    else if(usedFreeze) alert('🧊 Freeze imetumika! Streak imeokolewa! Sasa uko siku '+streak);
+    else alert('✅ Streak imeokolewa! Sasa uko siku '+streak+' mfululizo!');
   }
-  updateStreakUI();
-  updateDailyUI();
-  backHomeFromDaily();
+  document.getElementById('freezeMsg').textContent='';
+  updateStreakUI(); updateDailyUI(); renderLeaderboard(); backHomeFromDaily();
 }
-
-// ===== MPYA 3: NOTIFICATION YA SAA 8 JIONI - Saa 20:00 =====
 function checkEveningReminder(){
-  const now = new Date();
-  const today = now.toDateString();
-  const last = localStorage.getItem(getLastKey(selected));
-  const alreadyReminded = localStorage.getItem('mtaalam_reminded_' + today);
-  // Tuma tu saa 20:00 na kama hajajibu leo
-  if(now.getHours() === 20 && last !== today && !alreadyReminded){
-    const streak = getStreak(selected);
-    const short = profShort[selected] || 'QS';
-    let msg = '';
-    if(streak <= 2) msg = `Swali la Leo la ${selected} bado liko wazi. Wenzako wameshajibu. Jibu sasa - sekunde 30 tu.`;
-    else if(streak <= 6) msg = `🔥 Streak yako ya siku ${streak} ya ${short} itapotea baada ya masaa 4! Jibu swali 1 tu uiokoe.`;
-    else msg = `😱 Uko siku ${streak} ya ${short}! Usiharibu! Jibu Swali la Leo sasa uiokoe ranking yako.`;
-    // Kama browser inaruhusu notification, itume, vinginevyo onyesha alert ya ndani
-    if('Notification' in window && Notification.permission === 'granted'){
-      new Notification('MTAALAM - Streak Inapotea!', { body: msg });
-    } else {
-      // Onyesha kama banner ndani ya app - usisumbue kama ameshaona
-      const banner = document.createElement('div');
-      banner.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;background:#f59e0b;color:#111;padding:14px;border-radius:14px;font-weight:800;z-index:999;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.4)';
-      banner.textContent = msg + ' → Bonyeza kujibu';
-      banner.onclick = ()=>{ banner.remove(); openDailyQuestion(); };
-      document.body.appendChild(banner);
-      setTimeout(()=>banner.remove(), 15000);
-    }
-    localStorage.setItem('mtaalam_reminded_' + today, '1');
-  }
-  // Omba ruhusa ya notification mara moja
-  if('Notification' in window && Notification.permission === 'default'){
-    // Usiombe mara kwa mara, omba mara moja tu
-    if(!localStorage.getItem('mtaalam_notif_asked')){
-      localStorage.setItem('mtaalam_notif_asked','1');
-      // Notification.requestPermission(); // Washa kama unataka
-    }
+  const now=new Date(); const today=now.toDateString();
+  const last=localStorage.getItem(getLastKey(selected));
+  const already=localStorage.getItem('mtaalam_reminded_'+today);
+  if(now.getHours()===20 && last!==today && !already){
+    const streak=getStreak(selected); const short=profShort[selected]||'QS';
+    let msg='';
+    if(streak<=2) msg=`Swali la Leo la ${selected} bado liko wazi. Wenzako wameshajibu. Jibu sasa - sekunde 30 tu.`;
+    else if(streak<=6) msg=`🔥 Streak yako ya siku ${streak} ya ${short} itapotea baada ya masaa 4! Jibu swali 1 tu uiokoe.`;
+    else msg=`😱 Uko siku ${streak} ya ${short}! Usiharibu! Jibu Swali la Leo sasa uiokoe ranking yako.`;
+    if('Notification' in window && Notification.permission==='granted'){ new Notification('MTAALAM - Streak Inapotea!',{body:msg}); }
+    else { const banner=document.createElement('div'); banner.style.cssText='position:fixed;bottom:16px;left:16px;right:16px;background:#f59e0b;color:#111;padding:14px;border-radius:14px;font-weight:800;z-index:999;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.4)'; banner.textContent=msg+' → Bonyeza kujibu'; banner.onclick=()=>{banner.remove();openDailyQuestion();}; document.body.appendChild(banner); setTimeout(()=>banner.remove(),15000); }
+    localStorage.setItem('mtaalam_reminded_'+today,'1');
   }
 }
-
+const DAILY_BANK = {
+'Quantity Surveyor': [
+{q:'BoQ ni nini?',opts:['Bill of Quantities','Book of Quality','Bill of Quality','Basic of Quantities'],a:0,ex:'BoQ ni orodha ya vipimo na bei za kazi za ujenzi.'},
+{q:'Variation ni nini?',opts:['Mabadiliko ya kazi baada ya mkataba','Kazi mpya kabisa','Kufuta mkataba','Malipo ya awali'],a:0,ex:'Variation ni mabadiliko ya kazi, bei au muda baada ya mkataba.'},
+{q:'Nani anathibitisha Valuation?',opts:['QS','Fundi','Mteja pekee','Serikali'],a:0,ex:'QS anapima kazi na kutoa Valuation / Certificate ya malipo.'},
+{q:'JCT ni nini?',opts:['Mkataba wa ujenzi','Aina ya saruji','Chombo cha kupima','Shirika'],a:0,ex:'JCT - Joint Contracts Tribunal, mfumo wa mikataba ya ujenzi.'},
+{q:'Prime Cost Sum ni nini?',opts:['Kiasi kwa kazi ambayo bei haijajulikana','Gharama ya mwisho','Faida','Kodi'],a:0,ex:'PC Sum ni kiasi kwenye BoQ kwa vitu ambavyo havijachaguliwa.'},
+{q:'Retention ni nini?',opts:['Pesa inayozuiliwa kama dhamana','Malipo ya awali','Faini','Kodi'],a:0,ex:'Retention 5-10% inazuiliwa kuhakikisha mjenzi atarekebisha kasoro.'},
+{q:'Final Account ni nini?',opts:['Hesabu ya mwisho ya gharama halisi','Bajeti ya mwanzo','Malipo ya kwanza','Kadirio tu'],a:0,ex:'Final Account huandaliwa baada ya mradi kuisha.'},
+{q:'Measurement inafanywa kwa kutumia nini?',opts:['Michoro na vipimo halisi site','Kubahatisha','Picha tu','Maneno ya mteja'],a:0,ex:'QS hupima kutoka michoro na site - Standard Method of Measurement.'},
+{q:'Provisional Sum ni nini?',opts:['Kiasi cha kazi isiyoeleweka vizuri','Bei ya mwisho','Faida','Kodi ya serikali'],a:0,ex:'Provisional Sum ni kwa kazi ambayo haijulikani ukubwa wake.'},
+{q:'Interim Valuation hufanyika lini?',opts:['Kila mwezi wakati wa ujenzi','Mwisho tu','Mwanzo tu','Kila mwaka'],a:0,ex:'Interim Valuation ni malipo ya kila mwezi kulingana na kazi iliyofanyika.'},
+{q:'Fluctuation ni nini?',opts:['Mabadiliko ya bei ya vifaa / mishahara','Kazi mpya','Kuvuja kwa paa','Aina ya mkataba'],a:0,ex:'Fluctuation hulipa mjenzi tofauti ya bei iliyopanda baada ya mkataba.'},
+{q:'Daywork ni nini?',opts:['Kazi inayolipwa kwa saa / siku','Kazi ya usiku','Kazi ya bure','Kazi ya serikali'],a:0,ex:'Daywork - kazi ndogo isiyokuwa kwenye BoQ, inalipwa kwa saa.'},
+{q:'Tender ni nini?',opts:['Mchakato wa mjenzi kuomba kazi kwa bei','Kazi ya QS','Mkataba','Ruhusa'],a:0,ex:'Tender ni mchakato wa kupata mjenzi kwa bei bora.'},
+{q:'Preliminaries kwenye BoQ ni nini?',opts:['Gharama za kuandaa site - ofisi, maji, umeme','Gharama za saruji','Mishahara ya QS','Kodi'],a:0,ex:'Prelims ni gharama za kuendesha site, sio za kujenga jengo lenyewe.'},
+{q:'Contingency Sum ni nini?',opts:['Kiasi cha akiba kwa mambo yasiyotarajiwa','Faida ya mjenzi','Kodi','Malipo ya QS'],a:0,ex:'Contingency ni akiba ya 5-10% kwa mambo yasiyotarajiwa.'},
+{q:'Nani anayepaswa kusaini Payment Certificate?',opts:['QS / Architect','Fundi','Mlinzi','Mteja pekee'],a:0,ex:'QS anaandaa, Architect / PM anasaini na kuthibitisha.'},
+{q:'Liquidated Damages ni nini?',opts:['Faini ya kuchelewa kukamilisha mradi','Malipo ya awali','Faida','Kodi'],a:0,ex:'LD ni kiasi kilichokubaliwa kwenye mkataba kwa kila siku ya kuchelewa.'},
+{q:'Practical Completion ni nini?',opts:['Jengo limekamilika na linaweza kutumika','Mwanzo wa ujenzi','Kumaliza BoQ','Kulipa QS'],a:0,ex:'PC - jengo linaweza kutumika, kasoro ndogo tu zimebaki.'},
+{q:'Defects Liability Period ni muda gani wa kawaida?',opts:['Miezi 6-12','Siku 1','Miaka 10','Wiki 1'],a:0,ex:'DLP kawaida miezi 6-12, mjenzi anarekebisha kasoro bure.'},
+{q:'Cost Plan ni nini?',opts:['Mpango wa gharama kulingana na bajeti ya mteja','Bei ya saruji','Mshahara','Orodha ya wafanyakazi'],a:0,ex:'Cost Plan inahakikisha design inabaki kwenye bajeti.'},
+{q:'Value Engineering ni nini?',opts:['Kupunguza gharama bila kupunguza ubora','Kupunguza ubora','Kuongeza bei','Kufuta mradi'],a:0,ex:'VE inatafuta njia mbadala ya kupata ubora ule ule kwa bei ndogo.'},
+{q:'Feasibility Study inafanywa lini?',opts:['Kabla ya kuanza mradi - kujua kama unawezekana','Baada ya kumaliza','Wakati wa ujenzi','Baada ya kulipa'],a:0,ex:'Feasibility inaangalia kama mradi una faida na unawezekana.'},
+{q:'Bill of Quantities ina sehemu gani kubwa?',opts:['Prelims, Measured Works, Provisional Sums','Mchoro tu','Picha','Orodha ya wafanyakazi'],a:0,ex:'BoQ ina Prelims, kazi zilizopimwa na sums za akiba.'},
+{q:'Rate ni nini kwenye BoQ?',opts:['Bei ya unit moja ya kazi','Bei ya mradi wote','Mshahara','Kodi'],a:0,ex:'Rate - mfano Tsh 50,000 kwa m2 ya ukuta.'},
+{q:'Take-off ni nini?',opts:['Kupima na kuorodhesha kazi kutoka michoro','Kupiga picha','Kuchora','Kusafisha site'],a:0,ex:'Take-off ni hatua ya kwanza ya kupima - unatoa vipimo kwenye michoro.'},
+{q:'Nani anayeandaa BoQ?',opts:['Quantity Surveyor','Architect pekee','Mjenzi','Fundi'],a:0,ex:'QS ndiye mtaalamu wa BoQ.'},
+{q:'Mkataba wa Lump Sum ni nini?',opts:['Bei moja ya jumla kwa mradi wote','Bei inayobadilika kila siku','Malipo ya saa','Bila mkataba'],a:0,ex:'Lump Sum - mjenzi anakubali bei moja, hatari ya kupanda bei ni yake.'},
+{q:'Re-measurement Contract ni nini?',opts:['Mkataba ambapo malipo ni kulingana na kazi halisi iliyopimwa','Bei moja','Bila kupima','Kazi ya bure'],a:0,ex:'Re-measurement - unalipwa kwa kazi halisi, sio iliyokadiriwa.'},
+{q:'Claim ya mjenzi ni nini?',opts:['Ombi la pesa / muda zaidi kutokana na mabadiliko','Malalamiko tu','Barua ya shukrani','Orodha ya wafanyakazi'],a:0,ex:'Claim hutokea variation, kuchelewa kwa mteja au hali isiyotarajiwa.'},
+{q:'AQRB inasimamia QS vipi?',opts:['Usajili, leseni, maadili na nidhamu','Kulipa mishahara','Kujenga','Kuuza vifaa'],a:0,ex:'AQRB inasajili QS na kuhakikisha wanafuata maadili.'}
+],
+'Architect': [
+{q:'Site Analysis ni nini?',opts:['Kuchambua eneo kabla ya kubuni','Kupiga picha tu','Kuchora ramani','Kupima ardhi pekee'],a:0,ex:'Site Analysis - jua, upepo, ardhi, maji na mazingira.'},
+{q:'Scale 1:100 ina maana gani?',opts:['1cm = 100cm halisi','1m = 100m','Kitu ni kidogo','Haina maana'],a:0,ex:'1:100 - kila 1 unit kwenye mchoro ni 100 halisi.'},
+{q:'Nani anatoa Building Permit?',opts:['Halmashauri / Mamlaka ya Mipango Miji','Fundi','Mteja','CRB'],a:0,ex:'Kibali hutolewa na Halmashauri baada ya michoro kupitishwa.'},
+{q:'Concept Design ni hatua gani?',opts:['Wazo la kwanza la design','Michoro ya mwisho','Ujenzi','Kadirio'],a:0,ex:'Concept ni wazo la kwanza - form, space na mtazamo.'},
+{q:'Passive Design inategemea nini?',opts:['Jua na upepo wa asili','AC pekee','Taa za umeme','Chuma'],a:0,ex:'Passive hutumia jua, upepo na mwanga wa asili.'},
+{q:'AQRB inasimamia nani?',opts:['Architects, QS na wataalamu wa ujenzi','Wahandisi tu','Wakandarasi tu','Wote'],a:0,ex:'AQRB - Architects and Quantity Surveyors Registration Board.'},
+{q:'Section Drawing inaonyesha nini?',opts:['Jengo likikatwa wima kuona ndani','Jengo kutoka juu','Jengo kutoka nje','Mlango tu'],a:0,ex:'Section inaonyesha urefu, dari, sakafu na muundo wa ndani.'},
+{q:'Elevation ni nini?',opts:['Jengo linavyoonekana kutoka nje','Jengo kutoka juu','Sehemu ya ndani','Msingi'],a:0,ex:'Elevation ni mtazamo wa nje - mbele, nyuma, pembeni.'},
+{q:'Floor Plan inaonyesha nini?',opts:['Jengo kutoka juu baada ya kukatwa','Jengo kutoka nje','Paa','Msingi'],a:0,ex:'Plan ni kama umekata jengo juu ya dirisha na kuangalia chini.'},
+{q:'Circulation ni nini?',opts:['Njia watu wanavyotembea ndani ya jengo','Mzunguko wa hewa','Mzunguko wa maji','Kasi ya upepo'],a:0,ex:'Circulation - corridor, stairs, lobby.'},
+{q:'Daylighting ni nini?',opts:['Kutumia mwanga wa asili ndani ya jengo','Taa za umeme','Mishumaa','Rangi'],a:0,ex:'Daylighting inapunguza umeme na inaboresha afya.'},
+{q:'Orientation ya jengo inazingatia nini?',opts:['Jua na upepo','Rangi','Bei','Jina la mteja'],a:0,ex:'Orientation nzuri - madirisha makubwa upande usio na jua kali.'},
+{q:'Human Scale ni nini?',opts:['Kubuni kulingana na ukubwa wa binadamu','Kubuni majengo makubwa tu','Kubuni kwa bei','Kubuni kwa rangi'],a:0,ex:'Milango, madirisha na vyumba viwe sawa na binadamu.'},
+{q:'Sustainability katika usanifu ni nini?',opts:['Kubuni bila kuharibu mazingira na kutumia rasilimali kidogo','Kubuni majengo makubwa','Kutumia chuma','Kutumia AC'],a:0,ex:'Sustainable - vifaa vya asili, maji ya mvua, nishati kidogo.'},
+{q:'Zoning ni nini?',opts:['Kugawanya ardhi kwa matumizi - makazi, biashara, viwanda','Kupaka rangi','Kujenga ukuta','Kupima ardhi'],a:0,ex:'Zoning inazuia kiwanda kujengwa katikati ya makazi.'},
+{q:'Building Code ni nini?',opts:['Sheria za usalama na ubora wa ujenzi','Kitabu cha rangi','Orodha ya bei','Mkataba'],a:0,ex:'Code inasema urefu wa dari, upana wa ngazi, usalama wa moto.'},
+{q:'Fire Escape inahitaji nini?',opts:['Njia mbadala ya kutoka haraka moto ukitokea','Mlango mzuri','Rangi','Taa'],a:0,ex:'Kila jengo lina njia 2 za kutoka moto.'},
+{q:'Ventilation ya asili ni nini?',opts:['Hewa kuingia na kutoka bila mashine','AC','Feni','Dirisha lililofungwa'],a:0,ex:'Cross ventilation - madirisha mawili yanayoelekeana.'},
+{q:'Thermal Comfort ni nini?',opts:['Joto na baridi vinavyomfaa binadamu ndani','Rangi','Mwanga','Sauti'],a:0,ex:'Jengo lisipate joto kali wala baridi kali.'},
+{q:'Acoustics katika jengo ni nini?',opts:['Jinsi sauti inavyosikika na kudhibitiwa','Rangi','Mwanga','Harufu'],a:0,ex:'Ukumbi unahitaji acoustics nzuri ili kila mtu asikie.'},
+{q:'Facade ni nini?',opts:['Uso wa nje wa jengo','Ndani ya jengo','Paa','Msingi'],a:0,ex:'Facade ndiyo sura ya jengo inayoonekana mtaani.'},
+{q:'Atrium ni nini?',opts:['Nafasi kubwa wazi katikati ya jengo yenye mwanga','Choo','Chumba kidogo','Ghorofa'],a:0,ex:'Atrium inaleta mwanga na hewa katikati ya jengo.'},
+{q:'Cantilever ni nini?',opts:['Sehemu ya jengo inayoninginia bila nguzo chini','Nguzo','Msingi','Dirisha'],a:0,ex:'Balcony ya cantilever haina nguzo chini yake.'},
+{q:'Load Bearing Wall ni nini?',opts:['Ukuta unaobeba uzito wa jengo','Ukuta wa mapambo','Ukuta wa rangi','Ukuta wa mbao'],a:0,ex:'Ukuta huu ukibomolewa jengo linaweza kuanguka.'},
+{q:'Foundation ni nini?',opts:['Sehemu ya chini inayobeba jengo','Paa','Dirisha','Mlango'],a:0,ex:'Foundation inahamisha uzito wa jengo kwenda ardhini.'},
+{q:'Urban Design ni nini?',opts:['Kubuni miji na nafasi za umma','Kubuni chumba','Kubuni fanicha','Kubuni rangi'],a:0,ex:'Urban Design - barabara, mitaa, bustani za umma.'},
+{q:'Brief ya mteja ni nini?',opts:['Mahitaji ya mteja aliyoyaeleza - vyumba, bajeti, mtindo','Mkataba','Bei','Rangi'],a:0,ex:'Brief ndiyo mwanzo wa design.'},
+{q:'Schematic Design ni hatua gani?',opts:['Baada ya concept - michoro ya awali yenye vipimo','Mwisho','Ujenzi','Kulipa'],a:0,ex:'Schematic - mpango wa sakafu, eneo na mtazamo wa awali.'},
+{q:'Design Development ni nini?',opts:['Kuboresha schematic hadi kuwa na vifaa na maelezo','Kuchora tu','Kupiga picha','Kusafisha'],a:0,ex:'Hapa unachagua vifaa, milango, madirisha na rangi.'},
+{q:'Tender Drawing ni nini?',opts:['Michoro ya kuomba bei kutoka kwa wakandarasi','Mchoro wa kupendezesha','Sketch','Picha'],a:0,ex:'Tender Drawings + BoQ ndiyo wakandarasi wanatumia kuweka bei.'}
+],
+'Architectural Technologist': [
+{q:'Kazi kubwa ya Technologist ni nini?',opts:['Kutengeneza michoro ya ujenzi na maelezo ya kiufundi','Kubuni tu','Kupanga bei','Kusimamia wafanyakazi'],a:0,ex:'Technologist anahakikisha design inaweza kujengwa.'},
+{q:'Working Drawing ni nini?',opts:['Michoro ya kutumika site kujenga','Mchoro wa kupendezesha','Sketch','Picha'],a:0,ex:'Working Drawings ndiyo fundi anatumia site.'},
+{q:'Specification ni nini?',opts:['Maelezo ya vifaa na ubora wa kazi','Bei','Jina la mjenzi','Muda'],a:0,ex:'Spec inaeleza vifaa gani na ubora gani.'},
+{q:'Detail Drawing hutumika kwa nini?',opts:['Kuonyesha sehemu ndogo kwa ukubwa mkubwa','Kuonyesha jengo zima','Kupima ardhi','Kupiga picha'],a:0,ex:'Detail - joint ya paa, dirisha kwa scale kubwa.'},
+{q:'BIM ni nini?',opts:['Mfumo wa kidigitali wa kubuni na kusimamia jengo','Aina ya saruji','Programu ya bei','Mchoro wa mkono'],a:0,ex:'BIM ni mfumo wa 3D unaounganisha design, gharama na muda.'},
+{q:'U-value inapima nini?',opts:['Jinsi joto linavyopita kwenye ukuta/paa','Uzito','Urefu','Bei'],a:0,ex:'U-value ndogo = insulation nzuri.'},
+{q:'DPC ni nini?',opts:['Tabaka linalozuia maji kupanda ukutani','Rangi','Saruji','Paaza'],a:0,ex:'DPC huwekwa juu ya foundation kuzuia unyevu.'},
+{q:'Cavity Wall ni nini?',opts:['Ukuta wa tabaka mbili wenye pengo katikati','Ukuta wa chuma','Ukuta wa rangi','Ukuta wa mbao'],a:0,ex:'Pengo linazuia maji na joto kupita.'},
+{q:'Lintel ni nini?',opts:['Boriti juu ya mlango / dirisha inayobeba ukuta','Msingi','Paa','Sakafu'],a:0,ex:'Lintel inabeba uzito juu ya dirisha.'},
+{q:'Flashing ni nini?',opts:['Bati / karatasi inayozuia maji kuingia kwenye joint ya paa','Rangi','Saruji','Mbao'],a:0,ex:'Flashing huwekwa kwenye joint ya paa na ukuta.'},
+{q:'Insulation inafanya nini?',opts:['Inazuia joto / baridi kupita','Inapaka rangi','Inabeba jengo','Inapima ardhi'],a:0,ex:'Insulation inapunguza matumizi ya AC.'},
+{q:'Vapour Barrier ni nini?',opts:['Tabaka linalozuia mvuke wa maji kuingia ukutani','Rangi','Mbao','Chuma'],a:0,ex:'Inazuia unyevu kuharibu ukuta.'},
+{q:'Tolerances ni nini?',opts:['Tofauti ndogo inayokubalika kwenye vipimo','Kosa kubwa','Bei','Muda'],a:0,ex:'Kwenye ujenzi hakuna vipimo 100% - kuna tolerance ndogo.'},
+{q:'Shop Drawing ni nini?',opts:['Mchoro wa mtengenezaji wa vifaa - mfano dirisha','Mchoro wa Architect','Picha','Sketch'],a:0,ex:'Fundi wa dirisha anachora shop drawing kabla ya kutengeneza.'},
+{q:'As-Built Drawing ni nini?',opts:['Mchoro wa jengo kama lilivyojengwa halisi','Mchoro wa mwanzo','Sketch','Picha'],a:0,ex:'Baada ya ujenzi, mchoro unaonyesha kilichojengwa kweli.'},
+{q:'Grid Line ni nini?',opts:['Mistari ya kurejelea vipimo kwenye mchoro','Mistari ya rangi','Mistari ya paa','Mistari ya umeme'],a:0,ex:'Grid A, B, C na 1,2,3 inasaidia kupata sehemu haraka.'},
+{q:'Section Detail inaonyesha nini?',opts:['Jinsi sehemu inavyounganishwa - vifaa na tabaka','Jengo zima','Picha','Bei'],a:0,ex:'Section detail inaonyesha paa, ukuta na sakafu.'},
+{q:'Stair Rise ni nini?',opts:['Urefu wa hatua moja ya ngazi','Upana wa ngazi','Urefu wa jengo','Idadi ya hatua'],a:0,ex:'Rise kawaida 150-170mm, Going 250-300mm.'},
+{q:'Fire Rating ni nini?',opts:['Muda ukuta / mlango unaweza kustahimili moto','Rangi ya moto','Joto la moto','Ukubwa wa moto'],a:0,ex:'Mlango wa Fire Rating 60 min unastahimili moto saa 1.'},
+{q:'Acoustic Insulation ni nini?',opts:['Kuzuia sauti kupita ukutani','Kupaka rangi','Kuweka taa','Kupima ardhi'],a:0,ex:'Ukuta wa vyumba viwili unahitaji acoustic insulation.'},
+{q:'Expansion Joint ni nini?',opts:['Pengo linaloruhusu jengo kupanuka / kusinyaa','Mlango','Dirisha','Msingi'],a:0,ex:'Saruji inapanuka joto likiwa kali - joint inazuia kupasuka.'},
+{q:'Waterproofing inafanywa wapi zaidi?',opts:['Paa, bafu, basement','Sebuleni','Chumbani','Jikoni tu'],a:0,ex:'Maji yasipo zuiwa paa na bafu, yanaharibu jengo.'},
+{q:'Drainage Fall ni nini?',opts:['Mwinuko wa bomba ili maji yatiririke','Kuanguka kwa jengo','Bei','Rangi'],a:0,ex:'Bomba linahitaji fall 1:40 ili maji yatiririke.'},
+{q:'Cladding ni nini?',opts:['Tabaka la nje linalofunika ukuta','Rangi','Saruji','Mbao ya sakafu'],a:0,ex:'Cladding inaweza kuwa mawe, mbao, chuma au glass.'},
+{q:'Parapet ni nini?',opts:['Ukuta mfupi juu ya paa','Msingi','Dirisha','Mlango'],a:0,ex:'Parapet inazuia mtu kuanguka paa.'},
+{q:'Eaves ni nini?',opts:['Sehemu ya paa inayozidi ukuta','Msingi','Dirisha','Mlango'],a:0,ex:'Eaves inazuia mvua kugonga ukuta.'},
+{q:'Soffit ni nini?',opts:['Sehemu ya chini ya paa / slab','Juu ya paa','Msingi','Ukuta'],a:0,ex:'Soffit ni chini ya eaves au slab.'},
+{q:'Headroom ni nini?',opts:['Urefu kutoka sakafu hadi dari','Urefu wa mlango','Urefu wa jengo','Upana wa chumba'],a:0,ex:'Headroom ya ngazi lazima iwe angalau 2m.'},
+{q:'Building Envelope ni nini?',opts:['Ganda la nje la jengo - ukuta, paa, madirisha','Ndani ya jengo','Msingi','Fanicha'],a:0,ex:'Envelope nzuri inazuia maji, joto na upepo kuingia.'},
+{q:'Modular Coordination ni nini?',opts:['Kutumia vipimo sanifu ili vifaa vitoshee','Kuchora tu','Kupaka rangi','Kupima ardhi'],a:0,ex:'Modular - mlango 900mm, tile 300mm.'}
+],
+'Interior Designer': [
+{q:'Mood Board ni nini?',opts:['Mkusanyiko wa picha, rangi na vifaa kuonyesha wazo','Bodi ya shule','Jedwali','Orodha ya bei'],a:0,ex:'Mood Board inamsaidia mteja kuona na kuhisi design.'},
+{q:'Ergonomics ni nini?',opts:['Kubuni kulingana na mwili na starehe ya binadamu','Kubuni kwa bei ghali','Kupaka rangi','Kuweka taa'],a:0,ex:'Ergonomics - kiti, meza na nafasi ziwe sawa na mwili.'},
+{q:'Rangi ya joto ni ipi?',opts:['Machungwa, nyekundu','Bluu, kijani','Nyeusi','Nyeupe'],a:0,ex:'Warm colors - nyekundu, machungwa, njano.'},
+{q:'Space Planning ni nini?',opts:['Kupanga matumizi ya nafasi ndani ya chumba','Kupaka rangi','Kununua fanicha','Kuweka pazia'],a:0,ex:'Space Planning - wapi sofa, meza, njia ya kupita.'},
+{q:'Lighting Layers ni nini?',opts:['Ambient, Task na Accent','Taa moja tu','Taa za nje','Mishumaa'],a:0,ex:'Chumba kizuri kina taa 3: jumla, kazi na kupendezesha.'},
+{q:'Designer vs Decorator?',opts:['Designer anashughulika na muundo na nafasi, Decorator mapambo tu','Hakuna tofauti','Designer ni fundi','Decorator ni daktari'],a:0,ex:'Designer anabadilisha nafasi na muundo.'},
+{q:'Material Board hutumika kwa nini?',opts:['Kuonyesha mteja vifaa halisi','Kuhesabu bei','Kupima chumba','Kuchora'],a:0,ex:'Mteja anagusa kitambaa, mbao, tiles kabla hajachagua.'},
+{q:'Focal Point ni nini?',opts:['Sehemu ya kwanza jicho linaangalia ukiingia chumbani','Mlango','Dirisha','Sakafu'],a:0,ex:'Focal Point inaweza kuwa TV, fireplace au picha kubwa.'},
+{q:'Balance katika Interior ni nini?',opts:['Usawa wa vitu - pande zote mbili zina uzito sawa','Rangi moja','Fanicha moja','Taa moja'],a:0,ex:'Balance - sofa kubwa upande mmoja, viti viwili upande mwingine.'},
+{q:'Proportion ni nini?',opts:['Uwiano wa ukubwa wa vitu kwa chumba','Rangi','Mwanga','Bei'],a:0,ex:'Sofa kubwa kwenye chumba kidogo inaharibu proportion.'},
+{q:'Rhythm ni nini?',opts:['Kurudia rangi / muundo ili jicho litembee','Kupiga ngoma','Kuweka saa','Kupaka rangi'],a:0,ex:'Rhythm - kurudia mito ya rangi moja kwenye chumba.'},
+{q:'Texture ni nini?',opts:['Hisia ya uso wa kitu - laini, mbaya, baridi','Rangi','Mwanga','Sauti'],a:0,ex:'Texture - velvet laini, mbao mbaya, chuma baridi.'},
+{q:'Contrast ni nini?',opts:['Kuweka vitu tofauti karibu - nyeusi na nyeupe','Kuweka vitu sawa','Rangi moja','Fanicha moja'],a:0,ex:'Contrast inafanya chumba kiwe na uhai.'},
+{q:'Colour Wheel ni nini?',opts:['Mduara unaoonyesha rangi na uhusiano wake','Gurudumu','Saa','Meza'],a:0,ex:'Rangi zinazoelekeana ni complementary - bluu na machungwa.'},
+{q:'Neutral Colors ni zipi?',opts:['Nyeupe, kijivu, beige, nyeusi','Nyekundu, bluu','Njano, kijani','Zambarau'],a:0,ex:'Neutrals ni msingi, rangi kali ni accents.'},
+{q:'Task Lighting ni nini?',opts:['Taa ya kufanyia kazi - kusoma, kupika','Taa ya mapambo','Taa ya nje','Taa ya usingizi'],a:0,ex:'Task - taa ya mezani kusoma, taa jikoni kupika.'},
+{q:'Accent Lighting ni nini?',opts:['Taa ya kuangazia picha / sehemu maalum','Taa kubwa','Taa ya nje','Taa ya mlangoni'],a:0,ex:'Spotlight kwenye picha ni accent.'},
+{q:'Open Plan ni nini?',opts:['Sebule, jiko na dining bila kuta katikati','Chumba kidogo','Nyumba yenye vyumba vingi','Ghorofa'],a:0,ex:'Open plan inafanya nyumba ionekane kubwa.'},
+{q:'Traffic Flow ni nini?',opts:['Njia watu wanavyotembea ndani ya chumba','Magari','Maji','Hewa'],a:0,ex:'Usizibe njia - acha 900mm ya kupita.'},
+{q:'Anthropometrics ni nini?',opts:['Vipimo vya mwili wa binadamu','Vipimo vya chumba','Vipimo vya fanicha','Vipimo vya rangi'],a:0,ex:'Meza ya chakula 750mm, kiti 450mm.'},
+{q:'Upholstery ni nini?',opts:['Kitambaa kinachofunika fanicha','Mbao','Chuma','Rangi'],a:0,ex:'Upholstery nzuri inastahimili kuisha na ni rahisi kusafisha.'},
+{q:'Window Treatment ni nini?',opts:['Pazia, blinds, shutters','Dirisha','Kioo','Mbao'],a:0,ex:'Pazia linadhibiti mwanga, joto na faragha.'},
+{q:'Sustainable Interior ni nini?',opts:['Kutumia vifaa vya asili na vilivyotumika tena','Kutumia plastiki','Kutumia rangi kali','Kutumia AC'],a:0,ex:'Mbao iliyotumika tena, rangi isiyo na sumu.'},
+{q:'Biophilic Design ni nini?',opts:['Kuleta asili ndani - mimea, mwanga, mbao','Kuweka picha za wanyama','Kupaka rangi ya kijani','Kuweka maji'],a:0,ex:'Mimea ndani inaboresha hewa na hisia.'},
+{q:'Minimalism ni nini?',opts:['Vitu vichache, nafasi safi, kazi kubwa','Vitu vingi','Rangi nyingi','Fanicha kubwa'],a:0,ex:'Minimalism - kila kitu kina kazi.'},
+{q:'Maximalism ni nini?',opts:['Rangi nyingi, mapambo mengi, vitu vingi','Vitu vichache','Rangi moja','Nafasi tupu'],a:0,ex:'Maximalism ni kinyume cha minimalism.'},
+{q:'FF&E ni nini?',opts:['Furniture, Fixtures & Equipment','Bei','Rangi','Mkataba'],a:0,ex:'FF&E ni orodha ya fanicha na vifaa.'},
+{q:'Joinery ni nini?',opts:['Kazi ya mbao iliyotengenezwa maalum - makabati, shelving','Kazi ya chuma','Kazi ya rangi','Kazi ya umeme'],a:0,ex:'Joinery - kabati la jikoni lililopimwa kwa chumba chako.'},
+{q:'Ceiling Height inaathiri nini?',opts:['Hisia ya ukubwa na hewa ndani ya chumba','Rangi','Bei','Jina'],a:0,ex:'Dari fupi inafanya chumba kidogo, dari ndefu kikubwa.'},
+{q:'Mirror inafanya nini chumbani?',opts:['Inafanya chumba kionekane kikubwa na chenye mwanga','Inapaka rangi','Inabeba vitu','Inazuia sauti'],a:0,ex:'Mirror kubwa mbele ya dirisha inarudisha mwanga.'}
+],
+'Landscape Architect': [
+{q:'Kazi kubwa ya Landscape Architect ni nini?',opts:['Kubuni nafasi za nje - bustani, barabara, mazingira','Kupanda maua tu','Kujenga nyumba','Kupima ardhi'],a:0,ex:'Landscape anabuni nje ya jengo.'},
+{q:'Site Grading ni nini?',opts:['Kupanga mwinuko wa ardhi ili maji yatiririke','Kupanda miti','Kujenga ukuta','Kupaka rangi'],a:0,ex:'Grading inahakikisha maji hayasimami karibu na jengo.'},
+{q:'Native Plants ni nini?',opts:['Mimea ya asili ya eneo hilo','Mimea ya nje','Maua ya plastiki','Mimea ya dukani'],a:0,ex:'Miti ya asili hustahimili hali ya hewa.'},
+{q:'Hardscape ni nini?',opts:['Sehemu ngumu - njia, mawe, ukuta','Miti','Maua','Majani'],a:0,ex:'Hardscape = njia, patio, ukuta.'},
+{q:'EIA inahusika vipi?',opts:['Kuchambua athari za mradi kwa mazingira','Kupiga picha','Kuhesabu bei','Kupanga rangi'],a:0,ex:'EIA - Environmental Impact Assessment.'},
+{q:'Sustainable Drainage ni nini?',opts:['Kutumia ardhi na mimea kupunguza mafuriko','Mifereji ya saruji tu','Kuziba maji','Kujenga bwawa'],a:0,ex:'SUDS hutumia mimea kunyonya maji.'},
+{q:'Public Space nzuri ina nini?',opts:['Kukaa, kivuli, usalama na urahisi wa kufika','Maua tu','Rangi','Ukuta mkubwa'],a:0,ex:'Public space nzuri watu wanataka kukaa na kukutana.'},
+{q:'Softscape ni nini?',opts:['Mimea, majani, maua, miti','Mawe','Saruji','Chuma'],a:0,ex:'Softscape ni vitu hai - miti na majani.'},
+{q:'Topography ni nini?',opts:['Umbo na mwinuko wa ardhi','Aina ya udongo','Aina ya miti','Hali ya hewa'],a:0,ex:'Topography - eneo ni tambarare au mlimani.'},
+{q:'Microclimate ni nini?',opts:['Hali ya hewa ya eneo dogo - kivuli, upepo','Hali ya hewa ya nchi','Hali ya hewa ya dunia','Hali ya hewa ya bahari'],a:0,ex:'Kwenye kivuli ni baridi, kwenye jua ni joto.'},
+{q:'Shade Tree ni nini?',opts:['Mti unaotoa kivuli kikubwa','Mti wa matunda','Mti wa maua','Mti mfupi'],a:0,ex:'Mti wa kivuli unapunguza joto.'},
+{q:'Permeable Paving ni nini?',opts:['Mawe yanayoruhusu maji kupita kwenda ardhini','Mawe ya saruji','Lami','Tiles'],a:0,ex:'Permeable inapunguza mafuriko.'},
+{q:'Rain Garden ni nini?',opts:['Bustani inayokusanya na kuchuja maji ya mvua','Bustani ya maua','Bustani ya matunda','Bustani ya miti'],a:0,ex:'Rain Garden inasafisha maji kabla hayajaingia mtoni.'},
+{q:'Xeriscaping ni nini?',opts:['Kubuni bustani inayohitaji maji kidogo','Kubuni bustani ya maji','Kubuni bustani ya maua','Kubuni bustani ya miti'],a:0,ex:'Xeriscaping hutumia mimea inayostahimili ukame.'},
+{q:'Green Roof ni nini?',opts:['Paa lenye mimea na majani','Paa la rangi ya kijani','Paa la chuma','Paa la saruji'],a:0,ex:'Green Roof inapunguza joto.'},
+{q:'Urban Heat Island ni nini?',opts:['Mji kuwa na joto zaidi kuliko vijijini kutokana na saruji na lami','Mji kuwa baridi','Mji kuwa na mvua','Mji kuwa na upepo'],a:0,ex:'Miti mingi inapunguza Urban Heat Island.'},
+{q:'Wayfinding ni nini?',opts:['Alama na njia zinazosaidia watu kupata sehemu','Ramani','Barabara','Mlango'],a:0,ex:'Alama, njia na ramani za bustani ni wayfinding.'},
+{q:'Playground nzuri ina nini?',opts:['Usalama, kivuli, maji na vifaa vya umri tofauti','Mchanga tu','Rangi','Ukuta'],a:0,ex:'Playground - watoto wa umri tofauti wanahitaji vifaa tofauti.'},
+{q:'Buffer Zone ni nini?',opts:['Eneo la mimea linalotenganisha sehemu mbili','Eneo la kupaki','Eneo la kujenga','Eneo la michezo'],a:0,ex:'Buffer ya miti inapunguza kelele na vumbi.'},
+{q:'Wetland ni nini?',opts:['Eneo lenye maji na mimea - kinasaidia kuchuja maji','Ziwa','Bahari','Bwawa la kuogelea'],a:0,ex:'Wetland ni mfumo wa asili wa kusafisha maji.'},
+{q:'Contour ni nini?',opts:['Mstari unaoonyesha mwinuko sawa kwenye ramani','Mstari wa barabara','Mstari wa mto','Mstari wa mpaka'],a:0,ex:'Contour karibu karibu = mteremko mkali.'},
+{q:'Soil Erosion ni nini?',opts:['Udongo kuondolewa na maji / upepo','Udongo kuwa mgumu','Udongo kuwa laini','Udongo kuwa na maji'],a:0,ex:'Mimea na mawe yanazuia soil erosion.'},
+{q:'Irrigation ni nini?',opts:['Kumwagilia mimea kwa mfumo','Kupanda mimea','Kukata mimea','Kuweka mbolea'],a:0,ex:'Drip irrigation inatumia maji kidogo.'},
+{q:'Deciduous Tree ni nini?',opts:['Mti unaopukutisha majani msimu fulani','Mti wa matunda','Mti wa maua','Mti wa kijani kila wakati'],a:0,ex:'Deciduous - majira ya baridi haina majani.'},
+{q:'Evergreen Tree ni nini?',opts:['Mti wenye majani kila wakati','Mti wa matunda','Mti mfupi','Mti wa maua'],a:0,ex:'Evergreen inatoa kivuli mwaka mzima.'},
+{q:'Streetscape ni nini?',opts:['Muonekano wa mtaa - miti, taa, benchi, njia','Barabara','Magari','Nyumba'],a:0,ex:'Streetscape nzuri inafanya watu watake kutembea.'},
+{q:'Plaza ni nini?',opts:['Nafasi kubwa wazi ya umma watu kukutana','Soko','Barabara','Bustani'],a:0,ex:'Plaza - kama mnara wa posta Dar es Salaam.'},
+{q:'Biodiversity ni nini?',opts:['Aina nyingi za mimea na wanyama katika eneo','Miti mingi','Maua mengi','Wanyama wengi'],a:0,ex:'Biodiversity inafanya mazingira kuwa imara.'},
+{q:'Ecological Restoration ni nini?',opts:['Kurudisha eneo lililoharibiwa kuwa la asili','Kujenga jengo','Kupanda maua','Kusafisha'],a:0,ex:'Kurudisha msitu uliokatwa ni restoration.'},
+{q:'Site Inventory ni nini?',opts:['Kuorodhesha kilichopo site - miti, maji, udongo, majengo','Kuhesabu bei','Kupiga picha','Kuchora'],a:0,ex:'Kabla ya kubuni, unapaswa kujua kilichopo.'}
+],
+'Construction Manager': [
+{q:'Kazi kubwa ya CM ni nini?',opts:['Kupanga, kusimamia muda, gharama na ubora','Kujenga mwenyewe','Kubuni','Kupima ardhi'],a:0,ex:'CM anahakikisha mradi unaisha kwa muda, bajeti na ubora.'},
+{q:'Gantt Chart hutumika kwa nini?',opts:['Kuonyesha ratiba ya kazi kwa muda','Kuhesabu bei','Kuchora jengo','Kupima ardhi'],a:0,ex:'Gantt inaonyesha kazi gani inaanza lini na inaisha lini.'},
+{q:'Critical Path ni nini?',opts:['Mfululizo wa kazi muhimu zikichelewa mradi unachelewa','Njia ya kwenda site','Barabara','Mfereji'],a:0,ex:'Kazi kwenye Critical Path ikichelewa siku 1, mradi unachelewa siku 1.'},
+{q:'OSHA inahusu nini?',opts:['Usalama na afya ya wafanyakazi','Bei','Rangi','Ubunifu'],a:0,ex:'OSHA - helmet, PPE, site salama.'},
+{q:'Site Meeting hufanyika kwa nini?',opts:['Kujadili maendeleo, changamoto na hatua zinazofuata','Kula chakula','Kupiga picha','Kusaini mkataba'],a:0,ex:'Site Meeting - kila wiki mteja, mjenzi, QS na Architect.'},
+{q:'Mobilization ni nini?',opts:['Kuleta vifaa, wafanyakazi na kuandaa site','Kumaliza mradi','Kulipa','Kufunga site'],a:0,ex:'Mobilization ni hatua ya kwanza.'},
+{q:'Snag List ni nini?',opts:['Orodha ya kasoro ndogo za kurekebisha kabla ya kukabidhi','Orodha ya wafanyakazi','Orodha ya bei','Orodha ya vifaa'],a:0,ex:'Kabla ya handover, mteja anaandika kasoro.'},
+{q:'Method Statement ni nini?',opts:['Maelezo ya jinsi kazi itakavyofanywa kwa usalama','Mkataba','Bei','Orodha ya wafanyakazi'],a:0,ex:'Method Statement - hatua kwa hatua kazi itakavyofanywa.'},
+{q:'Risk Assessment ni nini?',opts:['Kutambua hatari na jinsi ya kuzizuia','Kuhesabu bei','Kupanga rangi','Kuchora'],a:0,ex:'Risk Assessment - mfano kuanguka kutoka juu.'},
+{q:'PPE ni nini?',opts:['Vifaa vya kujikinga - helmet, gloves, boots','Vifaa vya kujenga','Vifaa vya kupima','Vifaa vya kupika'],a:0,ex:'PPE lazima kwa kila mtu site.'},
+{q:'Scaffolding ni nini?',opts:['Jukwaa la muda la kufanyia kazi juu','Ngazi','Mlango','Dirisha'],a:0,ex:'Scaffold lazima iwe imara na salama.'},
+{q:'Formwork ni nini?',opts:['Kibaba cha muda cha kumwagia saruji','Mbao ya sakafu','Mlango','Dirisha'],a:0,ex:'Formwork inashikilia saruji hadi ikauke.'},
+{q:'Curing ya saruji ni nini?',opts:['Kuweka saruji yenye unyevu ili ipate nguvu','Kupaka rangi','Kusafisha','Kupima'],a:0,ex:'Saruji isiyonyweshwa maji inapasuka na inakuwa dhaifu.'},
+{q:'Quality Control ni nini?',opts:['Kuhakikisha kazi inafanywa kwa ubora uliokubaliwa','Kuhesabu bei','Kupanga muda','Kusafisha site'],a:0,ex:'QC - kupima saruji, kuangalia ukuta uko sawa.'},
+{q:'Subcontractor ni nini?',opts:['Mjenzi mdogo anayefanya sehemu ya kazi - mfano umeme','Mteja','Architect','QS'],a:0,ex:'Main Contractor anaweza kumpa Subcontractor kazi ya umeme.'},
+{q:'Procurement ni nini?',opts:['Kununua vifaa na kuajiri wakandarasi','Kujenga','Kubuni','Kupima'],a:0,ex:'Procurement nzuri - vifaa vinakuja kwa wakati na bei nzuri.'},
+{q:'Cash Flow ni nini?',opts:['Pesa inayoingia na kutoka wakati wa mradi','Bei ya mradi','Mshahara','Kodi'],a:0,ex:'Cash Flow mbaya - mjenzi anakosa pesa ya kununua vifaa.'},
+{q:'Programme ni nini?',opts:['Ratiba ya mradi - kazi gani lini','Bei','Mkataba','Orodha ya wafanyakazi'],a:0,ex:'Programme inaonyesha mwanzo na mwisho wa kila kazi.'},
+{q:'Extension of Time ni nini?',opts:['Kuongeza muda wa mradi kutokana na sababu za halali','Kuchelewa bila sababu','Kufuta mradi','Kulipa faini'],a:0,ex:'Mvua kubwa au variation inaweza kuongeza muda.'},
+{q:'Handover ni nini?',opts:['Kukabidhi jengo kwa mteja baada ya kumaliza','Kuanza ujenzi','Kulipa QS','Kufunga site'],a:0,ex:'Handover - mteja anakagua, snag list inatengenezwa.'},
+{q:'Commissioning ni nini?',opts:['Kujaribu mifumo - umeme, maji, AC - kama inafanya kazi','Kujenga','Kupaka rangi','Kusafisha'],a:0,ex:'Kabla ya handover, mifumo yote inajaribiwa.'},
+{q:'Health and Safety Plan ni nini?',opts:['Mpango wa kuzuia ajali site','Mpango wa bei','Mpango wa rangi','Mpango wa ujenzi'],a:0,ex:'Kila site lazima iwe na H&S Plan.'},
+{q:'Toolbox Talk ni nini?',opts:['Mazungumzo mafupi ya usalama kabla ya kuanza kazi','Kuzungumza kuhusu bei','Kuzungumza kuhusu mshahara','Kuzungumza kuhusu chakula'],a:0,ex:'Toolbox Talk - dakika 5-10 kila asubuhi kuhusu usalama.'},
+{q:'Waste Management site ni nini?',opts:['Kutenganisha na kuondoa taka kwa usahihi','Kuchoma taka','Kutupa taka popote','Kuficha taka'],a:0,ex:'Taka za ujenzi zinapaswa kutenganishwa.'},
+{q:'Site Layout Plan ni nini?',opts:['Mpango wa wapi ofisi, vifaa, na njia site','Mpango wa jengo','Mpango wa bei','Mpango wa rangi'],a:0,ex:'Site Layout - wapi kuweka saruji, wapi kuweka ofisi.'},
+{q:'Crane ni nini?',opts:['Mashine ya kubeba vitu vizito juu','Gari','Trekta','Mashine ya kuchimba'],a:0,ex:'Crane inabeba saruji na chuma kwenda ghorofa za juu.'},
+{q:'Excavation ni nini?',opts:['Kuchimba ardhi kwa ajili ya foundation','Kujenga ukuta','Kupaka rangi','Kuweka paa'],a:0,ex:'Excavation - kuchimba msingi.'},
+{q:'Backfilling ni nini?',opts:['Kurudisha udongo baada ya kujenga foundation','Kuchimba','Kupaka rangi','Kusafisha'],a:0,ex:'Baada ya foundation, udongo unarudishwa na kugandamizwa.'},
+{q:'Compaction ni nini?',opts:['Kugandamiza udongo ili uwe imara','Kulainisha udongo','Kumwagilia udongo','Kuchimba udongo'],a:0,ex:'Udongo usiogandamizwa unasababisha jengo kuzama.'},
+{q:'AQRB inahusika vipi na CM?',opts:['Kusajili na kusimamia maadili ya wataalamu wa ujenzi','Kulipa mishahara','Kujenga','Kuuza vifaa'],a:0,ex:'AQRB inahakikisha CM anafuata maadili na viwango.'}
+]
+};
 checkUser();
 updatePremiumText();
 updateStreakUI();
 updateDailyUI();
-setInterval(checkEveningReminder, 60000); // Check kila dakika kama ni saa 8 jioni
+renderLeaderboard();
+setInterval(checkEveningReminder, 60000);
 checkEveningReminder();
 </script>
 </body>

@@ -45,6 +45,9 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .pay-opt.active{border-color:#f59e0b;background:#fffbeb}
 .law-card{background:white;color:#111;border-radius:16px;padding:14px;margin-top:10px;cursor:pointer;border:2px solid #e2e8f0}
 .law-card:active{border-color:#f59e0b;background:#fffbeb}
+.premium-card{background:linear-gradient(135deg,#f97316,#dc2626);color:white;border-radius:20px;padding:18px;margin-top:12px;cursor:pointer}
+.premium-card p{color:#ffe4e6}
+.sms-btn{display:block;text-align:center;background:#0f172a;color:white;font-weight:800;padding:14px;border-radius:14px;margin-top:10px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -54,15 +57,12 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <p id="authDesc">Ingia ili Log Book yako ihifadhiwe kwako peke yako.</p>
 <input id="authEmail" type="email" placeholder="Email yako - mfano: rwegasore@gmail.com" style="background:white">
 <input id="authPass" type="password" placeholder="Password - angalau herufi 6">
-<div class="row">
-<button class="btn btn-gold" onclick="doLogin()">Ingia</button>
-<button class="btn btn-white" onclick="doSignup()">Jisajili Mpya</button>
-</div>
+<div class="row"><button class="btn btn-gold" onclick="doLogin()">Ingia</button><button class="btn btn-white" onclick="doSignup()">Jisajili Mpya</button></div>
 <p id="authMsg" class="small center" style="color:#fbbf24;margin-top:8px"></p>
 </div>
 <div id="userBar" class="auth-box hidden">
 <b id="userEmail">👤 </b>
-<p>Umeingia. Log Book hapa ni yako peke yako.</p>
+<p id="subStatus">Umeingia. Log Book hapa ni yako peke yako.</p>
 <button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
 </div>
 <div id="landing">
@@ -83,6 +83,12 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 <p class="small center" style="margin-top:10px">Umechagua: <b id="chosen">Quantity Surveyor</b></p>
 </div>
+<div class="premium-card" onclick="startQuiz('aqrb')">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:20px">📜 AQRB Past Paper</b><span style="background:#facc15;color:#111;font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px">🔒 PREMIUM</span></div>
+<p style="margin-top:8px">QS - Maswali halisi ya 2019 - 2024. Maswali 1000+ • Majibu + Maelezo</p>
+<p style="font-size:13px;margin-top:8px;color:white">Kuanzia <b>Tsh 1,000</b> tu → Bonyeza kufungua</p>
+<div style="background:white;color:#dc2626;font-weight:800;text-align:center;padding:12px;border-radius:12px;margin-top:12px">Fungua AQRB Past Paper →</div>
+</div>
 <div class="card">
 <b>📒 Log Book Yangu</b>
 <p>Maendeleo yako kuelekea 420 masaa / siku za mafunzo.</p>
@@ -100,16 +106,35 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 </div>
 <div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Ingia kwanza ili uone log zako.</p></div></div>
 </div>
-
 <div id="lawsPage" class="hidden">
+<div class="card"><b style="font-size:20px">📜 Sheria 13 za AQRB</b><p>Chagua sheria moja ujibu maswali yake. Zote ni BURE kwa sasa.</p><div id="lawsContainer"></div><button class="btn btn-white" style="width:100%;margin-top:14px" onclick="backFromLaws()">← Rudi Nyumbani</button></div>
+</div>
+<div id="payPage" class="hidden">
 <div class="card">
-<b style="font-size:20px">📜 Sheria 13 za AQRB</b>
-<p>Chagua sheria moja ujibu maswali yake. Zote ni BURE kwa sasa.</p>
-<div id="lawsContainer"></div>
-<button class="btn btn-white" style="width:100%;margin-top:14px" onclick="backFromLaws()">← Rudi Nyumbani</button>
+<b style="font-size:20px">🔒 Lipia Premium</b>
+<p>Chagua kifurushi, lipa kwa Lipa Namba, halafu tuma screenshot kwa SMS.</p>
+<div id="payOptions"></div>
+<div style="background:#fefce8;border:1px solid #fde68a;border-radius:14px;padding:14px;margin-top:12px">
+<p class="small">HATUA 1 - TUMA PESA</p>
+<p style="font-weight:800;margin-top:4px">M-Pesa → Lipa Namba</p>
+<p style="font-size:34px;font-weight:900;letter-spacing:2px">35120289</p>
+<p style="font-size:14px">Jina: Norbert Mujuni Robert</p>
+<p style="font-size:14px">Kiasi: <b id="payAmountText">Tsh 1,000</b> - <span id="payPackageText">Siku 1</span></p>
+<p class="small" style="margin-top:6px">*150*00# → Lipa Namba → 35120289 → Weka kiasi → PIN</p>
+<button class="btn btn-white" onclick="navigator.clipboard.writeText('35120289');alert('Lipa Namba imenakiliwa: 35120289')">Nakili Lipa Namba</button>
+</div>
+<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:14px;margin-top:12px">
+<p class="small">HATUA 2 - TUMA SCREENSHOT KWA SMS</p>
+<p class="small">Baada ya kulipa, piga screenshot ya SMS ya M-Pesa, halafu itume kwa namba hii:</p>
+<input id="payJina" placeholder="Jina lako kamili">
+<input id="payMuamala" placeholder="Namba ya Muamala - kutoka SMS ya M-Pesa">
+<a id="smsLink" class="sms-btn" href="sms:0722655693?body=Nimelipia MTAALAM">📩 Tuma Screenshot kwa SMS - 0722655693</a>
+<button class="btn" style="background:#16a34a;color:white;width:100%;margin-top:10px" onclick="sendWhatsApp()">Au Tuma kwa WhatsApp →</button>
+<p class="small center" style="margin-top:8px">Tutakufungulia ndani ya dakika 5-30 baada ya kupokea screenshot</p>
+</div>
+<button class="btn btn-white" style="width:100%;margin-top:12px" onclick="backHome()">← Rudi Nyumbani</button>
 </div>
 </div>
-
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
 <div class="progress"><i id="qBar"></i></div>
@@ -126,14 +151,13 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div id="payBox" class="hidden">
 <div style="border-top:1px solid #e2e8f0;margin-top:14px;padding-top:12px">
 <b>🔓 Fungua Maswali Yote - Chagua Kifurushi</b>
-<p class="small">Umemaliza 20 ya bure. Chagua kifurushi ili uendelee na maswali 3000+ na mitihani ya majaribio.</p>
-<div class="pay-opt" onclick="choosePlan('Siku 1 - 1,000/-',1000,this)"><span><b>⚡ Siku 1</b><br><small class="small">Saa 24 - kwa kujaribu</small></span><b>1,000/-</b></div>
-<div class="pay-opt active" onclick="choosePlan('Wiki 1 - 5,000/-',5000,this)"><span><b>🔥 Wiki 1 - Maarufu</b><br><small class="small">Siku 7 - bora kwa revision</small></span><b>5,000/-</b></div>
-<div class="pay-opt" onclick="choosePlan('Mwezi 1 - 20,000/-',20000,this)"><span><b>📚 Mwezi 1</b><br><small class="small">Siku 30 - kujiandaa vizuri</small></span><b>20,000/-</b></div>
-<div class="pay-opt" onclick="choosePlan('Yote - 50,000/-',50000,this)"><span><b>👑 Yote - Full Access</b><br><small class="small">Hadi mtihani - maswali yote</small></span><b>50,000/-</b></div>
+<p class="small">Umemaliza 20 ya bure. Chagua kifurushi ili uendelee na AQRB Past Paper.</p>
+<div class="pay-opt" onclick="choosePlan('Siku 1',1000,'daily',this)"><span><b>⚡ Siku 1</b><br><small class="small">Saa 24 - kwa kujaribu</small></span><b>1,000/-</b></div>
+<div class="pay-opt active" onclick="choosePlan('Wiki 1',5000,'weekly',this)"><span><b>🔥 Wiki 1 - Maarufu</b><br><small class="small">Siku 7 - bora kwa revision</small></span><b>5,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Mwezi 1',15000,'monthly',this)"><span><b>📚 Mwezi 1</b><br><small class="small">Siku 30 - kujiandaa vizuri</small></span><b>15,000/-</b></div>
+<div class="pay-opt" onclick="choosePlan('Mwaka 1',120000,'yearly',this)"><span><b>👑 Mwaka 1</b><br><small class="small">Siku 365 - hadi mtihani</small></span><b>120,000/-</b></div>
 <p class="small center" style="margin-top:10px">Umechagua: <b id="chosenPlan">Wiki 1 - 5,000/-</b></p>
-<button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="payNow()">Lipa Sasa na M-Pesa / Tigo Pesa</button>
-<p id="payMsg" class="small center" style="margin-top:8px"></p>
+<button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="goToPay()">Lipa Sasa - Lipa Namba 35120289 →</button>
 </div>
 </div>
 <button class="btn btn-gold" style="width:100%;margin-top:14px" onclick="startQuiz(currentCat)">Jaribu Tena (Bure)</button>
@@ -143,10 +167,11 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 const SUPABASE_URL = "https://deszjuhihaoiywgujogm.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_FprsrZpPOx-DJXDuYD_KJg_2pRhAzVl";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const PAYMENT_CONFIG = { lipaNamba:"35120289", jina:"Norbert Mujuni Robert", smsNumber:"0722655693", whatsapp:"255722655693", packages:[{id:'daily',label:'Siku 1',price:1000,days:1,desc:'Saa 24 - kwa kujaribu'},{id:'weekly',label:'Wiki 1',price:5000,days:7,desc:'Siku 7 - bora kwa revision'},{id:'monthly',label:'Mwezi 1',price:15000,days:30,desc:'Siku 30 - kujiandaa vizuri'},{id:'yearly',label:'Mwaka 1',price:120000,days:365,desc:'Siku 365 - hadi mtihani'}] };
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
-let selectedPlan='Wiki 1 - 5,000/-';let selectedPrice=5000;
-let currentLawId=null;
-
+let selectedPlan='Wiki 1';let selectedPrice=5000;let selectedPackageId='weekly';let currentLawId=null;let userProfile=null;
+function isSubscriptionActive(){if(!userProfile)return false;if(!userProfile.is_premium)return false;if(!userProfile.premium_until)return false;return new Date()<new Date(userProfile.premium_until);}
+async function loadProfile(){if(!currentUser){userProfile=null;return;}try{const {data}=await supabaseClient.from('profiles').select('*').eq('id',currentUser.id).single();if(data)userProfile=data;const el=document.getElementById('subStatus');if(el&&userProfile){if(isSubscriptionActive()){el.textContent='✅ Premium - Inaisha: '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ');el.style.color='#4ade80';}else if(userProfile.premium_until){el.textContent='🔒 Subscription imeisha '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ')+' - Lipia tena';el.style.color='#fbbf24';}}}catch(e){console.log(e.message)}}
 const LAWS_10 = [
   { id:'Law 1', name:'AQRB Act 2010', count:20, desc:'Usajili, Bodi, Nidhamu, Stop Order' },
   { id:'Law 2', name:'By-Laws + Code of Conduct', count:10, desc:'Maadili, Ada, Malalamiko' },
@@ -162,109 +187,14 @@ const LAWS_10 = [
   { id:'Law 12', name:'OSHA - Health & Safety', count:10, desc:'Usalama Kazini, PPE, Ajali' },
   { id:'Law 13', name:'Professional Ethics', count:10, desc:'Maadili, Uaminifu, Conflict of Interest' },
 ];
-
-// MPYA - ZOTE KWA PAMOJA: Inaonyesha List na inahesabu yenyewe kutoka Supabase
-async function showLaws(){
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('quiz').classList.add('hidden');
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('lawsPage').classList.remove('hidden');
-  renderLawsList({});
-  try{
-    const { data } = await supabaseClient.from('questions').select('topic').eq('profession','qs').eq('paper','laws').eq('is_active',true);
-    const counts={};
-    if(data) data.forEach(r=>{ counts[r.topic]=(counts[r.topic]||0)+1; });
-    renderLawsList(counts);
-  }catch(e){ console.log(e.message); }
-  window.scrollTo(0,0);
-}
-function renderLawsList(counts){
-  document.getElementById('lawsContainer').innerHTML = LAWS_10.map((law,i)=>{
-    const realCount = counts[law.id] || 0;
-    const status = realCount>0 ? `✅ ${realCount} Maswali • BURE` : `⏳ ${law.count} Yanakuja • BURE`;
-    const bg = realCount>0 ? '#dcfce7' : '#fef9c3';
-    return `<div class="law-card" onclick="openLaw('${law.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <b>${i+1}. ${law.name}</b>
-        <span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px;white-space:nowrap">${status}</span>
-      </div>
-      <div class="small" style="margin-top:4px">${law.desc}</div>
-      <div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div>
-    </div>`;
-  }).join('');
-}
-function backFromLaws(){
-  document.getElementById('lawsPage').classList.add('hidden');
-  document.getElementById('landing').classList.remove('hidden');
-  window.scrollTo(0,0);
-}
-// MPYA - ZOTE KWA PAMOJA: Law 1 hadi Law 13 zote zinatumia hii hii, hakuna kubadilisha tena
-async function openLaw(lawId){
-  currentLawId = lawId;
-  currentCat = 'sheria';
-  qi=0; score=0;
-  document.getElementById('lawsPage').classList.add('hidden');
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('quiz').classList.remove('hidden');
-  document.getElementById('qCat').textContent = lawId.toUpperCase() + ' - SHERIA';
-  document.getElementById('qText').textContent = 'Inapakia maswali...';
-  document.getElementById('opts').innerHTML = '';
-  document.getElementById('explain').classList.add('hidden');
-  document.getElementById('nextBtn').classList.add('hidden');
-  try{
-    const { data, error } = await supabaseClient.from('questions').select('*').eq('profession','qs').eq('paper','laws').eq('topic',lawId).eq('is_free',true).eq('is_active',true).order('created_at',{ascending:true});
-    if(error) throw error;
-    if(data && data.length>0){
-      questions.sheria = data.map(r=>({ q:r.question, opts:[r.option_a,r.option_b,r.option_c,r.option_d], a:['A','B','C','D'].indexOf(r.correct_answer), ex:r.explanation||'' }));
-      showQ();
-    } else {
-      document.getElementById('qNum').textContent = 'Swali 0 / 0';
-      document.getElementById('qText').textContent = 'Maswali ya '+lawId+' bado hayajaingia. Tafadhali rudi baadae - tunayaandaa sasa.';
-      document.getElementById('opts').innerHTML = '<button class="btn btn-gold" style="width:100%;margin-top:10px" onclick="backHome()">← Rudi kwenye Laws</button>';
-    }
-  }catch(e){
-    document.getElementById('qText').textContent = 'Kosa kupakia: '+e.message;
-  }
-  window.scrollTo(0,0);
-}
-
-async function checkUser(){
-  const {data} = await supabaseClient.auth.getSession();
-  currentUser = data.session?.user || null;
-  if(currentUser){
-    document.getElementById('authCard').classList.add('hidden');
-    document.getElementById('userBar').classList.remove('hidden');
-    document.getElementById('userEmail').textContent='👤 '+currentUser.email;
-    loadLogs();
-  } else {
-    document.getElementById('authCard').classList.remove('hidden');
-    document.getElementById('userBar').classList.add('hidden');
-    logs=0; updateLogUI();
-    document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';
-    document.getElementById('syncStatus').textContent='🔐 Ingia ili uone Log Book yako';
-  }
-}
-async function doSignup(){
-  let email=document.getElementById('authEmail').value.trim();
-  let pass=document.getElementById('authPass').value;
-  if(!email||!pass||pass.length<6){document.getElementById('authMsg').textContent='Weka email sahihi na password ya herufi 6+';return}
-  document.getElementById('authMsg').textContent='Inajisajili...';
-  const {data,error}=await supabaseClient.auth.signUp({email:email,password:pass});
-  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}
-  document.getElementById('authMsg').textContent='Umejisajili! Sasa Ingia.';
-  checkUser();
-}
-async function doLogin(){
-  let email=document.getElementById('authEmail').value.trim();
-  let pass=document.getElementById('authPass').value;
-  if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}
-  document.getElementById('authMsg').textContent='Inaingia...';
-  const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});
-  if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message+' - Jaribu Jisajili kwanza.';return}
-  document.getElementById('authMsg').textContent='';
-  checkUser();
-}
-async function doLogout(){ await supabaseClient.auth.signOut(); checkUser(); }
+async function showLaws(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('lawsPage').classList.remove('hidden');renderLawsList({});try{const {data}=await supabaseClient.from('questions').select('topic').eq('profession','qs').eq('paper','laws').eq('is_active',true);const counts={};if(data)data.forEach(r=>{counts[r.topic]=(counts[r.topic]||0)+1});renderLawsList(counts);}catch(e){console.log(e.message)}window.scrollTo(0,0);}
+function renderLawsList(counts){document.getElementById('lawsContainer').innerHTML=LAWS_10.map((law,i)=>{const rc=counts[law.id]||0;const st=rc>0?`✅ ${rc} Maswali • BURE`:`⏳ ${law.count} Yanakuja • BURE`;const bg=rc>0?'#dcfce7':'#fef9c3';return `<div class="law-card" onclick="openLaw('${law.id}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${law.name}</b><span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px">${st}</span></div><div class="small">${law.desc}</div><div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div></div>`}).join('');}
+function backFromLaws(){document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0);}
+async function openLaw(lawId){currentLawId=lawId;currentCat='sheria';qi=0;score=0;document.getElementById('lawsPage').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=lawId.toUpperCase()+' - SHERIA';document.getElementById('qText').textContent='Inapakia maswali...';document.getElementById('opts').innerHTML='';document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');try{const {data,error}=await supabaseClient.from('questions').select('*').eq('profession','qs').eq('paper','laws').eq('topic',lawId).eq('is_free',true).eq('is_active',true).order('created_at',{ascending:true});if(error)throw error;if(data&&data.length>0){questions.sheria=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));showQ();}else{document.getElementById('qNum').textContent='Swali 0 / 0';document.getElementById('qText').textContent='Maswali ya '+lawId+' bado hayajaingia.';document.getElementById('opts').innerHTML='<button class="btn btn-gold" style="width:100%" onclick="backHome()">← Rudi</button>';}}catch(e){document.getElementById('qText').textContent='Kosa: '+e.message}window.scrollTo(0,0);}
+async function checkUser(){const {data}=await supabaseClient.auth.getSession();currentUser=data.session?.user||null;if(currentUser){document.getElementById('authCard').classList.add('hidden');document.getElementById('userBar').classList.remove('hidden');document.getElementById('userEmail').textContent='👤 '+currentUser.email;await loadProfile();loadLogs();}else{document.getElementById('authCard').classList.remove('hidden');document.getElementById('userBar').classList.add('hidden');logs=0;updateLogUI();document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';}}
+async function doSignup(){let email=document.getElementById('authEmail').value.trim();let pass=document.getElementById('authPass').value;if(!email||!pass||pass.length<6){document.getElementById('authMsg').textContent='Weka email na password 6+';return}document.getElementById('authMsg').textContent='Inajisajili...';const {error}=await supabaseClient.auth.signUp({email:email,password:pass});if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}document.getElementById('authMsg').textContent='Umejisajili! Sasa Ingia.';checkUser();}
+async function doLogin(){let email=document.getElementById('authEmail').value.trim();let pass=document.getElementById('authPass').value;if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}document.getElementById('authMsg').textContent='Inaingia...';const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}document.getElementById('authMsg').textContent='';checkUser();}
+async function doLogout(){await supabaseClient.auth.signOut();checkUser();}
 const questions={
 sheria:[
 {q:"Mteja anakupa kazi bila mkataba wa maandishi. Baadaye anakataa kukulipa. Hatua sahihi ni ipi?",opts:["Kukataa kazi zote bila mkataba","Kufanya kazi kwanza, mkataba baadaye","Kuhakikisha mkataba wa maandishi unaeleza wigo, ada na majukumu kabla ya kuanza kazi","Kumlipia mteja ili akubali"],a:2,ex:"Mtaalamu lazima afanye kazi kwa mkataba wa maandishi."},
@@ -319,97 +249,28 @@ syllabus:[
 {q:"Foundation inachaguliwa kwa kuzingatia nini?",opts:["Rangi ya nyumba","Aina ya udongo, mzigo wa jengo na kina cha maji ardhini","Jina la mteja","Siku ya wiki"],a:1,ex:"Udongo mbaya + jengo zito = foundation kubwa / tofauti."},
 {q:"Kwenye Project Management, 'Critical Path' ni nini?",opts:["Njia ya kwenda site","Mfululizo wa kazi muhimu ambao ukichelewa, mradi mzima unachelewa","Njia ya mkato","Njia ya kwenda ofisini"],a:1,ex:"Critical Path inakuambia kazi gani huna muda wa kuchelewa nazo."},
 {q:"Mwisho - QS anasaidiaje mteja kuokoa pesa?",opts:["Kwa kupunguza ubora","Kwa kupanga bajeti sahihi, kudhibiti variations, kupima kazi halisi na kuhakikisha analipa alichopata tu","Kwa kumuibia mkandarasi","Kwa kutofanya kazi"],a:1,ex:"QS mzuri anahakikisha mteja analipa bei ya haki kwa kazi iliyofanyika kweli."}
-]};
-document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
-function showLog(){
-  if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}
-  document.getElementById('logForm').classList.remove('hidden')
-}
-async function loadLogs(){
-  if(!currentUser) return;
-  try{
-    const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);
-    if(error) throw error;
-    let total=0; data.forEach(r=> total+= (r.hours||0));
-    logs=total; updateLogUI();
-    if(data.length){
-      document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');
-      document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;
-    } else {
-      document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';
-      document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';
-    }
-  }catch(e){ document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message; }
-}
-function updateLogUI(){ document.getElementById('logCount').textContent=logs; document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%'; }
-async function saveLog(){
-  if(!currentUser){alert('Ingia kwanza');return}
-  let title=document.getElementById('logTitle').value||'Log Book';
-  let h=parseInt(document.getElementById('logHours').value||0);
-  let cat=document.getElementById('logCat').value;
-  if(!h){alert('Weka masaa');return}
-  try{
-    const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);
-    if(error) throw error;
-    document.getElementById('logForm').classList.add('hidden');
-    document.getElementById('logTitle').value=''; document.getElementById('logHours').value='';
-    alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');
-    loadLogs();
-  }catch(e){ alert('Kosa kuhifadhi: '+e.message); }
-}
-const profMap = {
-  'Architect':'architect',
-  'Quantity Surveyor':'qs',
-  'Architectural Technologist':'technologist',
-  'Interior Designer':'interior',
-  'Landscape Architect':'landscape',
-  'Construction Manager':'cm'
+],
+aqrb:[]
 };
-async function loadFreeQuestions(){
-  if(currentCat === 'sheria') return;
-  let dbProf = profMap[selected];
-  if(!dbProf) return;
-  try{
-    const { data, error } = await supabaseClient
-      .from('questions')
-      .select('*')
-      .eq('profession', dbProf)
-      .eq('paper','syllabus')
-      .eq('is_free', true)
-      .eq('is_active', true)
-      .limit(20);
-    if(error) throw error;
-    if(data && data.length > 0){
-      questions.syllabus = data.map(r => ({
-        q: r.question,
-        opts: [r.option_a, r.option_b, r.option_c, r.option_d],
-        a: ['A','B','C','D'].indexOf(r.correct_answer),
-        ex: r.explanation || ''
-      }));
-    }
-  }catch(e){ console.log('Kutumia maswali ya zamani:', e.message); }
-}
-function choosePlan(label, price, el){
-  selectedPlan = label; selectedPrice = price;
-  document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.getElementById('chosenPlan').textContent = label;
-}
-function payNow(){
-  let payNumber = "075X XXX XXX";
-  let msg = 'Umechagua: ' + selectedPlan + '\n\nLipa ' + selectedPrice + '/- kwenda M-Pesa: ' + payNumber + '\nJina: MTAALAM\n\nBaada ya kulipa, tuma screenshot ya muamala WhatsApp ili tukufungulie.';
-  document.getElementById('payMsg').textContent = 'Tuma ' + selectedPrice + '/- kwenda ' + payNumber + ' - ' + selectedPlan;
-  alert(msg);
-}
-async function startQuiz(cat){
-  document.getElementById('lawsPage').classList.add('hidden');
-  currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();showQ();window.scrollTo(0,0)
-}
+document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;}});
+function showLog(){if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}document.getElementById('logForm').classList.remove('hidden')}
+async function loadLogs(){if(!currentUser)return;try{const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);if(error)throw error;let total=0;data.forEach(r=>total+=(r.hours||0));logs=total;updateLogUI();if(data.length){document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;}else{document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message;}}
+function updateLogUI(){document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';}
+async function saveLog(){if(!currentUser){alert('Ingia kwanza');return}let title=document.getElementById('logTitle').value||'Log Book';let h=parseInt(document.getElementById('logHours').value||0);let cat=document.getElementById('logCat').value;if(!h){alert('Weka masaa');return}try{const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);if(error)throw error;document.getElementById('logForm').classList.add('hidden');document.getElementById('logTitle').value='';document.getElementById('logHours').value='';alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');loadLogs();}catch(e){alert('Kosa kuhifadhi: '+e.message);}}
+const profMap={'Architect':'architect','Quantity Surveyor':'qs','Architectural Technologist':'technologist','Interior Designer':'interior','Landscape Architect':'landscape','Construction Manager':'cm'};
+async function loadFreeQuestions(){if(currentCat==='sheria')return;let dbProf=profMap[selected];if(!dbProf)return;try{if(currentCat==='aqrb'){const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','aqrb_past_paper').eq('is_active',true).limit(50);if(error)throw error;if(data&&data.length>0)questions.aqrb=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));return;}const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','syllabus').eq('is_free',true).eq('is_active',true).limit(20);if(error)throw error;if(data&&data.length>0)questions.syllabus=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));}catch(e){console.log('Kutumia maswali ya zamani:',e.message);}}
+function goToPay(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.remove('hidden');renderPayOptions();window.scrollTo(0,0);}
+function renderPayOptions(){document.getElementById('payOptions').innerHTML=PAYMENT_CONFIG.packages.map(p=>{const active=p.id===selectedPackageId?'active':'';return `<div class="pay-opt ${active}" onclick="choosePlan('${p.label}',${p.price},'${p.id}',this)"><span><b>${p.label}</b><br><small class="small">${p.desc}</small></span><b>${p.price.toLocaleString()}/-</b></div>`}).join('');updatePayText();}
+function updatePayText(){document.getElementById('payAmountText').textContent='Tsh '+selectedPrice.toLocaleString();document.getElementById('payPackageText').textContent=selectedPlan;const jina=document.getElementById('payJina')?document.getElementById('payJina').value:'';const muamala=document.getElementById('payMuamala')?document.getElementById('payMuamala').value:'';const smsBody=`Habari Mtaalam, nimelipia ${selectedPlan} Tsh ${selectedPrice}. Jina: ${jina}, Email: ${currentUser?currentUser.email:''}, Muamala: ${muamala}`;document.getElementById('smsLink').href=`sms:0722655693?body=${encodeURIComponent(smsBody)}`;}
+function choosePlan(label,price,pkgId,el){selectedPlan=label;selectedPrice=price;selectedPackageId=pkgId;document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');const cp=document.getElementById('chosenPlan');if(cp)cp.textContent=label+' - '+price.toLocaleString()+'/-';updatePayText();}
+async function sendWhatsApp(){const jina=document.getElementById('payJina').value.trim()||(currentUser?currentUser.email:'');const muamala=document.getElementById('payMuamala').value.trim();const msg=`Habari Mtaalam, nimelipia ${selectedPlan} Tsh ${selectedPrice}. Jina: ${jina}, Email: ${currentUser?currentUser.email:''}, Muamala: ${muamala}`;try{await supabaseClient.from('payments').insert([{user_email:currentUser?currentUser.email:jina,jina:jina,muamala_id:muamala,package_id:selectedPackageId,amount:selectedPrice,lipa_namba:'35120289',status:'pending'}]);}catch(e){console.log(e.message)}window.open(`https://wa.me/${PAYMENT_CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`,'_blank');}
+function payNow(){goToPay();}
+async function startQuiz(cat){if(cat==='aqrb'){await loadProfile();if(!isSubscriptionActive()){if(!currentUser){alert('Ingia kwanza ili ulipie AQRB Past Paper');return;}goToPay();return;}}document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':cat==='aqrb'?'AQRB PAST PAPER - PREMIUM':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();if(cat==='aqrb'&&(!questions.aqrb||questions.aqrb.length===0)){document.getElementById('qText').textContent='AQRB Past Paper bado haijaingia Supabase. Tafadhali rudi baadae.';document.getElementById('opts').innerHTML='';return;}showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
-function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
 checkUser();
 </script>
 </body>

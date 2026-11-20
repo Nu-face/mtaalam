@@ -48,6 +48,11 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .premium-card{background:linear-gradient(135deg,#f97316,#dc2626);color:white;border-radius:20px;padding:18px;margin-top:12px;cursor:pointer}
 .premium-card p{color:#ffe4e6}
 .sms-btn{display:block;text-align:center;background:#0f172a;color:white;font-weight:800;padding:14px;border-radius:14px;margin-top:10px;text-decoration:none}
+/* ===== MPYA: STREAK + SWALI LA LEO - HAZIGUSI CODE YA ZAMANI ===== */
+.streak-bar{background:#1e293b;border:2px solid #f59e0b;border-radius:20px;padding:16px;margin-top:12px}
+.streak-bar .s-row{display:flex;justify-content:space-between;align-items:center}
+.daily-card{background:#f59e0b;color:#111;border-radius:20px;padding:16px;margin-top:12px}
+.daily-card p{color:#111}
 </style>
 </head>
 <body>
@@ -65,6 +70,33 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <p id="subStatus">Umeingia. Log Book hapa ni yako peke yako.</p>
 <button class="btn btn-white" style="width:100%;margin-top:8px" onclick="doLogout()">Toka (Logout)</button>
 </div>
+
+<!-- ===== MPYA 1: STREAK BAR - Kwa Taaluma 6 Zote ===== -->
+<div id="streakBar" class="streak-bar">
+  <div class="s-row">
+    <div>
+      <div style="font-size:12px;color:#f59e0b;font-weight:800" id="streakCourseLabel">QUANTITY SURVEYOR • STREAK</div>
+      <div style="font-size:26px;font-weight:900;line-height:1.1">🔥 Siku <span id="streakNum">0</span></div>
+      <div style="font-size:12px;color:#94a3b8">Maswali uliyojibu: <b id="streakAnswered" style="color:white">0</b></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-weight:800;color:#f59e0b">🏆 #<span id="streakRank">--</span> <span id="streakRankCourse">QS</span></div>
+      <div style="font-size:12px;color:#94a3b8">Tanzania</div>
+    </div>
+  </div>
+  <div class="progress" style="background:#334155"><i id="streakBarFill" style="width:0%"></i></div>
+  <p style="font-size:11px;color:#94a3b8;margin-top:6px" id="streakMsg">Anza leo - jibu Swali la Leo upate siku 1!</p>
+</div>
+
+<!-- ===== MPYA 2: SWALI LA LEO - Kwa Taaluma 6 Zote ===== -->
+<div id="dailyCard" class="daily-card">
+  <p style="font-size:12px;font-weight:800">SWALI LA LEO • <span id="dailyCourseLabel">QUANTITY SURVEYOR</span></p>
+  <p style="font-weight:900;font-size:18px;line-height:1.2;margin-top:4px">Leo unaweza kuwa kwenye 32% bora wa <span id="dailyCourseLabel2">QS</span>?</p>
+  <p style="font-size:13px;margin-top:4px">Wenzako <span id="dailyPeers">14</span> wameshajibu • Sekunde 30 tu • BURE</p>
+  <button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="openDailyQuestion()">JIBU SWALI LA LEO →</button>
+  <p id="dailyStatus" style="text-align:center;font-size:12px;font-weight:700;margin-top:8px">🔥 Ukijibu sasa, streak yako inaokolewa</p>
+</div>
+
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
@@ -135,6 +167,17 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <button class="btn btn-white" style="width:100%;margin-top:12px" onclick="backHome()">← Rudi Nyumbani</button>
 </div>
 </div>
+
+<!-- ===== MPYA: SWALI LA LEO MODAL ===== -->
+<div id="dailyQuiz" class="card hidden">
+<div class="q-top"><span id="dailyQCat">SWALI LA LEO</span><span>🔥 Streak</span></div>
+<div class="q" id="dailyQText"></div>
+<div id="dailyOpts"></div>
+<div id="dailyExplain" class="explain hidden"></div>
+<button id="dailyNextBtn" class="btn btn-dark hidden" style="width:100%;margin-top:14px" onclick="closeDailyAndSave()">Sawa, Nimeelewa → Okoa Streak</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="backHomeFromDaily()">← Rudi Nyumbani</button>
+</div>
+
 <div id="quiz" class="card hidden">
 <div class="q-top"><span id="qCat">SYLLABUS</span><span id="qNum">Swali 1 / 20</span></div>
 <div class="progress"><i id="qBar"></i></div>
@@ -170,16 +213,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const PAYMENT_CONFIG = { lipaNamba:"35120289", jina:"Norbert Mujuni Robert", smsNumber:"0722655693", whatsapp:"255722655693", packages:[{id:'daily',label:'Siku 1',price:1000,days:1,desc:'Saa 24 - kwa kujaribu'},{id:'weekly',label:'Wiki 1',price:5000,days:7,desc:'Siku 7 - bora kwa revision'},{id:'monthly',label:'Mwezi 1',price:15000,days:30,desc:'Siku 30 - kujiandaa vizuri'},{id:'yearly',label:'Mwaka 1',price:120000,days:365,desc:'Siku 365 - hadi mtihani'}] };
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
 let selectedPlan='Wiki 1';let selectedPrice=5000;let selectedPackageId='weekly';let currentLawId=null;let userProfile=null;
-
-// ===== MPYA: Changanya maswali RANDOM =====
-function shuffleArray(arr){
-  for(let i = arr.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
+function shuffleArray(arr){for(let i = arr.length - 1; i > 0; i--){const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]];}return arr;}
 function isSubscriptionActive(){if(!userProfile)return false;if(!userProfile.is_premium)return false;if(!userProfile.premium_until)return false;return new Date()<new Date(userProfile.premium_until);}
 async function loadProfile(){if(!currentUser){userProfile=null;return;}try{const {data}=await supabaseClient.from('profiles').select('*').eq('id',currentUser.id).single();if(data)userProfile=data;const el=document.getElementById('subStatus');if(el&&userProfile){if(isSubscriptionActive()){el.textContent='✅ Premium - Inaisha: '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ');el.style.color='#4ade80';}else if(userProfile.premium_until){el.textContent='🔒 Subscription imeisha '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ')+' - Lipia tena';el.style.color='#fbbf24';}}}catch(e){console.log(e.message)}}
 const LAWS_10 = [
@@ -213,13 +247,11 @@ async function doSignup(){let email=document.getElementById('authEmail').value.t
 async function doLogin(){let email=document.getElementById('authEmail').value.trim();let pass=document.getElementById('authPass').value;if(!email||!pass){document.getElementById('authMsg').textContent='Weka email na password';return}document.getElementById('authMsg').textContent='Inaingia...';const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:pass});if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}document.getElementById('authMsg').textContent='';checkUser();}
 async function doLogout(){await supabaseClient.auth.signOut();checkUser();}
 const questions={sheria:[],syllabus:[],aqrb:[]};
-document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;updatePremiumText();}});
+document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;updatePremiumText();updateStreakUI();updateDailyUI();}});
 function showLog(){if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}document.getElementById('logForm').classList.remove('hidden')}
 async function loadLogs(){if(!currentUser)return;try{const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);if(error)throw error;let total=0;data.forEach(r=>total+=(r.hours||0));logs=total;updateLogUI();if(data.length){document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;}else{document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message;}}
 function updateLogUI(){document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';}
 async function saveLog(){if(!currentUser){alert('Ingia kwanza');return}let title=document.getElementById('logTitle').value||'Log Book';let h=parseInt(document.getElementById('logHours').value||0);let cat=document.getElementById('logCat').value;if(!h){alert('Weka masaa');return}try{const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);if(error)throw error;document.getElementById('logForm').classList.add('hidden');document.getElementById('logTitle').value='';document.getElementById('logHours').value='';alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');loadLogs();}catch(e){alert('Kosa kuhifadhi: '+e.message);}}
-
-// ===== FIX: PREMIUM TU - Bila limit, inachukua yote kwa pagination =====
 async function fetchAllPremium(prof){
   let all = [];
   let from = 0;
@@ -234,13 +266,11 @@ async function fetchAllPremium(prof){
   }
   return all;
 }
-
 async function loadFreeQuestions(){
   if(currentCat==='sheria') return;
   let dbProf=profMap[selected]; if(!dbProf) return;
   try{
     if(currentCat==='aqrb'){
-      // PREMIUM: Bila limit - chukua yote
       let data = await fetchAllPremium(dbProf);
       if((!data||data.length===0) && dbProf!=='qs' && dbProf!=='cm'){
         const short = profShort[selected]?.toLowerCase();
@@ -249,7 +279,6 @@ async function loadFreeQuestions(){
       if(data&&data.length>0){ questions.aqrb=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.aqrb = shuffleArray(questions.aqrb); }
       return;
     }
-    // FREE / SYLLABUS: Imebaki limit 20 kama zamani
     const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','syllabus').limit(20);
     if(error) throw error;
     if(data&&data.length>0){ questions.syllabus=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.syllabus = shuffleArray(questions.syllabus); }
@@ -266,9 +295,230 @@ function showQ(){let list=questions[currentCat];if(!list||list.length===0){docum
 function check(i,el,item){let opts=document.querySelectorAll('.opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
-function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+function backHome(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('dailyQuiz').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+function backHomeFromDaily(){document.getElementById('dailyQuiz').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0)}
+
+/* ===== MPYA: STREAK + SWALI LA LEO + NOTIFICATION SAA 8 - KWA TAALUMA 6 ===== */
+const DAILY_BANK = {
+  'Quantity Surveyor': [
+    {q:'BoQ ni nini?',opts:['Bill of Quantities','Book of Quality','Bill of Quality','Basic of Quantities'],a:0,ex:'BoQ ni orodha ya vipimo na bei za kazi za ujenzi. Hii ndiyo silaha ya QS.'},
+    {q:'Variation ni nini?',opts:['Mabadiliko ya kazi baada ya mkataba','Kazi mpya kabisa','Kufuta mkataba','Malipo ya awali'],a:0,ex:'Variation ni mabadiliko yoyote ya kazi, bei au muda baada ya mkataba kusainiwa.'},
+    {q:'Nani anathibitisha Valuation kwa malipo ya mjenzi?',opts:['QS','Fundi','Mteja pekee','Serikali'],a:0,ex:'QS ndiye anayepima kazi iliyofanyika na kutoa Valuation / Certificate ya malipo.'},
+    {q:'JCT ni nini?',opts:['Mkataba wa ujenzi','Aina ya saruji','Chombo cha kupima','Shirika la serikali'],a:0,ex:'JCT - Joint Contracts Tribunal, ni mfumo wa mikataba ya ujenzi unaotumika sana.'},
+    {q:'Prime Cost Sum ni nini?',opts:['Kiasi kilichowekwa kwa kazi ambayo bado haijajulikana bei yake','Gharama ya mwisho','Faida ya mjenzi','Kodi'],a:0,ex:'PC Sum ni kiasi kilichowekwa kwenye BoQ kwa ajili ya vitu ambavyo havijachaguliwa bado.'},
+    {q:'Retention ni nini?',opts:['Pesa inayozuiliwa kama dhamana hadi kazi ikamilike','Malipo ya awali','Faini','Kodi ya mjenzi'],a:0,ex:'Retention ni 5-10% inayozuiliwa ili kuhakikisha mjenzi atarudi kurekebisha kasoro.'},
+    {q:'Final Account ni nini?',opts:['Hesabu ya mwisho ya gharama halisi ya mradi','Bajeti ya mwanzo','Malipo ya kwanza','Kadirio tu'],a:0,ex:'Final Account huandaliwa baada ya mradi kuisha, ina gharama halisi zote + variations.'}
+  ],
+  'Architect': [
+    {q:'Site Analysis ni nini?',opts:['Kuchambua eneo kabla ya kubuni','Kupiga picha tu','Kuchora ramani','Kupima ardhi pekee'],a:0,ex:'Site Analysis ni kuchambua jua, upepo, ardhi, maji na mazingira kabla ya design.'},
+    {q:'Scale 1:100 ina maana gani?',opts:['1cm kwenye karatasi = 100cm halisi','1m = 100m','Kitu ni kidogo','Haina maana'],a:0,ex:'1:100 - kila 1 unit kwenye mchoro ni 100 units halisi.'},
+    {q:'Nani anatoa Building Permit?',opts:['Halmashauri / Mamlaka ya Mipango Miji','Fundi','Mteja','CRB'],a:0,ex:'Kibali cha kujenga hutolewa na Halmashauri baada ya michoro kupitishwa.'},
+    {q:'Concept Design ni hatua gani?',opts:['Wazo la kwanza la design','Michoro ya mwisho','Ujenzi','Kadirio la bei'],a:0,ex:'Concept ni wazo la kwanza - form, space na mtazamo wa jengo.'},
+    {q:'Passive Design inategemea nini?',opts:['Jua na upepo wa asili','AC pekee','Taa za umeme','Chuma'],a:0,ex:'Passive Design hutumia jua, upepo na mwanga wa asili kupunguza matumizi ya umeme.'},
+    {q:'AQRB inasimamia nani?',opts:['Architects, QS na wataalamu wengine wa ujenzi','Wahandisi tu','Wakandarasi tu','Wote'],a:0,ex:'AQRB - Architects and Quantity Surveyors Registration Board.'},
+    {q:'Section Drawing inaonyesha nini?',opts:['Jengo likikatwa wima kuona ndani','Jengo kutoka juu','Jengo kutoka nje','Mlango tu'],a:0,ex:'Section inaonyesha urefu, dari, sakafu na muundo wa ndani kama jengo limekatwa.'}
+  ],
+  'Architectural Technologist': [
+    {q:'Kazi kubwa ya Architectural Technologist ni nini?',opts:['Kutengeneza michoro ya ujenzi na maelezo ya kiufundi','Kubuni tu','Kupanga bei','Kusimamia wafanyakazi'],a:0,ex:'Technologist anahakikisha design ya Architect inaweza kujengwa - details, materials na specs.'},
+    {q:'Working Drawing ni nini?',opts:['Michoro ya kutumika site kujenga','Mchoro wa kupendezesha','Sketch','Picha'],a:0,ex:'Working Drawings ndiyo michoro halisi ambayo fundi anatumia site.'},
+    {q:'Specification ni nini?',opts:['Maelezo ya vifaa na ubora wa kazi','Bei','Jina la mjenzi','Muda'],a:0,ex:'Spec inaeleza ni vifaa gani, ubora gani na jinsi gani kazi ifanyike.'},
+    {q:'Detail Drawing hutumika kwa nini?',opts:['Kuonyesha sehemu ndogo kwa ukubwa mkubwa','Kuonyesha jengo zima','Kupima ardhi','Kupiga picha'],a:0,ex:'Detail inaonyesha sehemu kama joint ya paa, dirisha kwa scale kubwa.'},
+    {q:'Building Information Modeling (BIM) ni nini?',opts:['Mfumo wa kidigitali wa kubuni na kusimamia jengo','Aina ya saruji','Programu ya bei','Mchoro wa mkono'],a:0,ex:'BIM ni mfumo wa 3D unaounganisha design, gharama na muda.'},
+    {q:'U-value inapima nini?',opts:['Jinsi joto linavyopita kwenye ukuta/paa','Uzito','Urefu','Bei'],a:0,ex:'U-value ndogo = insulation nzuri, joto haliingii sana.'},
+    {q:'Damp Proof Course (DPC) ni nini?',opts:['Tabaka linalozuia maji kupanda ukutani','Rangi','Saruji','Paaza'],a:0,ex:'DPC huwekwa juu ya foundation kuzuia unyevu kupanda.'}
+  ],
+  'Interior Designer': [
+    {q:'Mood Board ni nini?',opts:['Mkusanyiko wa picha, rangi na vifaa kuonyesha wazo la design','Bodi ya shule','Jedwali','Orodha ya bei'],a:0,ex:'Mood Board inamsaidia mteja kuona na kuhisi design kabla haijatekelezwa.'},
+    {q:'Ergonomics katika Interior ni nini?',opts:['Kubuni kulingana na mwili na starehe ya binadamu','Kubuni kwa bei ghali','Kupaka rangi','Kuweka taa'],a:0,ex:'Ergonomics - kiti, meza na nafasi ziwe sawa na mwili wa mtu.'},
+    {q:'Rangi ya joto (Warm Color) ni ipi?',opts:['Nyota ya machungwa, nyekundu','Bluu, kijani','Nyeusi','Nyeupe'],a:0,ex:'Warm colors - nyekundu, machungwa, njano - huleta hisia ya joto na ukaribu.'},
+    {q:'Space Planning ni nini?',opts:['Kupanga matumizi ya nafasi ndani ya chumba','Kupaka rangi','Kununua fanicha','Kuweka pazia'],a:0,ex:'Space Planning ni kupanga wapi sofa, meza, njia ya kupita ili nafasi itumike vizuri.'},
+    {q:'Lighting Layers ni nini?',opts:['Ambient, Task na Accent zikichanganyika','Taa moja tu','Taa za nje','Mishumaa'],a:0,ex:'Chumba kizuri kina taa 3: ya jumla, ya kazi na ya kupendezesha.'},
+    {q:'Kazi ya Interior Designer inatofautiana vipi na Decorator?',opts:['Designer anashughulika na muundo na nafasi, Decorator rangi na mapambo tu','Hakuna tofauti','Designer ni fundi','Decorator ni daktari'],a:0,ex:'Designer anabadilisha nafasi na muundo, Decorator anapamba juu yake.'},
+    {q:'Material Board hutumika kwa nini?',opts:['Kuonyesha mteja vifaa halisi vitakavyotumika','Kuhesabu bei','Kupima chumba','Kuchora'],a:0,ex:'Mteja anagusa kitambaa, mbao, tiles kabla hajachagua.'}
+  ],
+  'Landscape Architect': [
+    {q:'Kazi kubwa ya Landscape Architect ni nini?',opts:['Kubuni nafasi za nje - bustani, barabara, mazingira','Kupanda maua tu','Kujenga nyumba','Kupima ardhi'],a:0,ex:'Landscape anabuni nje ya jengo - njia, miti, maji, na sehemu za kukaa.'},
+    {q:'Site Grading ni nini?',opts:['Kupanga mwinuko wa ardhi ili maji yatiririke vizuri','Kupanda miti','Kujenga ukuta','Kupaka rangi'],a:0,ex:'Grading inahakikisha maji hayasimami karibu na jengo, yanatiririka kwenda drain.'},
+    {q:'Native Plants ni nini?',opts:['Mimea ya asili ya eneo hilo','Mimea ya nje','Maua ya plastiki','Mimea ya dukani'],a:0,ex:'Miti ya asili hustahimili hali ya hewa na inahitaji maji kidogo.'},
+    {q:'Hardscape ni nini?',opts:['Sehemu ngumu - njia, mawe, ukuta','Miti','Maua','Majani'],a:0,ex:'Hardscape = njia, patio, ukuta wa mawe. Softscape = miti na majani.'},
+    {q:'EIA inahusika vipi na Landscape?',opts:['Kuchambua athari za mradi kwa mazingira kabla ya kujenga','Kupiga picha','Kuhesabu bei','Kupanga rangi'],a:0,ex:'EIA - Environmental Impact Assessment, inahitajika kabla ya miradi mikubwa.'},
+    {q:'Sustainable Drainage ni nini?',opts:['Kutumia ardhi na mimea kupunguza mafuriko','Mifereji ya saruji tu','Kuziba maji','Kujenga bwawa'],a:0,ex:'SUDS hutumia mimea na ardhi kunyonya maji badala ya kuyapeleka yote mtaani.'},
+    {q:'Public Space nzuri ina nini?',opts:['Kukaa, kivuli, usalama na urahisi wa kufika','Maua tu','Rangi','Ukuta mkubwa'],a:0,ex:'Public space nzuri watu wanataka kukaa, kupumzika na kukutana.'}
+  ],
+  'Construction Manager': [
+    {q:'Kazi kubwa ya Construction Manager ni nini?',opts:['Kupanga, kusimamia muda, gharama na ubora wa ujenzi','Kujenga mwenyewe','Kubuni','Kupima ardhi'],a:0,ex:'CM ndiye anayehakikisha mradi unaisha kwa muda, bajeti na ubora.'},
+    {q:'Gantt Chart hutumika kwa nini?',opts:['Kuonyesha ratiba ya kazi kwa muda','Kuhesabu bei','Kuchora jengo','Kupima ardhi'],a:0,ex:'Gantt Chart inaonyesha kazi gani inaanza lini, inaisha lini na nani anaifanya.'},
+    {q:'Critical Path ni nini?',opts:['Mfululizo wa kazi muhimu ambazo zikichelewa mradi wote unachelewa','Njia ya kwenda site','Barabara','Mfereji'],a:0,ex:'Kama kazi kwenye Critical Path ikichelewa siku 1, mradi wote unachelewa siku 1.'},
+    {q:'OSHA inahusu nini site?',opts:['Usalama na afya ya wafanyakazi','Bei','Rangi','Ubunifu'],a:0,ex:'OSHA - wafanyakazi wawe na helmet, PPE, na site iwe salama.'},
+    {q:'Site Meeting hufanyika kwa nini?',opts:['Kujadili maendeleo, changamoto na hatua zinazofuata','Kula chakula','Kupiga picha','Kusaini mkataba'],a:0,ex:'Site Meeting - kila wiki, mteja, mjenzi, QS na Architect wanakutana.'},
+    {q:'Mobilization ni nini?',opts:['Kuleta vifaa, wafanyakazi na kuandaa site kabla ya kuanza','Kumaliza mradi','Kulipa','Kufunga site'],a:0,ex:'Mobilization ni hatua ya kwanza - site office, vifaa, maji, umeme.'},
+    {q:'Snag List ni nini?',opts:['Orodha ya kasoro ndogo za kurekebisha kabla ya kukabidhi mradi','Orodha ya wafanyakazi','Orodha ya bei','Orodha ya vifaa'],a:0,ex:'Kabla ya handover, mteja anatembea na kuandika kasoro - hizo ndizo snags.'}
+  ]
+};
+
+function getStreakKey(course){ return 'mtaalam_streak_' + (profMap[course] || 'qs'); }
+function getLastKey(course){ return 'mtaalam_last_' + (profMap[course] || 'qs'); }
+function getAnsweredKey(course){ return 'mtaalam_answered_' + (profMap[course] || 'qs'); }
+
+function getStreak(course){
+  return parseInt(localStorage.getItem(getStreakKey(course)) || '0');
+}
+function getAnswered(course){
+  return parseInt(localStorage.getItem(getAnsweredKey(course)) || '0');
+}
+
+function updateStreakUI(){
+  const streak = getStreak(selected);
+  const answered = getAnswered(selected);
+  const short = profShort[selected] || 'QS';
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('streakAnswered').textContent = answered;
+  document.getElementById('streakCourseLabel').textContent = selected.toUpperCase() + ' • STREAK';
+  document.getElementById('streakRankCourse').textContent = short;
+  // Rank ya kubahatisha kulingana na streak - kwa demo, ili mtu ajisikie yuko kwenye mashindano
+  const rank = streak === 0 ? '--' : Math.max(1, 25 - streak);
+  document.getElementById('streakRank').textContent = rank;
+  document.getElementById('streakBarFill').style.width = Math.min(100, (streak/30)*100) + '%';
+  if(streak === 0){
+    document.getElementById('streakMsg').textContent = 'Anza leo - jibu Swali la Leo upate siku 1!';
+  } else if(streak < 7){
+    document.getElementById('streakMsg').textContent = `Vizuri! Zimebaki siku ${7-streak} kufika Badge ya siku 7.`;
+  } else if(streak < 30){
+    document.getElementById('streakMsg').textContent = `Zimebaki siku ${30-streak} kufika Badge ya Mfalme wa ${selected} 👑`;
+  } else {
+    document.getElementById('streakMsg').textContent = `Hongera! Wewe ni Mfalme wa ${selected} 👑`;
+  }
+}
+
+function updateDailyUI(){
+  const short = profShort[selected] || 'QS';
+  document.getElementById('dailyCourseLabel').textContent = selected.toUpperCase();
+  document.getElementById('dailyCourseLabel2').textContent = short;
+  document.getElementById('dailyPeers').textContent = 12 + (new Date().getDate() % 10);
+  const today = new Date().toDateString();
+  const last = localStorage.getItem(getLastKey(selected));
+  const statusEl = document.getElementById('dailyStatus');
+  if(last === today){
+    statusEl.textContent = '✅ Umemaliza leo! Streak yako iko salama. Rudi kesho 6:00 asubuhi';
+  } else {
+    const s = getStreak(selected);
+    if(s >= 3) statusEl.textContent = `🔥 Streak yako ya siku ${s} inasubiri - jibu sasa uiokoe!`;
+    else statusEl.textContent = '🔥 Ukijibu sasa, streak yako inaokolewa';
+  }
+}
+
+let dailyCurrent = null;
+function getDailyQuestion(){
+  const bank = DAILY_BANK[selected] || DAILY_BANK['Quantity Surveyor'];
+  const day = new Date().getDate(); // 1-31, kila siku swali tofauti
+  return bank[day % bank.length];
+}
+
+function openDailyQuestion(){
+  dailyCurrent = getDailyQuestion();
+  // Ficha landing, onyesha daily
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('dailyQuiz').classList.remove('hidden');
+  document.getElementById('dailyQCat').textContent = 'SWALI LA LEO • ' + selected.toUpperCase();
+  document.getElementById('dailyQText').textContent = dailyCurrent.q;
+  document.getElementById('dailyExplain').classList.add('hidden');
+  document.getElementById('dailyNextBtn').classList.add('hidden');
+  const box = document.getElementById('dailyOpts');
+  box.innerHTML = '';
+  dailyCurrent.opts.forEach((o,i)=>{
+    const d = document.createElement('div');
+    d.className = 'opt';
+    d.textContent = o;
+    d.onclick = ()=>checkDaily(i, d);
+    box.appendChild(d);
+  });
+  window.scrollTo(0,0);
+}
+
+function checkDaily(i, el){
+  const opts = document.querySelectorAll('#dailyOpts .opt');
+  if(opts[0].style.pointerEvents === 'none') return;
+  opts.forEach(o=>o.style.pointerEvents='none');
+  const isCorrect = i === dailyCurrent.a;
+  if(isCorrect){ el.classList.add('correct'); } else { el.classList.add('wrong'); opts[dailyCurrent.a].classList.add('correct'); }
+  const ex = document.getElementById('dailyExplain');
+  if(isCorrect){
+    ex.innerHTML = '<b>✅ Sahihi! Wenzako 68% walikosea swali hili. Wewe uko kwenye 32% bora!</b><br><br><b>Maelezo:</b> ' + dailyCurrent.ex;
+  } else {
+    ex.innerHTML = '<b>❌ Si sahihi. Hili ndilo swali linalowafeli wengi AQRB.</b><br><br><b>Maelezo:</b> ' + dailyCurrent.ex + '<br><br><b>🔓 Fungua Past Paper uone maswali 10 kama haya → Tsh 1,000 tu</b>';
+  }
+  ex.classList.remove('hidden');
+  document.getElementById('dailyNextBtn').classList.remove('hidden');
+}
+
+function closeDailyAndSave(){
+  // Okoa streak - hii ndiyo inafanya mtu awe addicted
+  const today = new Date().toDateString();
+  const last = localStorage.getItem(getLastKey(selected));
+  if(last !== today){
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    let streak = getStreak(selected);
+    if(last === yesterday) streak += 1;
+    else streak = 1;
+    localStorage.setItem(getStreakKey(selected), streak);
+    localStorage.setItem(getLastKey(selected), today);
+    const ans = getAnswered(selected) + 1;
+    localStorage.setItem(getAnsweredKey(selected), ans);
+    // Badge alerts
+    if(streak === 3) alert('🎉 Hongera! Siku 3! Umepata Badge ya Msomaji Mpya!');
+    else if(streak === 7) alert('🔥 Siku 7! Umepata Badge ya Mwenye Nidhamu + Streak Freeze 1!');
+    else if(streak === 30) alert('👑 Siku 30! Wewe ni Mfalme wa ' + selected + '!');
+    else alert('✅ Streak imeokolewa! Sasa uko siku ' + streak + ' mfululizo!');
+  }
+  updateStreakUI();
+  updateDailyUI();
+  backHomeFromDaily();
+}
+
+// ===== MPYA 3: NOTIFICATION YA SAA 8 JIONI - Saa 20:00 =====
+function checkEveningReminder(){
+  const now = new Date();
+  const today = now.toDateString();
+  const last = localStorage.getItem(getLastKey(selected));
+  const alreadyReminded = localStorage.getItem('mtaalam_reminded_' + today);
+  // Tuma tu saa 20:00 na kama hajajibu leo
+  if(now.getHours() === 20 && last !== today && !alreadyReminded){
+    const streak = getStreak(selected);
+    const short = profShort[selected] || 'QS';
+    let msg = '';
+    if(streak <= 2) msg = `Swali la Leo la ${selected} bado liko wazi. Wenzako wameshajibu. Jibu sasa - sekunde 30 tu.`;
+    else if(streak <= 6) msg = `🔥 Streak yako ya siku ${streak} ya ${short} itapotea baada ya masaa 4! Jibu swali 1 tu uiokoe.`;
+    else msg = `😱 Uko siku ${streak} ya ${short}! Usiharibu! Jibu Swali la Leo sasa uiokoe ranking yako.`;
+    // Kama browser inaruhusu notification, itume, vinginevyo onyesha alert ya ndani
+    if('Notification' in window && Notification.permission === 'granted'){
+      new Notification('MTAALAM - Streak Inapotea!', { body: msg });
+    } else {
+      // Onyesha kama banner ndani ya app - usisumbue kama ameshaona
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;bottom:16px;left:16px;right:16px;background:#f59e0b;color:#111;padding:14px;border-radius:14px;font-weight:800;z-index:999;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.4)';
+      banner.textContent = msg + ' → Bonyeza kujibu';
+      banner.onclick = ()=>{ banner.remove(); openDailyQuestion(); };
+      document.body.appendChild(banner);
+      setTimeout(()=>banner.remove(), 15000);
+    }
+    localStorage.setItem('mtaalam_reminded_' + today, '1');
+  }
+  // Omba ruhusa ya notification mara moja
+  if('Notification' in window && Notification.permission === 'default'){
+    // Usiombe mara kwa mara, omba mara moja tu
+    if(!localStorage.getItem('mtaalam_notif_asked')){
+      localStorage.setItem('mtaalam_notif_asked','1');
+      // Notification.requestPermission(); // Washa kama unataka
+    }
+  }
+}
+
 checkUser();
 updatePremiumText();
+updateStreakUI();
+updateDailyUI();
+setInterval(checkEveningReminder, 60000); // Check kila dakika kama ni saa 8 jioni
+checkEveningReminder();
 </script>
 </body>
 </html>

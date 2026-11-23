@@ -64,6 +64,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 .syllabus-section b{color:#f59e0b}
 .syllabus-item{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:8px;color:#111}
 .syllabus-item b{color:#111}
+.log-sec{background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:10px;margin-top:8px;color:#111}
 </style>
 </head>
 <body>
@@ -112,7 +113,7 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div id="landing">
 <div class="card">
 <h1>Karibu Mtaalam.<br>Prepare for AQRB Exam.</h1>
-<p>Chagua taaluma yako. Jifunze Sheria na Syllabus. Jaza Log Book yako hadi 420.</p>
+<p>Chagua taaluma yako. Jifunze Sheria na Syllabus. Jaza Log Book yako hadi 1400 hrs - AQRB.</p>
 <div class="grid">
 <div class="prof" data-p="Architect"><b>🏛️ Architect</b><br><small>AR</small></div>
 <div class="prof" data-p="Architectural Technologist"><b>📐 Technologist</b><br><small>AT</small></div>
@@ -134,18 +135,26 @@ input,select{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px
 <div style="background:white;color:#dc2626;font-weight:800;text-align:center;padding:12px;border-radius:12px;margin-top:12px">Fungua AQRB Past Paper →</div>
 </div>
 <div class="card">
-<b>📒 Log Book Yangu</b>
-<p>Maendeleo yako kuelekea 420 masaa / siku za mafunzo.</p>
-<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">0</span> / 420</p>
+<b>📒 Log Book Yangu - AQRB</b>
+<p>Maendeleo yako kuelekea 1400 masaa - Minimum ya AQRB kupita.</p>
+<p style="font-size:28px;font-weight:900;color:#111"><span id="logCount">0</span> / 1400</p>
 <div class="progress"><i id="logBar" style="width:0%"></i></div>
-<button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="showLog()">+ Ongeza Log Book</button>
+<p id="logSectionText" class="small center" style="margin-top:6px">Section 5: 0 / 425 hrs • Section 1: 0 / 140 hrs</p>
+<div id="logSections"></div>
+<div class="row">
+<button class="btn btn-gold" onclick="showLog()">+ Ongeza Entry</button>
+<button class="btn btn-dark" onclick="downloadLogbookPDF()">📄 Download PDF</button>
+</div>
 <p id="syncStatus" class="small center" style="margin-top:8px">☁️ Imeunganishwa na Supabase</p>
 </div>
 <div id="logForm" class="card hidden">
-<b>Ongeza Log Book</b>
-<input id="logTitle" placeholder="Mfano: Site Visit - Mbezi">
-<input id="logHours" type="number" placeholder="Masaa / Siku - mfano 8">
-<select id="logCat"><option>Site Experience</option><option>Design</option><option>Measurement / QS</option><option>Project Management</option></select>
+<b>Ongeza Logbook Entry - AQRB</b>
+<select id="logCat"><option>Inapakia categories za AQRB...</option></select>
+<input id="logTitle" placeholder="Mradi - mf: Nyumba Mwanza">
+<input id="logLocation" placeholder="Location - mf: Mwanza">
+<input id="logHours" type="number" placeholder="Masaa - mf: 8">
+<input id="logSpecial" placeholder="Points of Special Interest - ulifanya nini hasa?">
+<input id="logSupervisor" placeholder="Supervisor - mf: Arch. John, AQRB No.">
 <button class="btn btn-dark" style="width:100%;margin-top:12px" onclick="saveLog()">Hifadhi Log Book</button>
 </div>
 <div id="logList" class="card"><b>📋 Log Zangu za Mwisho</b><div id="logItems"><p class="small">Ingia kwanza ili uone log zako.</p></div></div>
@@ -225,6 +234,9 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const PAYMENT_CONFIG = { lipaNamba:"35120289", jina:"Norbert Mujuni Robert", smsNumber:"0722655693", whatsapp:"255722655693", packages:[{id:'daily',label:'Siku 1',price:1000,days:1,desc:'Saa 24 - kwa kujaribu'},{id:'weekly',label:'Wiki 1',price:5000,days:7,desc:'Siku 7 - bora kwa revision'},{id:'monthly',label:'Mwezi 1',price:15000,days:30,desc:'Siku 30 - kujiandaa vizuri'},{id:'yearly',label:'Mwaka 1',price:120000,days:365,desc:'Siku 365 - hadi mtihani'}] };
 let selected='Quantity Surveyor';let logs=0;let currentCat='sheria';let qi=0,score=0;let currentUser=null;
 let selectedPlan='Wiki 1';let selectedPrice=5000;let selectedPackageId='weekly';let currentLawId=null;let userProfile=null;
+let logbookCats=[]; let logEntries=[]; let logBySection={};
+const LOGBOOK_SECTION_MIN={1:140,2:110,3:150,4:168,5:425,6:125,7:195,8:76};
+const LOGBOOK_SECTION_NAME={1:'Inception & Feasibility',2:'Preliminary Design',3:'Scheme Design',4:'Pre-Tender',5:'Production Info & BoQ',6:'Tender Action',7:'Site Operations',8:'Dispute / CPD'};
 function shuffleArray(arr){for(let i = arr.length - 1; i > 0; i--){const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]];}return arr;}
 function isSubscriptionActive(){if(!userProfile)return false;if(!userProfile.is_premium)return false;if(!userProfile.premium_until)return false;return new Date()<new Date(userProfile.premium_until);}
 async function loadProfile(){if(!currentUser){userProfile=null;return;}try{const {data}=await supabaseClient.from('profiles').select('*').eq('id',currentUser.id).single();if(data)userProfile=data;const el=document.getElementById('subStatus');if(el&&userProfile){if(isSubscriptionActive()){el.textContent='✅ Premium - Inaisha: '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ');el.style.color='#4ade80';}else if(userProfile.premium_until){el.textContent='🔒 Subscription imeisha '+new Date(userProfile.premium_until).toLocaleDateString('sw-TZ')+' - Lipia tena';el.style.color='#fbbf24';}}}catch(e){console.log(e.message)}}
@@ -249,32 +261,7 @@ function updatePremiumText(){const short = profShort[selected] || 'QS';const el 
 async function showLaws(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('syllabusPage').classList.add('hidden');document.getElementById('lawsPage').classList.remove('hidden');renderLawsList({});try{const dbProf=profMap[selected]||'qs';const {data}=await supabaseClient.from('questions').select('topic').eq('profession',dbProf).eq('paper','laws');const counts={};if(data)data.forEach(r=>{counts[r.topic]=(counts[r.topic]||0)+1});renderLawsList(counts);}catch(e){console.log(e.message)}window.scrollTo(0,0);}
 function renderLawsList(counts){document.getElementById('lawsContainer').innerHTML=LAWS_10.map((law,i)=>{const rc=counts[law.id]||0;const st=rc>0?`✅ ${rc} Maswali • BURE`:`⏳ ${law.count} Yanakuja • BURE`;const bg=rc>0?'#dcfce7':'#fef9c3';return `<div class="law-card" onclick="openLaw('${law.id}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${law.name}</b><span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px">${st}</span></div><div class="small">${law.desc}</div><div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div></div>`}).join('');}
 function backFromLaws(){document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0);}
-async function showSyllabus(){
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('lawsPage').classList.add('hidden');
-  document.getElementById('quiz').classList.add('hidden');
-  document.getElementById('result').classList.add('hidden');
-  document.getElementById('payPage').classList.add('hidden');
-  document.getElementById('syllabusPage').classList.remove('hidden');
-  document.getElementById('syllabusProf').textContent = selected.toUpperCase();
-  document.getElementById('syllabusContainer').innerHTML = '<p class="small">Inapakia Syllabus...</p>';
-  try{
-    const dbProf = profMap[selected] || 'qs';
-    const {data, error} = await supabaseClient.from('syllabuses').select('*').eq('profession', dbProf).order('id',{ascending:true});
-    if(error) throw error;
-    if(!data || data.length===0){
-      document.getElementById('syllabusContainer').innerHTML = '<p>Syllabus ya '+selected+' bado haijaingia. Tuma PDF yake niweke.</p>';
-      return;
-    }
-    const groups = {};
-    data.forEach(r=>{ if(!groups[r.section]) groups[r.section]=[]; groups[r.section].push(r); });
-    document.getElementById('syllabusContainer').innerHTML = Object.keys(groups).map(sec=>{
-      const items = groups[sec].map(it=>`<div class="syllabus-item"><b>${it.code} - ${it.title}</b><div class="small" style="margin-top:4px">${it.topics||''}</div></div>`).join('');
-      return `<div class="syllabus-section"><b>${sec}</b>${items}</div>`;
-    }).join('');
-  }catch(e){ document.getElementById('syllabusContainer').innerHTML = 'Kosa: '+e.message; }
-  window.scrollTo(0,0);
-}
+async function showSyllabus(){document.getElementById('landing').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('syllabusPage').classList.remove('hidden');document.getElementById('syllabusProf').textContent = selected.toUpperCase();document.getElementById('syllabusContainer').innerHTML = '<p class="small">Inapakia Syllabus...</p>';try{const dbProf = profMap[selected] || 'qs';const {data, error} = await supabaseClient.from('syllabuses').select('*').eq('profession', dbProf).order('id',{ascending:true});if(error) throw error;if(!data || data.length===0){document.getElementById('syllabusContainer').innerHTML = '<p>Syllabus ya '+selected+' bado haijaingia.</p>';return;}const groups = {};data.forEach(r=>{ if(!groups[r.section]) groups[r.section]=[]; groups[r.section].push(r); });document.getElementById('syllabusContainer').innerHTML = Object.keys(groups).map(sec=>{const items = groups[sec].map(it=>`<div class="syllabus-item"><b>${it.code} - ${it.title}</b><div class="small" style="margin-top:4px">${it.topics||''}</div></div>`).join('');return `<div class="syllabus-section"><b>${sec}</b>${items}</div>`;}).join('');}catch(e){ document.getElementById('syllabusContainer').innerHTML = 'Kosa: '+e.message; }window.scrollTo(0,0);}
 function backFromSyllabus(){ document.getElementById('syllabusPage').classList.add('hidden'); document.getElementById('landing').classList.remove('hidden'); window.scrollTo(0,0); }
 async function openLaw(lawId){currentLawId=lawId;currentCat='sheria';qi=0;score=0;document.getElementById('lawsPage').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=lawId.toUpperCase()+' - SHERIA';document.getElementById('qText').textContent='Inapakia maswali...';document.getElementById('opts').innerHTML='';document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');try{const dbProf=profMap[selected]||'qs';const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','laws').eq('topic',lawId).order('created_at',{ascending:true});if(error)throw error;if(data&&data.length>0){questions.sheria=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.sheria = shuffleArray(questions.sheria); showQ();}else{document.getElementById('qNum').textContent='Swali 0 / 0';document.getElementById('qText').textContent='Maswali ya '+lawId+' bado hayajaingia.';document.getElementById('opts').innerHTML='<button class="btn btn-gold" style="width:100%" onclick="backHome()">← Rudi</button>';}}catch(e){document.getElementById('qText').textContent='Kosa: '+e.message}window.scrollTo(0,0);}
 async function checkUser(){const {data}=await supabaseClient.auth.getSession();currentUser=data.session?.user||null;if(currentUser){document.getElementById('authCard').classList.add('hidden');document.getElementById('userBar').classList.remove('hidden');document.getElementById('userEmail').textContent='👤 '+currentUser.email;await loadProfile();loadLogs();}else{document.getElementById('authCard').classList.remove('hidden');document.getElementById('userBar').classList.add('hidden');logs=0;updateLogUI();document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';}}
@@ -283,10 +270,12 @@ async function doLogin(){let email=document.getElementById('authEmail').value.tr
 async function doLogout(){await supabaseClient.auth.signOut();checkUser();}
 const questions={sheria:[],syllabus:[],aqrb:[]};
 document.querySelectorAll('.prof').forEach(el=>{el.onclick=()=>{document.querySelectorAll('.prof').forEach(x=>x.classList.remove('active'));el.classList.add('active');selected=el.dataset.p;document.getElementById('chosen').textContent=selected;updatePremiumText();updateStreakUI();updateDailyUI();renderLeaderboard();}});
-function showLog(){if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return}document.getElementById('logForm').classList.remove('hidden')}
-async function loadLogs(){if(!currentUser)return;try{const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(10);if(error)throw error;let total=0;data.forEach(r=>total+=(r.hours||0));logs=total;updateLogUI();if(data.length){document.getElementById('logItems').innerHTML=data.map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.title||'Log'}</b> - ${r.hours} hrs - ${r.category||''}</p>`).join('');document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+data.length+' logs - '+currentUser.email;}else{document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>';document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message;}}
-function updateLogUI(){document.getElementById('logCount').textContent=logs;document.getElementById('logBar').style.width=Math.min(100,logs/420*100)+'%';}
-async function saveLog(){if(!currentUser){alert('Ingia kwanza');return}let title=document.getElementById('logTitle').value||'Log Book';let h=parseInt(document.getElementById('logHours').value||0);let cat=document.getElementById('logCat').value;if(!h){alert('Weka masaa');return}try{const {error}=await supabaseClient.from('logbook').insert([{title:title,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);if(error)throw error;document.getElementById('logForm').classList.add('hidden');document.getElementById('logTitle').value='';document.getElementById('logHours').value='';alert('Imehifadhiwa kwako! Sasa una '+(logs+h)+' / 420');loadLogs();}catch(e){alert('Kosa kuhifadhi: '+e.message);}}
+async function loadLogbookCats(){if(logbookCats.length) return; try{const {data}=await supabaseClient.from('logbook_categories').select('*').order('id'); logbookCats=data||[]; const sel=document.getElementById('logCat'); if(sel && logbookCats.length) sel.innerHTML=logbookCats.map(c=>`<option value="${c.id}">${c.id} - ${c.title} (${c.recommended_hours} hrs)</option>`).join('');}catch(e){console.log(e.message)}}
+function showLog(){if(!currentUser){alert('Ingia kwanza ili uongeze Log Book');return} loadLogbookCats(); document.getElementById('logForm').classList.remove('hidden')}
+async function loadLogs(){if(!currentUser)return; await loadLogbookCats(); try{const {data,error}=await supabaseClient.from('logbook').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false}).limit(50); if(error) throw error; logEntries=data||[]; let total=0; logBySection={}; logEntries.forEach(r=>{total+=(r.hours||0); const cat=logbookCats.find(c=>c.id===r.category); if(cat){logBySection[cat.section]=(logBySection[cat.section]||0)+(r.hours||0);} else { const m=(r.category||'').match(/^(\d)\./); if(m) logBySection[m[1]]=(logBySection[m[1]]||0)+(r.hours||0); }}); logs=total; updateLogUI(); if(logEntries.length){document.getElementById('logItems').innerHTML=logEntries.slice(0,10).map(r=>`<p style="font-size:14px;margin-top:8px;border-top:1px solid #e2e8f0;padding-top:8px"><b>${r.category||''} - ${r.title||'Log'}</b> - ${r.hours} hrs</p>`).join(''); document.getElementById('syncStatus').textContent='☁️ Imehifadhiwa Supabase - '+logEntries.length+' entries - '+currentUser.email;}else{document.getElementById('logItems').innerHTML='<p class="small">Bado huna log. Ongeza ya kwanza!</p>'; document.getElementById('syncStatus').textContent='☁️ Uko tayari - ongeza log yako ya kwanza';}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Kosa: '+e.message;}}
+function updateLogUI(){document.getElementById('logCount').textContent=logs; document.getElementById('logBar').style.width=Math.min(100,logs/1400*100)+'%'; const s5=logBySection[5]||0; const s1=logBySection[1]||0; const el=document.getElementById('logSectionText'); if(el) el.textContent = logs>=1400 ? '🎉 Umekidhi 1400 hrs! Uko tayari kwa mtihani' : `Section 5: ${s5} / 425 hrs • Section 1: ${s1} / 140 hrs • Bado ${1400-logs} hrs`; const secEl=document.getElementById('logSections'); if(secEl){ secEl.innerHTML=[1,2,3,4,5,6,7,8].map(s=>{const h=logBySection[s]||0; const min=LOGBOOK_SECTION_MIN[s]; const p=Math.min(100,Math.round(h/min*100)); const done=h>=min; return `<div class="log-sec"><div style="display:flex;justify-content:space-between"><b>${s}. ${LOGBOOK_SECTION_NAME[s]}</b><span>${done?'✅':h+' / '+min+' hrs'}</span></div><div class="progress"><i style="width:${p}%;background:${done?'#16a34a':'#f59e0b'}"></i></div></div>`}).join(''); }}
+async function saveLog(){if(!currentUser){alert('Ingia kwanza');return}let title=document.getElementById('logTitle').value||'Log Book';let h=parseInt(document.getElementById('logHours').value||0);let cat=document.getElementById('logCat').value;let loc=document.getElementById('logLocation').value||'';let special=document.getElementById('logSpecial').value||'';let sup=document.getElementById('logSupervisor').value||'';if(!h){alert('Weka masaa');return}try{const fullTitle = title + (loc?' | '+loc:'') + (special?' | '+special:'') + (sup?' | Sup: '+sup:''); const {error}=await supabaseClient.from('logbook').insert([{title:fullTitle,hours:h,category:cat,profession:selected,user_id:currentUser.id,email:currentUser.email}]);if(error)throw error;document.getElementById('logForm').classList.add('hidden');document.getElementById('logTitle').value='';document.getElementById('logHours').value='';document.getElementById('logLocation').value='';document.getElementById('logSpecial').value='';document.getElementById('logSupervisor').value='';alert('✅ Imehifadhiwa! Sasa una '+(logs+h)+' / 1400');loadLogs();}catch(e){alert('Kosa kuhifadhi: '+e.message);}}
+function downloadLogbookPDF(){if(!currentUser){alert('Ingia kwanza');return} const rows = logEntries.map(r=>`<tr><td>${r.category||''}</td><td>${(r.title||'').replace(/</g,'&lt;')}</td><td>${r.hours}</td><td>___________</td></tr>`).join('') || '<tr><td colspan="4">Bado huna entries</td></tr>'; const secRows=[1,2,3,4,5,6,7,8].map(s=>`<tr><td>${s}. ${LOGBOOK_SECTION_NAME[s]}</td><td>${logBySection[s]||0} / ${LOGBOOK_SECTION_MIN[s]} hrs</td><td>${(logBySection[s]||0)>=LOGBOOK_SECTION_MIN[s]?'✅ Imekamilika':'⏳ Bado'}</td></tr>`).join(''); const w=window.open('','_blank'); w.document.write(`<html><head><title>Logbook - ${currentUser.email}</title><style>body{font-family:sans-serif;padding:20px;color:#111}table{border-collapse:collapse;width:100%}td,th{border:1px solid #111;padding:8px;font-size:13px;text-align:left}</style></head><body><h2>ARCHITECTS AND QUANTITY SURVEYORS REGISTRATION BOARD</h2><p><b>PRACTICAL EXPERIENCE LOG BOOK</b><br>Jina: ${currentUser.email}<br>Taaluma: ${selected}<br>Jumla Masaa: ${logs} / 1400 hrs</p><h3>Analysis of Hours - Sections 8</h3><table><tr><th>Section</th><th>Masaa</th><th>Status</th></tr>${secRows}</table><h3>Entries</h3><table><tr><th>Cat</th><th>Mradi / Maelezo</th><th>Masaa</th><th>Supervisor Sahihi</th></tr>${rows}</table><br><p>Sahihi ya Candidate: ___________ &nbsp;&nbsp; Sahihi ya Supervisor + Stamp: ___________<br>AQRB Reg No: ___________ &nbsp; Tarehe: ___________</p><p><i>Print hii na u-copy kwenye Logbook halisi ya AQRB. Supervisor asaini.</i></p><script>window.print()<\/script></body></html>`); w.document.close();}
 async function fetchAllPremium(prof){let all=[];let from=0;const pageSize=1000;while(true){const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',prof).eq('paper','aqrb_past_paper').range(from,from+pageSize-1);if(error)throw error;if(!data||data.length===0)break;all=all.concat(data);if(data.length<pageSize)break;from+=pageSize;}return all;}
 async function loadFreeQuestions(){if(currentCat==='sheria')return;let dbProf=profMap[selected];if(!dbProf)return;try{if(currentCat==='aqrb'){let data=await fetchAllPremium(dbProf);if((!data||data.length===0)&&dbProf!=='qs'&&dbProf!=='cm'){const short=profShort[selected]?.toLowerCase();data=await fetchAllPremium(short);}if(data&&data.length>0){questions.aqrb=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));questions.aqrb=shuffleArray(questions.aqrb);}return;}const {data,error}=await supabaseClient.from('questions').select('*').eq('profession',dbProf).eq('paper','syllabus').limit(20);if(error)throw error;if(data&&data.length>0){questions.syllabus=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''}));questions.syllabus=shuffleArray(questions.syllabus);}}catch(e){console.log('Kutumia maswali ya zamani:',e.message);}}
 function goToPay(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('syllabusPage').classList.add('hidden');document.getElementById('payPage').classList.remove('hidden');renderPayOptions();window.scrollTo(0,0);}
@@ -310,157 +299,17 @@ function getStreak(c){return parseInt(localStorage.getItem(getStreakKey(c))||'0'
 function getAnswered(c){return parseInt(localStorage.getItem(getAnsweredKey(c))||'0');}
 function getFreeze(c){return parseInt(localStorage.getItem(getFreezeKey(c))||'0');}
 function setFreeze(c,v){localStorage.setItem(getFreezeKey(c),String(v));}
-function checkFreezeOnLoad(){
-  const today=new Date().toDateString();
-  const last=localStorage.getItem(getLastKey(selected));
-  if(!last||last===today) return;
-  const diffDays=Math.floor((new Date(today)-new Date(last))/86400000);
-  if(diffDays===2){
-    let f=getFreeze(selected);
-    if(f>0){
-      setFreeze(selected,f-1);
-      localStorage.setItem(getLastKey(selected), new Date(Date.now()-86400000).toDateString());
-      const fm=document.getElementById('freezeMsg');
-      if(fm) fm.textContent='🧊 Freeze imetumika! Streak yako imeokolewa. Freeze zilizobaki: '+(f-1);
-    }
-  }
-}
-function updateStreakUI(){
-  checkFreezeOnLoad();
-  const streak=getStreak(selected);
-  const answered=getAnswered(selected);
-  const freeze=getFreeze(selected);
-  const short=profShort[selected]||'QS';
-  document.getElementById('streakNum').textContent=streak;
-  document.getElementById('streakAnswered').textContent=answered;
-  document.getElementById('freezeCount').textContent=freeze;
-  document.getElementById('streakCourseLabel').textContent=selected.toUpperCase()+' • STREAK';
-  document.getElementById('streakRankCourse').textContent=short;
-  const pct=Math.max(10, Math.min(100,(streak/30)*100));
-  document.getElementById('streakBarFill').style.width=pct+'%';
-  if(streak===0) document.getElementById('streakMsg').textContent='Anza leo - jibu Swali la Leo upate siku 1!';
-  else if(streak<7) document.getElementById('streakMsg').textContent=`Vizuri! Zimebaki siku ${7-streak} kufika Badge ya siku 7 + Freeze 1 🧊`;
-  else if(streak<30) document.getElementById('streakMsg').textContent=`Zimebaki siku ${30-streak} kufika Badge ya Mfalme wa ${selected} 👑`;
-  else document.getElementById('streakMsg').textContent=`Hongera! Wewe ni Mfalme wa ${selected} 👑`;
-  const fm=document.getElementById('freezeMsg');
-  if(fm && !fm.textContent.includes('Freeze imetumika')){
-    fm.textContent = freeze>0 ? `🧊 Una Freeze ${freeze} - ukisahau siku 1, streak haitapotea.` : '';
-  }
-}
-function updateDailyUI(){
-  const short=profShort[selected]||'QS';
-  document.getElementById('dailyCourseLabel').textContent=selected.toUpperCase();
-  document.getElementById('dailyCourseLabel2').textContent=short;
-  document.getElementById('dailyPeers').textContent=12+(new Date().getDate()%10);
-  const today=new Date().toDateString();
-  const last=localStorage.getItem(getLastKey(selected));
-  const statusEl=document.getElementById('dailyStatus');
-  const btn=document.getElementById('dailyBtn');
-  if(last===today){
-    statusEl.textContent='✅ Umemaliza leo! Streak yako iko salama. Rudi kesho 6:00 asubuhi';
-    btn.textContent='✅ Umemaliza Leo - Rudi Kesho 6:00';
-    btn.classList.add('btn-disabled');
-    btn.disabled=true;
-  } else {
-    const s=getStreak(selected);
-    statusEl.textContent = s>=3 ? `🔥 Streak yako ya siku ${s} inasubiri - jibu sasa uiokoe!` : '🔥 Ukijibu sasa, streak yako inaokolewa';
-    btn.textContent='JIBU SWALI LA LEO →';
-    btn.classList.remove('btn-disabled');
-    btn.disabled=false;
-  }
-}
+function checkFreezeOnLoad(){const today=new Date().toDateString();const last=localStorage.getItem(getLastKey(selected));if(!last||last===today) return;const diffDays=Math.floor((new Date(today)-new Date(last))/86400000);if(diffDays===2){let f=getFreeze(selected);if(f>0){setFreeze(selected,f-1);localStorage.setItem(getLastKey(selected), new Date(Date.now()-86400000).toDateString());const fm=document.getElementById('freezeMsg');if(fm) fm.textContent='🧊 Freeze imetumika! Streak yako imeokolewa. Freeze zilizobaki: '+(f-1);}}}
+function updateStreakUI(){checkFreezeOnLoad();const streak=getStreak(selected);const answered=getAnswered(selected);const freeze=getFreeze(selected);const short=profShort[selected]||'QS';document.getElementById('streakNum').textContent=streak;document.getElementById('streakAnswered').textContent=answered;document.getElementById('freezeCount').textContent=freeze;document.getElementById('streakCourseLabel').textContent=selected.toUpperCase()+' • STREAK';document.getElementById('streakRankCourse').textContent=short;const pct=Math.max(10, Math.min(100,(streak/30)*100));document.getElementById('streakBarFill').style.width=pct+'%';if(streak===0) document.getElementById('streakMsg').textContent='Anza leo - jibu Swali la Leo upate siku 1!';else if(streak<7) document.getElementById('streakMsg').textContent=`Vizuri! Zimebaki siku ${7-streak} kufika Badge ya siku 7 + Freeze 1 🧊`;else if(streak<30) document.getElementById('streakMsg').textContent=`Zimebaki siku ${30-streak} kufika Badge ya Mfalme wa ${selected} 👑`;else document.getElementById('streakMsg').textContent=`Hongera! Wewe ni Mfalme wa ${selected} 👑`;const fm=document.getElementById('freezeMsg');if(fm && !fm.textContent.includes('Freeze imetumika')){fm.textContent = freeze>0 ? `🧊 Una Freeze ${freeze} - ukisahau siku 1, streak haitapotea.` : '';}}
+function updateDailyUI(){const short=profShort[selected]||'QS';document.getElementById('dailyCourseLabel').textContent=selected.toUpperCase();document.getElementById('dailyCourseLabel2').textContent=short;document.getElementById('dailyPeers').textContent=12+(new Date().getDate()%10);const today=new Date().toDateString();const last=localStorage.getItem(getLastKey(selected));const statusEl=document.getElementById('dailyStatus');const btn=document.getElementById('dailyBtn');if(last===today){statusEl.textContent='✅ Umemaliza leo! Streak yako iko salama. Rudi kesho 6:00 asubuhi';btn.textContent='✅ Umemaliza Leo - Rudi Kesho 6:00';btn.classList.add('btn-disabled');btn.disabled=true;} else {const s=getStreak(selected);statusEl.textContent = s>=3 ? `🔥 Streak yako ya siku ${s} inasubiri - jibu sasa uiokoe!` : '🔥 Ukijibu sasa, streak yako inaokolewa';btn.textContent='JIBU SWALI LA LEO →';btn.classList.remove('btn-disabled');btn.disabled=false;}}
 function getMyName(){ if(currentUser && currentUser.email) return currentUser.email.split('@')[0]; return 'Wewe'; }
-function renderLeaderboard(){
-  const short=profShort[selected]||'QS';
-  document.getElementById('leaderCourse').textContent=short;
-  const myStreak=getStreak(selected);
-  const myName=getMyName();
-  let others=[{name:'Juma',streak:21},{name:'Amina',streak:19},{name:'Baraka',streak:14},{name:'Neema',streak:11}];
-  let all=[...others,{name:myName,streak:myStreak,isMe:true}];
-  all.sort((a,b)=>b.streak-a.streak);
-  all=all.slice(0,5);
-  document.getElementById('leaderList').innerHTML=all.map((u,i)=>{
-    const cls=u.isMe?'leader-row me':'leader-row';
-    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-    return `<div class="${cls}"><span>${medal} ${u.name} ${u.isMe?'(Wewe)':''}</span><span>🔥 ${u.streak} siku</span></div>`;
-  }).join('');
-  const myRank=all.findIndex(u=>u.isMe)+1;
-  if(myStreak>0) document.getElementById('streakRank').textContent=myRank>0?myRank:'5';
-  else document.getElementById('streakRank').textContent='--';
-}
+function renderLeaderboard(){const short=profShort[selected]||'QS';document.getElementById('leaderCourse').textContent=short;const myStreak=getStreak(selected);const myName=getMyName();let others=[{name:'Juma',streak:21},{name:'Amina',streak:19},{name:'Baraka',streak:14},{name:'Neema',streak:11}];let all=[...others,{name:myName,streak:myStreak,isMe:true}];all.sort((a,b)=>b.streak-a.streak);all=all.slice(0,5);document.getElementById('leaderList').innerHTML=all.map((u,i)=>{const cls=u.isMe?'leader-row me':'leader-row';const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';return `<div class="${cls}"><span>${medal} ${u.name} ${u.isMe?'(Wewe)':''}</span><span>🔥 ${u.streak} siku</span></div>`;}).join('');const myRank=all.findIndex(u=>u.isMe)+1;if(myStreak>0) document.getElementById('streakRank').textContent=myRank>0?myRank:'5';else document.getElementById('streakRank').textContent='--';}
 let dailyCurrent=null;
-function getDailyQuestion(){
-  const bank=DAILY_BANK[selected]||DAILY_BANK['Quantity Surveyor'];
-  const day=new Date().getDate();
-  return bank[(day-1)%bank.length];
-}
-function openDailyQuestion(){
-  const btn=document.getElementById('dailyBtn');
-  if(btn.disabled) return;
-  dailyCurrent=getDailyQuestion();
-  document.getElementById('landing').classList.add('hidden');
-  document.getElementById('dailyQuiz').classList.remove('hidden');
-  document.getElementById('dailyQCat').textContent='SWALI LA LEO • '+selected.toUpperCase();
-  document.getElementById('dailyQText').textContent=dailyCurrent.q;
-  document.getElementById('dailyExplain').classList.add('hidden');
-  document.getElementById('dailyNextBtn').classList.add('hidden');
-  const box=document.getElementById('dailyOpts'); box.innerHTML='';
-  dailyCurrent.opts.forEach((o,i)=>{const d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>checkDaily(i,d);box.appendChild(d);});
-  window.scrollTo(0,0);
-}
-function checkDaily(i,el){
-  const opts=document.querySelectorAll('#dailyOpts .opt');
-  if(opts[0].style.pointerEvents==='none') return;
-  opts.forEach(o=>o.style.pointerEvents='none');
-  const isCorrect=i===dailyCurrent.a;
-  if(isCorrect) el.classList.add('correct'); else {el.classList.add('wrong');opts[dailyCurrent.a].classList.add('correct');}
-  const ex=document.getElementById('dailyExplain');
-  if(isCorrect) ex.innerHTML='<b>✅ Sahihi! Wenzako 68% walikosea swali hili. Wewe uko kwenye 32% bora!</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex;
-  else ex.innerHTML='<b>❌ Si sahihi. Hili ndilo swali linalowafeli wengi AQRB.</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex+'<br><br><b>🔓 Fungua Past Paper uone maswali 10 kama haya → Tsh 1,000 tu</b>';
-  ex.classList.remove('hidden');
-  document.getElementById('dailyNextBtn').classList.remove('hidden');
-}
-function closeDailyAndSave(){
-  const today=new Date().toDateString();
-  const last=localStorage.getItem(getLastKey(selected));
-  if(last!==today){
-    const yesterday=new Date(Date.now()-86400000).toDateString();
-    let streak=getStreak(selected);
-    let freeze=getFreeze(selected);
-    let usedFreeze=false;
-    const diff=last?Math.floor((new Date(today)-new Date(last))/86400000):99;
-    if(last===yesterday) streak+=1;
-    else if(diff===2 && freeze>0){ setFreeze(selected,freeze-1); streak+=1; usedFreeze=true; }
-    else streak=1;
-    localStorage.setItem(getStreakKey(selected),streak);
-    localStorage.setItem(getLastKey(selected),today);
-    const ans=getAnswered(selected)+1;
-    localStorage.setItem(getAnsweredKey(selected),ans);
-    if(streak===7 && getFreeze(selected)===0){ setFreeze(selected,1); alert('🔥 Siku 7! Umepata Badge ya Mwenye Nidhamu + 🧊 Freeze 1!'); }
-    else if(streak===14){ setFreeze(selected,getFreeze(selected)+1); alert('🔥 Siku 14! Umepata 🧊 Freeze nyingine! Sasa una '+getFreeze(selected)+' Freeze'); }
-    else if(streak===3) alert('🎉 Hongera! Siku 3! Umepata Badge ya Msomaji Mpya!');
-    else if(streak===30) alert('👑 Siku 30! Wewe ni Mfalme wa '+selected+'!');
-    else if(usedFreeze) alert('🧊 Freeze imetumika! Streak imeokolewa! Sasa uko siku '+streak);
-    else alert('✅ Streak imeokolewa! Sasa uko siku '+streak+' mfululizo!');
-  }
-  document.getElementById('freezeMsg').textContent='';
-  updateStreakUI(); updateDailyUI(); renderLeaderboard(); backHomeFromDaily();
-}
-function checkEveningReminder(){
-  const now=new Date(); const today=now.toDateString();
-  const last=localStorage.getItem(getLastKey(selected));
-  const already=localStorage.getItem('mtaalam_reminded_'+today);
-  if(now.getHours()===20 && last!==today && !already){
-    const streak=getStreak(selected); const short=profShort[selected]||'QS';
-    let msg='';
-    if(streak<=2) msg=`Swali la Leo la ${selected} bado liko wazi. Wenzako wameshajibu. Jibu sasa - sekunde 30 tu.`;
-    else if(streak<=6) msg=`🔥 Streak yako ya siku ${streak} ya ${short} itapotea baada ya masaa 4! Jibu swali 1 tu uiokoe.`;
-    else msg=`😱 Uko siku ${streak} ya ${short}! Usiharibu! Jibu Swali la Leo sasa uiokoe ranking yako.`;
-    if('Notification' in window && Notification.permission==='granted'){ new Notification('MTAALAM - Streak Inapotea!',{body:msg}); }
-    else { const banner=document.createElement('div'); banner.style.cssText='position:fixed;bottom:16px;left:16px;right:16px;background:#f59e0b;color:#111;padding:14px;border-radius:14px;font-weight:800;z-index:999;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.4)'; banner.textContent=msg+' → Bonyeza kujibu'; banner.onclick=()=>{banner.remove();openDailyQuestion();}; document.body.appendChild(banner); setTimeout(()=>banner.remove(),15000); }
-    localStorage.setItem('mtaalam_reminded_'+today,'1');
-  }
-}
+function getDailyQuestion(){const bank=DAILY_BANK[selected]||DAILY_BANK['Quantity Surveyor'];const day=new Date().getDate();return bank[(day-1)%bank.length];}
+function openDailyQuestion(){const btn=document.getElementById('dailyBtn');if(btn.disabled) return;dailyCurrent=getDailyQuestion();document.getElementById('landing').classList.add('hidden');document.getElementById('dailyQuiz').classList.remove('hidden');document.getElementById('dailyQCat').textContent='SWALI LA LEO • '+selected.toUpperCase();document.getElementById('dailyQText').textContent=dailyCurrent.q;document.getElementById('dailyExplain').classList.add('hidden');document.getElementById('dailyNextBtn').classList.add('hidden');const box=document.getElementById('dailyOpts'); box.innerHTML='';dailyCurrent.opts.forEach((o,i)=>{const d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>checkDaily(i,d);box.appendChild(d);});window.scrollTo(0,0);}
+function checkDaily(i,el){const opts=document.querySelectorAll('#dailyOpts .opt');if(opts[0].style.pointerEvents==='none') return;opts.forEach(o=>o.style.pointerEvents='none');const isCorrect=i===dailyCurrent.a;if(isCorrect) el.classList.add('correct'); else {el.classList.add('wrong');opts[dailyCurrent.a].classList.add('correct');}const ex=document.getElementById('dailyExplain');if(isCorrect) ex.innerHTML='<b>✅ Sahihi! Wenzako 68% walikosea swali hili. Wewe uko kwenye 32% bora!</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex;else ex.innerHTML='<b>❌ Si sahihi. Hili ndilo swali linalowafeli wengi AQRB.</b><br><br><b>Maelezo:</b> '+dailyCurrent.ex+'<br><br><b>🔓 Fungua Past Paper uone maswali 10 kama haya → Tsh 1,000 tu</b>';ex.classList.remove('hidden');document.getElementById('dailyNextBtn').classList.remove('hidden');}
+function closeDailyAndSave(){const today=new Date().toDateString();const last=localStorage.getItem(getLastKey(selected));if(last!==today){const yesterday=new Date(Date.now()-86400000).toDateString();let streak=getStreak(selected);let freeze=getFreeze(selected);let usedFreeze=false;const diff=last?Math.floor((new Date(today)-new Date(last))/86400000):99;if(last===yesterday) streak+=1;else if(diff===2 && freeze>0){ setFreeze(selected,freeze-1); streak+=1; usedFreeze=true; }else streak=1;localStorage.setItem(getStreakKey(selected),streak);localStorage.setItem(getLastKey(selected),today);const ans=getAnswered(selected)+1;localStorage.setItem(getAnsweredKey(selected),ans);if(streak===7 && getFreeze(selected)===0){ setFreeze(selected,1); alert('🔥 Siku 7! Umepata Badge ya Mwenye Nidhamu + 🧊 Freeze 1!'); }else if(streak===14){ setFreeze(selected,getFreeze(selected)+1); alert('🔥 Siku 14! Umepata 🧊 Freeze nyingine! Sasa una '+getFreeze(selected)+' Freeze'); }else if(streak===3) alert('🎉 Hongera! Siku 3! Umepata Badge ya Msomaji Mpya!');else if(streak===30) alert('👑 Siku 30! Wewe ni Mfalme wa '+selected+'!');else if(usedFreeze) alert('🧊 Freeze imetumika! Streak imeokolewa! Sasa uko siku '+streak);else alert('✅ Streak imeokolewa! Sasa uko siku '+streak+' mfululizo!');}document.getElementById('freezeMsg').textContent='';updateStreakUI(); updateDailyUI(); renderLeaderboard(); backHomeFromDaily();}
+function checkEveningReminder(){const now=new Date(); const today=now.toDateString();const last=localStorage.getItem(getLastKey(selected));const already=localStorage.getItem('mtaalam_reminded_'+today);if(now.getHours()===20 && last!==today && !already){const streak=getStreak(selected); const short=profShort[selected]||'QS';let msg='';if(streak<=2) msg=`Swali la Leo la ${selected} bado liko wazi. Wenzako wameshajibu. Jibu sasa - sekunde 30 tu.`;else if(streak<=6) msg=`🔥 Streak yako ya siku ${streak} ya ${short} itapotea baada ya masaa 4! Jibu swali 1 tu uiokoe.`;else msg=`😱 Uko siku ${streak} ya ${short}! Usiharibu! Jibu Swali la Leo sasa uiokoe ranking yako.`;if('Notification' in window && Notification.permission==='granted'){ new Notification('MTAALAM - Streak Inapotea!',{body:msg}); }else { const banner=document.createElement('div'); banner.style.cssText='position:fixed;bottom:16px;left:16px;right:16px;background:#f59e0b;color:#111;padding:14px;border-radius:14px;font-weight:800;z-index:999;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.4)'; banner.textContent=msg+' → Bonyeza kujibu'; banner.onclick=()=>{banner.remove();openDailyQuestion();}; document.body.appendChild(banner); setTimeout(()=>banner.remove(),15000); }localStorage.setItem('mtaalam_reminded_'+today,'1');}}
 const DAILY_BANK = {
 'Quantity Surveyor': [
 {q:'BoQ ni nini?',opts:['Bill of Quantities','Book of Quality','Bill of Quality','Basic of Quantities'],a:0,ex:'BoQ ni orodha ya vipimo na bei za kazi za ujenzi.'},

@@ -265,13 +265,53 @@ const LAWS_10 = [
 const profMap={'Architect':'architect','Quantity Surveyor':'qs','Architectural Technologist':'architectural_technologist','Interior Designer':'interior_design','Landscape Architect':'landscape_architect','Construction Manager':'construction_manager'};
 const profShort={'Architect':'AR','Quantity Surveyor':'QS','Architectural Technologist':'AT','Interior Designer':'ID','Landscape Architect':'LA','Construction Manager':'CM'};
 function updatePremiumText(){const short = profShort[selected] || 'QS';const el = document.getElementById('premiumText');if(el) el.textContent = short + ' - Maswali halisi ya 2019 - 2024. Maswali 1000+ • Majibu + Maelezo';}
-/* MABADILIKO 2: showLaws - sasa common, sio taaluma */
 async function showLaws(){document.getElementById('landing').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('syllabusPage').classList.add('hidden');document.getElementById('lawsPage').classList.remove('hidden');renderLawsList({});try{const {data}=await supabaseClient.from('questions').select('topic').eq('profession','common').eq('paper','laws');const counts={};if(data)data.forEach(r=>{counts[r.topic]=(counts[r.topic]||0)+1});renderLawsList(counts);}catch(e){console.log(e.message)}window.scrollTo(0,0);}
 function renderLawsList(counts){document.getElementById('lawsContainer').innerHTML=LAWS_10.map((law,i)=>{const rc=counts[law.id]||0;const st=rc>0?`✅ ${rc} Maswali • BURE`:`⏳ ${law.count} Yanakuja • BURE`;const bg=rc>0?'#dcfce7':'#fef9c3';return `<div class="law-card" onclick="openLaw('${law.id}')"><div style="display:flex;justify-content:space-between"><b>${i+1}. ${law.name}</b><span style="background:${bg};padding:4px 8px;border-radius:999px;font-size:12px">${st}</span></div><div class="small">${law.desc}</div><div style="color:#d97706;font-size:13px;font-weight:700;margin-top:6px">Bonyeza kuanza →</div></div>`}).join('');}
 function backFromLaws(){document.getElementById('lawsPage').classList.add('hidden');document.getElementById('landing').classList.remove('hidden');window.scrollTo(0,0);}
-async function showSyllabus(){document.getElementById('landing').classList.add('hidden');document.getElementById('lawsPage').classList.add('hidden');document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('syllabusPage').classList.remove('hidden');document.getElementById('syllabusProf').textContent = selected.toUpperCase();document.getElementById('syllabusContainer').innerHTML = '<p class="small">Inapakia Syllabus...</p>';try{const dbProf = profMap[selected] || 'qs';const {data, error} = await supabaseClient.from('syllabuses').select('*').eq('profession', dbProf).order('id',{ascending:true});if(error) throw error;if(!data || data.length===0){document.getElementById('syllabusContainer').innerHTML = '<p>Syllabus ya '+selected+' bado haijaingia.</p>';return;}const groups = {};data.forEach(r=>{ if(!groups[r.section]) groups[r.section]=[]; groups[r.section].push(r); });document.getElementById('syllabusContainer').innerHTML = Object.keys(groups).map(sec=>{const items = groups[sec].map(it=>`<div class="syllabus-item"><b>${it.code} - ${it.title}</b><div class="small" style="margin-top:4px">${it.topics||''}</div></div>`).join('');return `<div class="syllabus-section"><b>${sec}</b>${items}</div>`;}).join('');}catch(e){ document.getElementById('syllabusContainer').innerHTML = 'Kosa: '+e.message; }window.scrollTo(0,0);}
+
+// *** MABADILIKO MAPYA: SYLLABUS SASA NI PREMIUM - TITLE BURE, CONTENT PREMIUM ***
+async function showSyllabus(){
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('lawsPage').classList.add('hidden');
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('payPage').classList.add('hidden');
+  document.getElementById('syllabusPage').classList.remove('hidden');
+  document.getElementById('syllabusProf').textContent = selected.toUpperCase();
+  document.getElementById('syllabusContainer').innerHTML = '<p class="small">Inapakia Syllabus...</p>';
+  await loadProfile();
+  const isPremium = isSubscriptionActive();
+  try{
+    const dbProf = profMap[selected] || 'qs';
+    const {data, error} = await supabaseClient.from('syllabuses').select('*').eq('profession', dbProf).order('id',{ascending:true});
+    if(error) throw error;
+    if(!data || data.length===0){
+      document.getElementById('syllabusContainer').innerHTML = '<p>Syllabus ya '+selected+' bado haijaingia.</p>';
+      return;
+    }
+    const groups = {};
+    data.forEach(r=>{ if(!groups[r.section]) groups[r.section]=[]; groups[r.section].push(r); });
+    if(!isPremium){
+      document.getElementById('syllabusContainer').innerHTML = Object.keys(groups).map(sec=>{
+        const items = groups[sec].map(it=>`<div class="syllabus-item"><b>${it.code} - ${it.title}</b><div class="small" style="margin-top:4px">🔒 Lipia kuona maelezo kamili ya topic hii</div></div>`).join('');
+        return `<div class="syllabus-section"><b>${sec}</b>${items}</div>`;
+      }).join('') + `
+      <div style="background:linear-gradient(135deg,#f97316,#dc2626);color:white;border-radius:16px;padding:18px;margin-top:14px;text-align:center">
+        <b style="font-size:18px">🔒 Syllabus Kamili ni Premium</b>
+        <p style="font-size:14px;margin-top:6px">Umeona titles tu. Lipia uone maelezo kamili + Topics zote + Maswali 100 kwa kila topic.</p>
+        <p style="font-size:13px;margin-top:6px">Kuanzia <b>Tsh 1,000</b> tu</p>
+        <button class="btn btn-gold" style="width:100%;margin-top:12px" onclick="goToPay()">Fungua Syllabus Kamili →</button>
+      </div>`;
+      return;
+    }
+    document.getElementById('syllabusContainer').innerHTML = Object.keys(groups).map(sec=>{
+      const items = groups[sec].map(it=>`<div class="syllabus-item"><b>${it.code} - ${it.title}</b><div class="small" style="margin-top:4px">${it.topics||''}</div></div>`).join('');
+      return `<div class="syllabus-section"><b>${sec}</b>${items}</div>`;
+    }).join('');
+  }catch(e){ document.getElementById('syllabusContainer').innerHTML = 'Kosa: '+e.message; }
+  window.scrollTo(0,0);
+}
 function backFromSyllabus(){ document.getElementById('syllabusPage').classList.add('hidden'); document.getElementById('landing').classList.remove('hidden'); window.scrollTo(0,0); }
-/* MABADILIKO 3: openLaw - sasa common, maswali yale yale kwa wote */
 async function openLaw(lawId){currentLawId=lawId;currentCat='sheria';qi=0;score=0;document.getElementById('lawsPage').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=lawId.toUpperCase()+' - SHERIA';document.getElementById('qText').textContent='Inapakia maswali...';document.getElementById('opts').innerHTML='';document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');try{const {data,error}=await supabaseClient.from('questions').select('*').eq('profession','common').eq('paper','laws').eq('topic',lawId).order('created_at',{ascending:true});if(error)throw error;if(data&&data.length>0){questions.sheria=data.map(r=>({q:r.question,opts:[r.option_a,r.option_b,r.option_c,r.option_d],a:['A','B','C','D'].indexOf(r.correct_answer),ex:r.explanation||''})); questions.sheria = shuffleArray(questions.sheria); showQ();}else{document.getElementById('qNum').textContent='Swali 0 / 0';document.getElementById('qText').textContent='Maswali ya '+lawId+' bado hayajaingia.';document.getElementById('opts').innerHTML='<button class="btn btn-gold" style="width:100%" onclick="backHome()">← Rudi</button>';}}catch(e){document.getElementById('qText').textContent='Kosa: '+e.message}window.scrollTo(0,0);}
 async function checkUser(){const {data}=await supabaseClient.auth.getSession();currentUser=data.session?.user||null;if(currentUser){document.getElementById('authCard').classList.add('hidden');document.getElementById('userBar').classList.remove('hidden');document.getElementById('userEmail').textContent='👤 '+currentUser.email;await loadProfile();loadLogs();}else{document.getElementById('authCard').classList.remove('hidden');document.getElementById('userBar').classList.add('hidden');logs=0;updateLogUI();document.getElementById('logItems').innerHTML='<p class="small">Ingia kwanza ili uone log zako.</p>';}}
 async function doSignup(){let email=document.getElementById('authEmail').value.trim();let pass=document.getElementById('authPass').value;if(!email||!pass||pass.length<6){document.getElementById('authMsg').textContent='Weka email na password 6+';return}document.getElementById('authMsg').textContent='Inajisajili...';const {error}=await supabaseClient.auth.signUp({email:email,password:pass});if(error){document.getElementById('authMsg').textContent='Kosa: '+error.message;return}document.getElementById('authMsg').textContent='Umejisajili! Sasa Ingia.';checkUser();}
@@ -295,7 +335,6 @@ async function sendWhatsApp(){const jina=document.getElementById('payJina').valu
 function payNow(){goToPay();}
 async function startQuiz(cat){if(cat==='aqrb'){await loadProfile();if(!isSubscriptionActive()){if(!currentUser){alert('Ingia kwanza ili ulipie AQRB Past Paper');return;}goToPay();return;}}document.getElementById('lawsPage').classList.add('hidden');document.getElementById('payPage').classList.add('hidden');document.getElementById('syllabusPage').classList.add('hidden');currentCat=cat;qi=0;score=0;document.getElementById('landing').classList.add('hidden');document.getElementById('result').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');document.getElementById('qCat').textContent=cat==='sheria'?'SHERIA - AQRB':cat==='aqrb'?'AQRB PAST PAPER - PREMIUM':'SYLLABUS - '+selected.toUpperCase();await loadFreeQuestions();if(cat==='aqrb'&&(!questions.aqrb||questions.aqrb.length===0)){document.getElementById('qText').textContent='AQRB Past Paper bado haijaingia Supabase. Tafadhali rudi baadae.';document.getElementById('opts').innerHTML='';return;} if(questions[cat] && questions[cat].length>0){ questions[cat] = shuffleArray(questions[cat]); } showQ();window.scrollTo(0,0)}
 function showQ(){let list=questions[currentCat];if(!list||list.length===0){document.getElementById('qText').textContent='Hakuna maswali.';return;}let item=list[qi];document.getElementById('qNum').textContent='Swali '+(qi+1)+' / '+list.length;document.getElementById('qBar').style.width=((qi+1)/list.length*100)+'%';document.getElementById('qText').textContent=item.q;document.getElementById('explain').classList.add('hidden');document.getElementById('nextBtn').classList.add('hidden');let box=document.getElementById('opts');box.innerHTML='';item.opts.forEach((o,i)=>{let d=document.createElement('div');d.className='opt';d.textContent=o;d.onclick=()=>check(i,d,item);box.appendChild(d)})}
-/* MABADILIKO 1: check - sasa #opts .opt pekee, sio .opt yote */
 function check(i,el,item){let opts=document.querySelectorAll('#opts .opt');if(opts[0].style.pointerEvents==='none')return;opts.forEach(o=>o.style.pointerEvents='none');if(i===item.a){el.classList.add('correct');score++}else{el.classList.add('wrong');opts[item.a].classList.add('correct')}let ex=document.getElementById('explain');ex.innerHTML='<b>Maelezo:</b> '+item.ex;ex.classList.remove('hidden');let nb=document.getElementById('nextBtn');nb.textContent=qi===questions[currentCat].length-1?'Ona Matokeo →':'Swali Linalofuata →';nb.classList.remove('hidden')}
 function nextQ(){qi++;if(qi>=questions[currentCat].length){showResult()}else{showQ()}}
 function showResult(){document.getElementById('quiz').classList.add('hidden');document.getElementById('result').classList.remove('hidden');document.getElementById('scoreText').textContent=score+' / '+questions[currentCat].length;let pct=score/questions[currentCat].length*100;document.getElementById('scoreMsg').textContent=pct>=80?'Hongera sana! Uko tayari kwa AQRB.':pct>=60?'Vizuri sana! Endelea kidogo tu.':pct>=40?'Vizuri! Soma maelezo na ujaribu tena.':'Usikate tamaa. Rudi usome maelezo na ujaribu tena.';if(currentCat==='syllabus'){document.getElementById('payBox').classList.remove('hidden')}else{document.getElementById('payBox').classList.add('hidden')}}
